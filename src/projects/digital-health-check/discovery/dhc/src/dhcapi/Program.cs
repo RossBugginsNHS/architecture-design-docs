@@ -7,12 +7,15 @@ using dhcapi;
 using UnitsNet;
 using MediatR;
 using FluentValidation;
+using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi.Any;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers()
 .AddJsonOptions(options =>
     {
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+        options.JsonSerializerOptions.Converters.Add(new DateOnlyJsonConverter());
     });
 
 builder.Services.AddEndpointsApiExplorer()
@@ -29,6 +32,7 @@ builder.Services.AddEndpointsApiExplorer()
     })
 .AddSwaggerGen(c =>
     {
+        c.MapType<DateOnly>(() => new OpenApiSchema { Type = typeof(string).Name, Default = new OpenApiString("2020-01-01"), Format="date"});        
         var filePath = Path.Combine(System.AppContext.BaseDirectory, "dhcapi.xml");
         c.IncludeXmlComments(filePath);
         c.EnableAnnotations();

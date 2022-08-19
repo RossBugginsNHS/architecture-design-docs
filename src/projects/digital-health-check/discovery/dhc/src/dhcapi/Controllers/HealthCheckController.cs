@@ -26,5 +26,21 @@ public class HealthCheckController : ControllerBase
         var hcResult = await _sender.Send(new CalculateHealthCheckCommand(healthCheckData));
         return hcResult;
     }
+
+    [Consumes("application/json")]
+    [Produces("application/json")]
+    [HttpGet("/v{version:apiVersion}/Tools/DaysOld/{year}/{month}/{day}",Name = "GetBirthdayToDays"), MapToApiVersion("0.1")]
+    public async Task<ActionResult<int>> BirthdayToDays(
+         [FromRoute] int year,
+         [FromRoute] int month,
+         [FromRoute] int day
+         )
+    {
+        var birthDate = new DateOnly(year, month, day);
+        var today = DateOnly.FromDateTime(DateTime.Now);
+        var days = today.DayNumber - birthDate.DayNumber;
+        await Task.Yield();
+        return days;
+    }    
 }
 
