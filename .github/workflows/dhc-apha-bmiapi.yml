@@ -60,5 +60,5 @@ jobs:
         uses: azure/webapps-deploy@0b651ed7546ecfc75024011f76944cb9b381ef1e
         with:
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_NHS-BMI }}
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_NHS_BMI }}
           package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
