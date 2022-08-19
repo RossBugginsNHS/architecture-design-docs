@@ -56,7 +56,7 @@ builder.Services.AddCors(options =>
     {
         builder
             .AllowAnyOrigin()
-            .AllowAnyMethod();
+            .WithMethods("PUT", "POST", "GET");
     });
 });
 var app = builder.Build();
