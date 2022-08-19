@@ -44,7 +44,7 @@ builder.Services.AddHealthCheck((config) =>
     config.Services.AddValidatorsFromAssemblyContaining<ConvertHealthCheckCommandHandler>();   
     config.Services.AddMediatR(typeof(ConvertHealthCheckCommandHandler));
     config.Services.AddTransient<IHealthCheckRequestDataConverterProvider, HealthCheckRequestDataConverterProvider>();
-    //config.SetWebBpProvider(builder.Configuration);
+    config.SetWebBpProvider(builder.Configuration);
 });
 
 var app = builder.Build();
