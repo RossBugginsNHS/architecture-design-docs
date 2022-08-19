@@ -46,11 +46,20 @@ builder.Services.AddHealthCheck((config) =>
     config.Services.AddTransient<IHealthCheckRequestDataConverterProvider, HealthCheckRequestDataConverterProvider>();
     config.SetWebBpProvider(builder.Configuration);
 });
-
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AnyOrigin", builder =>
+    {
+        builder
+            .AllowAnyOrigin()
+            .AllowAnyMethod();
+    });
+});
 var app = builder.Build();
 var provider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
 if (app.Environment.IsDevelopment())
 {
+    app.UseCors("AnyOrigin");
     app.UseSwagger();
     app.UseSwaggerUI(options =>
     {

@@ -19,7 +19,7 @@ nav_order: 10.2
 <script>
     window.onload = function() {
         window.ui = SwaggerUIBundle({
-        url: "https://raw.githubusercontent.com/RossBugginsNHS/nhs-experience/latest/src/projects/digital-health-check/discovery/dhc/src/bmiapi/swagger-v0.2.json",
+        url: "https://nhs-bmi.azurewebsites.net/swagger/v0.2/swagger.json",
         dom_id: '#swagger-ui',
         deepLinking: true,
         presets: [
