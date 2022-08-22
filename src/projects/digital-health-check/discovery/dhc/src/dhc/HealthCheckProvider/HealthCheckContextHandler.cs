@@ -7,3 +7,11 @@ public class HealthCheckContextHandler
         return Task.CompletedTask;
     }
 }
+
+public class ContextHandler<T>
+{
+    public Task Handle(T context)
+    {
+        return Task.CompletedTask;
+    }
+}

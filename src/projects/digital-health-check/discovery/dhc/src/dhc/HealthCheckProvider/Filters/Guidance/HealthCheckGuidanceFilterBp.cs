@@ -1,6 +1,6 @@
 namespace dhc;
 
-public class HealthCheckGuidanceFilterBp: HealthCheckProviderFilter, IHealthCheckGuidanceFilter
+public class HealthCheckGuidanceFilterBp: ProviderFilter<HealthCheckContext>, IHealthCheckGuidanceFilter
 {
     private readonly IBloodPressureProvider _bloodPressureProvider;
     private readonly ILogger<HealthCheckGuidanceFilterBp> _logger;

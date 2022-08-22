@@ -1,6 +1,6 @@
 namespace dhc;
 
-public class HealthCheckFilterSmoking: HealthCheckProviderFilter,IHealthCheckFilter
+public class HealthCheckFilterSmoking: ProviderFilter<HealthCheckContext>,IHealthCheckFilter
 {
     SmokingCalculator _calculator;
     public HealthCheckFilterSmoking(

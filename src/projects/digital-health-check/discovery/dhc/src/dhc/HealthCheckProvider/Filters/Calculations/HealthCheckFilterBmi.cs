@@ -1,6 +1,6 @@
 namespace dhc;
 
-public class HealthCheckFilterBmi: HealthCheckProviderFilter,IHealthCheckFilter
+public class HealthCheckFilterBmi: ProviderFilter<HealthCheckContext>,IHealthCheckFilter
 {
     private readonly IBmiCalculatorProvider _bmiCalculatorProvider;
 

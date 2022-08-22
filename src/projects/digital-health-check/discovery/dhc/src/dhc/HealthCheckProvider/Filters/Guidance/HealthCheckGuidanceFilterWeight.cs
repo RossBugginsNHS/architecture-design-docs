@@ -1,6 +1,6 @@
 namespace dhc;
 
-public class HealthCheckGuidanceFilterWeight: HealthCheckProviderFilter,IHealthCheckGuidanceFilter
+public class HealthCheckGuidanceFilterWeight: ProviderFilter<HealthCheckContext>,IHealthCheckGuidanceFilter
 {
 
     private readonly ILogger<HealthCheckGuidanceFilterWeight> _logger;
