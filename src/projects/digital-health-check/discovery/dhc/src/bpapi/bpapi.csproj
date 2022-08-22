@@ -9,6 +9,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="MediatR" Version="10.0.1" />
+    <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="10.0.1" />
     <PackageReference Include="prometheus-net.AspNetCore" Version="6.0.0" />    
     <PackageReference Include="prometheus-net.AspNetCore.HealthChecks" Version="6.0.0" />      
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />

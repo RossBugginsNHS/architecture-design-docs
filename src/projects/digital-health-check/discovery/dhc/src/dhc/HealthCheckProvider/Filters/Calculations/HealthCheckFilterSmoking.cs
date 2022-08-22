@@ -1,12 +1,21 @@
 namespace dhc;
 
-public class HealthCheckFilterSmoking: IHealthCheckFilter
+public class HealthCheckFilterSmoking: HealthCheckProviderFilter,IHealthCheckFilter
 {
     SmokingCalculator _calculator;
-    public HealthCheckFilterSmoking(SmokingCalculator calculator)
+    public HealthCheckFilterSmoking(
+        ILogger<HealthCheckFilterSmoking> logger,
+        SmokingCalculator calculator) : base(logger)
     {
         _calculator = calculator;
     }
+
+    public override Task Handle(HealthCheckContext context)
+    {
+        context.HealthCheckResult = Update(context.HealthCheckResult, context.HealthCheckData);
+        return Task.CompletedTask;
+    }
+
     public HealthCheckResult Update(HealthCheckResult current, HealthCheckData data)
     {
         var smoke = _calculator.Calculate(data.SmokingData.CigarettesPerDay, data.SmokingData.UsedToSmoke);

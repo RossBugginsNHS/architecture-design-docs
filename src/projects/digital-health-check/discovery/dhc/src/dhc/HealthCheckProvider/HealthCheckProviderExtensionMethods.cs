@@ -32,10 +32,11 @@ public static class HealthCheckProviderExtensionMethods
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
         services.AddTransient<IHealthCheckDataBuilder,HealthCheckDataBuilder>();
         services.AddTransient<IHealthCheckDataBuilderProvider, HealthCheckDataBuilderProvider>();
-        services.AddTransient<BloodPressureProvider>();
+        services.AddTransient<IBloodPressureProvider, BloodPressureProvider>();
         services.AddTransient<IBmiCalculatorProvider, BmiCalculatorProvider>();
         services.AddTransient<IHealthCheckProvider, HealthCheckProvider>();
         services.AddTransient<SmokingCalculator>();
+        services.AddSingleton(typeof(PipelineWrapper<>));
         
         return services;
     }
@@ -49,18 +50,19 @@ public static class HealthCheckProviderExtensionMethods
 
     private static IServiceCollection AddHealthCheckProviderFilters(this IServiceCollection services, HealthCheckProviderOptions options)
     {
-        return services.AddTransientTypesFrom<IHealthCheckFilter>(options.Filters.Types);        
+        return services.AddTransientTypesFrom<IHealthCheckProviderFilter>(options.Filters.Types);        
     }
 
     private static IServiceCollection AddHealthCheckProviderGuidanceFilters(this IServiceCollection services, HealthCheckProviderOptions options)
     {
-        return services.AddTransientTypesFrom<IHealthCheckGuidanceFilter>(options.GuidanceFilters.Types);
+        return services.AddTransientTypesFrom<IHealthCheckProviderFilter>(options.GuidanceFilters.Types);
     }    
 
     private static IServiceCollection AddHealthCheckHealthCheckDataBuilders(this IServiceCollection services, HealthCheckProviderOptions options)
     {
         return services.AddTransientTypesFrom<IHealthCheckDataBuilderBuildFilter>(options.HealthCheckDataBuilders.Types);
     }
+
 
     private static IServiceCollection AddTransientTypesFrom<T>(this IServiceCollection services, IEnumerable<Type> types)
     {

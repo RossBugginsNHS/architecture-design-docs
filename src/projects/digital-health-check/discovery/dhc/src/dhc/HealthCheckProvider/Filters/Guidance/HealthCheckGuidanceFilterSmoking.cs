@@ -1,19 +1,20 @@
 namespace dhc;
 
-public class HealthCheckGuidanceFilterSmoking: IHealthCheckGuidanceFilter
+public class HealthCheckGuidanceFilterSmoking: HealthCheckProviderFilter,IHealthCheckGuidanceFilter
 {
-    private readonly BloodPressureProvider _bloodPressureProvider;
+
     private readonly ILogger<HealthCheckGuidanceFilterSmoking> _logger;
     public HealthCheckGuidanceFilterSmoking(
-        ILogger<HealthCheckGuidanceFilterSmoking> logger,
-        BloodPressureProvider bloodPressureProvider
-    )
+        ILogger<HealthCheckGuidanceFilterSmoking> logger
+    ):base(logger)
     {
         _logger = logger;
-        _bloodPressureProvider = bloodPressureProvider;
     }
-
-    public HealthCheckResult Update(HealthCheckResult current, HealthCheckData data)
+    public override Task Handle(HealthCheckContext context)
+    {
+        context.HealthCheckResult = Update(context.HealthCheckResult, context.HealthCheckData);
+        return Task.CompletedTask;
+    }    public HealthCheckResult Update(HealthCheckResult current, HealthCheckData data)
     {
         var smokingGuidance =   
             (current.Smoking.SmokingData) switch

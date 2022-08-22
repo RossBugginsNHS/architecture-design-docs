@@ -1,16 +1,20 @@
 namespace dhc;
 
-public class HealthCheckGuidanceFilterWeight: IHealthCheckGuidanceFilter
+public class HealthCheckGuidanceFilterWeight: HealthCheckProviderFilter,IHealthCheckGuidanceFilter
 {
-    private readonly BloodPressureProvider _bloodPressureProvider;
+
     private readonly ILogger<HealthCheckGuidanceFilterWeight> _logger;
     public HealthCheckGuidanceFilterWeight(
-        ILogger<HealthCheckGuidanceFilterWeight> logger,
-        BloodPressureProvider bloodPressureProvider
-    )
+        ILogger<HealthCheckGuidanceFilterWeight> logger
+    ):base(logger)
     {
         _logger = logger;
-        _bloodPressureProvider = bloodPressureProvider;
+    }
+
+    public override Task Handle(HealthCheckContext context)
+    {
+        context.HealthCheckResult = Update(context.HealthCheckResult, context.HealthCheckData);
+        return Task.CompletedTask;
     }
 
     public HealthCheckResult Update(HealthCheckResult current, HealthCheckData data)

@@ -1,5 +1,8 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using bpapi;
+using FluentValidation;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.OpenApi.Any;
@@ -32,8 +35,12 @@ builder.Services.AddSwaggerGen(c=>
     });
 builder.Services.AddSwaggerExamplesFromAssemblyOf<Program>();
 builder.Services.ConfigureOptions<ConfigureSwaggerOptions>();
+builder.Services.AddMediatR(typeof(CalculateBloodPressureCommandHandler));
+builder.Services.AddValidatorsFromAssemblyContaining<CalculateBloodPressureCommandHandler>();  
+builder.Services.AddTransient<IBloodPressureProvider, BloodPressureProvider>();
+builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehaviour<,>));
+builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
 
-builder.Services.AddTransient<BloodPressureProvider>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AnyOrigin", builder =>

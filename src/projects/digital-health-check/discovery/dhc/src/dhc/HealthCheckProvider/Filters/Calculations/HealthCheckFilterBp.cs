@@ -1,15 +1,24 @@
 namespace dhc;
 
-public class HealthCheckFilterBp: IHealthCheckFilter
+public class HealthCheckFilterBp: HealthCheckProviderFilter,IHealthCheckFilter
 {
-    private readonly BloodPressureProvider _bloodPressureProvider;
+    private readonly IBloodPressureProvider _bloodPressureProvider;
 
     public HealthCheckFilterBp(
-        BloodPressureProvider bloodPressureProvider
-    )
+        IBloodPressureProvider bloodPressureProvider,
+        ILogger<HealthCheckFilterBp> logger
+    ): base (logger)
     {
         _bloodPressureProvider = bloodPressureProvider;
     }
+
+    public override Task Handle(HealthCheckContext context)
+    {
+        context.HealthCheckResult = Update(context.HealthCheckResult, context.HealthCheckData);
+        return Task.CompletedTask;
+    }
+
+    
 
     public HealthCheckResult Update(HealthCheckResult current, HealthCheckData data)
     {

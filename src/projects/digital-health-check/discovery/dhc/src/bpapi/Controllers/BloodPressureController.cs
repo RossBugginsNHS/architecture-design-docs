@@ -1,3 +1,4 @@
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -9,13 +10,15 @@ namespace bpapi.Controllers;
 [Route("/v{version:apiVersion}/[controller]")]
 public class BloodPressureController : ControllerBase
 {
-
+    private readonly ISender _sender;
     private readonly ILogger<BloodPressureController> _logger;
-    private readonly BloodPressureProvider _bpProvider;
+    private readonly IBloodPressureProvider _bpProvider;
     public BloodPressureController(
+        ISender sender,
         ILogger<BloodPressureController> logger, 
-        BloodPressureProvider bpProvider)
+        IBloodPressureProvider bpProvider)
     {
+        _sender = sender;
         _logger = logger;
         _bpProvider = bpProvider;
     }
@@ -31,11 +34,12 @@ public class BloodPressureController : ControllerBase
     [Produces("text/plain")]
     [HttpGet("{systolic}/{diastolic}", Name = "GetBloodPressure"), MapToApiVersion("0.1")]
     [ProducesResponseType(typeof(string), 200)]
-    public ActionResult<string> Get(double systolic, double diastolic)
+    public async Task<ActionResult<string>> Get(double systolic, double diastolic)
     {
+        await Task.Yield();
         var result = BloodPressureResultConverter.GetResult(systolic, diastolic);
         _logger.LogTrace("V0.1 BP Result of {result} for {systolic} over {diastolic}", result, systolic, diastolic);
-        return result.ToString();
+        return result;
     }
     
 
@@ -50,11 +54,13 @@ public class BloodPressureController : ControllerBase
     [SwaggerResponse(StatusCodes.Status400BadRequest, "An error generating the blood pressure result.")]
     [Produces("application/json")]
     [HttpGet("{systolic}/{diastolic}", Name = "GetBloodPressure"), MapToApiVersion("0.2")]
-    public ActionResult<BloodPressureResult> GetV2(
+    public async Task<ActionResult<BloodPressureResult>> GetV2(
         [SwaggerParameter("The systolic (top)", Required = true)]int systolic, 
         [SwaggerParameter("The diastolic (bottom)", Required = true)]int diastolic)
     {
-        var bpResult = _bpProvider.CalculateBloodPressure(systolic,diastolic);
+        var bpResult = await _sender.Send(new CalculateBloodPressureCommand(new BloodPressureObservation(systolic, diastolic, DateOnly.FromDateTime(DateTime.Now), "No Location")));
+
+        //var bpResult = _bpProvider.CalculateBloodPressure(systolic,diastolic);
         _logger.LogTrace("V0.2 BP Result of {result} for {systolic} over {diastolic}", bpResult.BloodPressureDescription, systolic, diastolic);
         if(bpResult.BloodPressureDescription == "Error")
             return BadRequest();
@@ -65,7 +71,7 @@ public class BloodPressureController : ControllerBase
     [Consumes("application/json")]
     [Produces("application/json")]
     [HttpPost(Name = "GetBloodPressures"), MapToApiVersion("0.2")]
-    public ActionResult<BloodPressureResult> GetResult(IEnumerable<BloodPressureObservation> bps)
+    public  ActionResult<BloodPressureResult> GetResult(IEnumerable<BloodPressureObservation> bps)
     {
         var targetList = bps
           .Select(x => _bpProvider.CalculateBloodPressure(x.Systolic, x.Diastolic));
