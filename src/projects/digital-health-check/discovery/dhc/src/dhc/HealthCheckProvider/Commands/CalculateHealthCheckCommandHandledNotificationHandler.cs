@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 
-public class CalculateHealthCheckCommandHandledNotificationHandler1 : INotificationHandler<CalculateHealthCheckCommandHandledNotification>
+public class CalculateHealthCheckCommandHandledNotificationHandler : INotificationHandler<CalculateHealthCheckCommandHandledNotification>
 {
     private static readonly Counter _c_get_health_check = Metrics.CreateCounter("healthcheck_completed_counter", "Health Check Completed");     
 

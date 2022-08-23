@@ -1,17 +1,6 @@
 namespace dhc;
 
-public interface IPipelineBuilder<CntxtTp>
-{
-    ContextDelegate<CntxtTp> Build();
-    Task<CntxtTp> Run(CntxtTp context);
-    void Use(Func<ContextDelegate<CntxtTp>, ContextDelegate<CntxtTp>> middleware);
-    void Use(Func<CntxtTp, Func<Task>, Task> middleware);
-    void Use<T>();
-    void Use(Type filter);
-    void Use(IHandlingInvoker<CntxtTp> middleware);
-}
-
-public class PipelineBuilder<T, CntxtTp> : IPipelineBuilder<CntxtTp> where T : IHandlingInvoker<CntxtTp>
+public class PipelineBuilder<T, CntxtTp> : IPipelineBuilder<T, CntxtTp> where T : IHandlingInvoker<CntxtTp>
 {
 
     ContextDelegate<CntxtTp> app;
@@ -22,9 +11,9 @@ public class PipelineBuilder<T, CntxtTp> : IPipelineBuilder<CntxtTp> where T : I
         app = Build();
     }
 
-    protected List<Func<ContextDelegate<CntxtTp>, ContextDelegate<CntxtTp>>> wares = new List<Func<ContextDelegate<CntxtTp>, ContextDelegate<CntxtTp>>>();
+    protected List<ContextHandlerChainDelegate<CntxtTp>> wares = new List<ContextHandlerChainDelegate<CntxtTp>>();
 
-    public void Use(Func<ContextDelegate<CntxtTp>, ContextDelegate<CntxtTp>> middleware)
+    public void Use(ContextHandlerChainDelegate<CntxtTp> middleware)
     {
         wares.Add(middleware);
     }
@@ -43,40 +32,35 @@ public class PipelineBuilder<T, CntxtTp> : IPipelineBuilder<CntxtTp> where T : I
     }
     public void Use<T>()
     {
-        var middleware = (IHandlingInvoker<CntxtTp>)Activator.CreateInstance<T>();
-
-        this.Use(next =>
-        {
-            return context =>
-        {
-            return middleware.Handle(context, next);
-        };
-        });
+        Use(typeof(T));
     }
 
     public void Use(Type filter)
     {
         var middleware = (IHandlingInvoker<CntxtTp>)Activator.CreateInstance(filter);
-
-        this.Use(next =>
-        {
-            return context =>
-        {
-            return middleware.Handle(context, next);
-        };
-        });
+        Use(middleware);
     }
 
     public void Use(IHandlingInvoker<CntxtTp> middleware)
     {
-        this.Use(next =>
+        //Types not needed, but in for clearer code explanation.
+        ContextHandlerChainDelegate<CntxtTp>  nextChain = 
+        (next) =>
         {
-            return context =>
-        {
-            return middleware.Handle(context, next);
+            ContextDelegate<CntxtTp> thisHandler = 
+            (context) =>
+            {
+                ContextHandlerDelegate<CntxtTp> handleTask = middleware.Handle;
+                return handleTask(context, next);
+            };
+            return thisHandler;
         };
-        });
+
+        this.Use(nextChain);
     }
+
+
+
 
     public ContextDelegate<CntxtTp> Build()
     {
