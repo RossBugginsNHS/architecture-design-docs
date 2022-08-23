@@ -36,7 +36,9 @@ public static class HealthCheckProviderExtensionMethods
         services.AddTransient<IBmiCalculatorProvider, BmiCalculatorProvider>();
         services.AddTransient<IHealthCheckProvider, HealthCheckProvider>();
         services.AddTransient<SmokingCalculator>();
-        services.AddSingleton(typeof(PipelineWrapper<,>));
+        services.AddSingleton(typeof(PipelineBuilder<,>));
+        services.AddTransient<IHealthCheckContextBuilder, HealthCheckContextBuilder>();
+        services.AddTransient<IHealthCheckContext, HealthCheckContext>();
         
         return services;
     }

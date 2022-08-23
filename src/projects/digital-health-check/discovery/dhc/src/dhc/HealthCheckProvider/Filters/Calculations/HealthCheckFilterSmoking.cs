@@ -1,6 +1,6 @@
 namespace dhc;
 
-public class HealthCheckFilterSmoking: ProviderFilter<HealthCheckContext>,IHealthCheckFilter
+public class HealthCheckFilterSmoking: ProviderFilter<IHealthCheckContext>,IHealthCheckFilter
 {
     SmokingCalculator _calculator;
     public HealthCheckFilterSmoking(
@@ -10,7 +10,7 @@ public class HealthCheckFilterSmoking: ProviderFilter<HealthCheckContext>,IHealt
         _calculator = calculator;
     }
 
-    public override Task Handle(HealthCheckContext context)
+    public override Task Handle(IHealthCheckContext context)
     {
         context.HealthCheckResult = Update(context.HealthCheckResult, context.HealthCheckData);
         return Task.CompletedTask;

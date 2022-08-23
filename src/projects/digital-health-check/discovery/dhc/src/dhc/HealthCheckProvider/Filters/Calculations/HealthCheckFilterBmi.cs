@@ -1,6 +1,6 @@
 namespace dhc;
 
-public class HealthCheckFilterBmi: ProviderFilter<HealthCheckContext>,IHealthCheckFilter
+public class HealthCheckFilterBmi: ProviderFilter<IHealthCheckContext>,IHealthCheckFilter
 {
     private readonly IBmiCalculatorProvider _bmiCalculatorProvider;
 
@@ -12,7 +12,7 @@ public class HealthCheckFilterBmi: ProviderFilter<HealthCheckContext>,IHealthChe
         _bmiCalculatorProvider = bmiCalculatorProvider;
     }
 
-    public override Task Handle(HealthCheckContext context)
+    public override Task Handle(IHealthCheckContext context)
     {
         context.HealthCheckResult = Update(context.HealthCheckResult, context.HealthCheckData);
         return Task.CompletedTask;

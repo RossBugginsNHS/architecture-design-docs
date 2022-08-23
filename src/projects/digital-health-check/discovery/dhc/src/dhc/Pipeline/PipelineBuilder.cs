@@ -1,11 +1,21 @@
 namespace dhc;
 
+public interface IPipelineBuilder<CntxtTp>
+{
+    ContextDelegate<CntxtTp> Build();
+    Task<CntxtTp> Run(CntxtTp context);
+    void Use(Func<ContextDelegate<CntxtTp>, ContextDelegate<CntxtTp>> middleware);
+    void Use(Func<CntxtTp, Func<Task>, Task> middleware);
+    void Use<T>();
+    void Use(Type filter);
+    void Use(IHandlingInvoker<CntxtTp> middleware);
+}
 
-public class PipelineWrapper<T, CntxtTp>  where T: IHandlingInvoker<CntxtTp>
+public class PipelineBuilder<T, CntxtTp> : IPipelineBuilder<CntxtTp> where T : IHandlingInvoker<CntxtTp>
 {
 
     ContextDelegate<CntxtTp> app;
-    public PipelineWrapper(IEnumerable<T> filters)
+    public PipelineBuilder(IEnumerable<T> filters)
     {
         foreach (var filter in filters)
             Use(filter);
@@ -28,10 +38,10 @@ public class PipelineWrapper<T, CntxtTp>  where T: IHandlingInvoker<CntxtTp>
                 Func<Task> simpleNext = () => next(context);
                 return middleware(context, simpleNext);
             };
-            
+
         });
     }
-    public void Use<T>() 
+    public void Use<T>()
     {
         var middleware = (IHandlingInvoker<CntxtTp>)Activator.CreateInstance<T>();
 
@@ -39,7 +49,7 @@ public class PipelineWrapper<T, CntxtTp>  where T: IHandlingInvoker<CntxtTp>
         {
             return context =>
         {
-            return  middleware.Handle(context, next);
+            return middleware.Handle(context, next);
         };
         });
     }
@@ -70,7 +80,7 @@ public class PipelineWrapper<T, CntxtTp>  where T: IHandlingInvoker<CntxtTp>
 
     public ContextDelegate<CntxtTp> Build()
     {
-      
+
         var l = new ContextHandler<CntxtTp>();
         ContextDelegate<CntxtTp> first = l.Handle;
         foreach (var x in wares.AsEnumerable().Reverse())

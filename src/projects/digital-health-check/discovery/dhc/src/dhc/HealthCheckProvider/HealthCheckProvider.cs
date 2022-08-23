@@ -4,36 +4,30 @@ namespace dhc;
 
 public class HealthCheckProvider : IHealthCheckProvider
 {
-    private readonly PipelineWrapper<IHealthCheckProviderFilter, HealthCheckContext> _pipelineWrapper;
-    private readonly IEnumerable<IHealthCheckFilter> _filters;
-    private readonly IEnumerable<IHealthCheckGuidanceFilter> _guidanceFilters;
-
+    private readonly PipelineBuilder<IHealthCheckProviderFilter, IHealthCheckContext> _pipelineWrapper;
     private readonly ILogger<HealthCheckProvider> _logger;
+    private readonly IHealthCheckContextBuilder _builder;
+
     public HealthCheckProvider(
-        PipelineWrapper<IHealthCheckProviderFilter,HealthCheckContext> pipelineWrapper,
-        IEnumerable<IHealthCheckFilter> filters,
+        PipelineBuilder<IHealthCheckProviderFilter, IHealthCheckContext> pipelineWrapper,
         ILogger<HealthCheckProvider> logger,
-        IEnumerable<IHealthCheckGuidanceFilter> guidanceFilters)
+        IHealthCheckContextBuilder builder)
     {
         _pipelineWrapper = pipelineWrapper;
-        _filters = filters;
         _logger = logger;
-        _guidanceFilters = guidanceFilters;
+        _builder = builder;
     }
 
     public virtual HealthCheckResult Calculate(HealthCheckData value)
     {
-        HealthCheckContext context = new HealthCheckContext();
+        IHealthCheckContext context = _builder.Create();
         context.HealthCheckResult = default(HealthCheckResult);
         context.HealthCheckData = value;
-
         var current = CalculateResults(context);
-        //var result = CalculateGuidance(current, value);
         return current;
     }
 
-
-    public virtual HealthCheckResult CalculateResults(HealthCheckContext context)
+    public virtual HealthCheckResult CalculateResults(IHealthCheckContext context)
     {
          _logger.LogDebug("Starting health check calculation on {healthCheckData}", context.HealthCheckData);
         var result = _pipelineWrapper.Run(context);

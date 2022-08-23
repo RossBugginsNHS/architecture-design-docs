@@ -6,7 +6,7 @@ public interface IHealthCheckFilter : IHealthCheckProviderFilter
 }
 
 
-public interface IHealthCheckProviderFilter : IHandlingInvoker<HealthCheckContext>
+public interface IHealthCheckProviderFilter : IHandlingInvoker<IHealthCheckContext>
 {
 
 }
