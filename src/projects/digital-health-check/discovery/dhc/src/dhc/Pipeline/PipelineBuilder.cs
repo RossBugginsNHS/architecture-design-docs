@@ -2,6 +2,13 @@ namespace dhc;
 
 public class PipelineBuilder<T, CntxtTp> : IPipelineBuilder<T, CntxtTp> where T : IHandlingInvoker<CntxtTp>
 {
+            private static readonly Counter _pipeline_build_count =
+    Metrics.CreateCounter("pipeline_build_count", "how many times pipeline has been built.",
+     new CounterConfiguration
+     {
+         // Here you specify only the names of the labels.
+         LabelNames = new[] { "invoker_type_name", "context_type_name", "pipeline_count"}
+     });
     Type _invokerType;
     Type _contextType;
     IContextHandlerFactory<CntxtTp> _contextFactory;
@@ -83,6 +90,7 @@ public class PipelineBuilder<T, CntxtTp> : IPipelineBuilder<T, CntxtTp> where T 
              _logger.LogInformation("Building pipeline application for context type {contextType} and inokerType {invokerType} adding pipeline delegate {pipelineCount}",  _contextType.FullName, _invokerType.FullName, pipelineCount);
             first = x(first);
         }
+         _pipeline_build_count.WithLabels( _contextType.FullName, _invokerType.FullName, pipelineCount.ToString()).Inc();
         _logger.LogInformation("Built pipeline application for context type {contextType} and inokerType {invokerType} with  {pipelineCount} pipeline delegates",  _contextType.FullName, _invokerType.FullName, pipelineCount);
         return first;
     }

@@ -2,6 +2,15 @@ namespace dhc;
 
 public class PipelineRunner<T, CntxtTp> : IPipelineRunner<T, CntxtTp> where T : IHandlingInvoker<CntxtTp>
 {
+        private static readonly Counter _pipeline_runner_count =
+    Metrics.CreateCounter("pipeline_runner_count", "how many times pipeline has run.",
+     new CounterConfiguration
+     {
+         // Here you specify only the names of the labels.
+         LabelNames = new[] { "invoker_type_name", "context_type_name" }
+     });
+
+
     Type _invokerType;
     Type _contextType;
     object locker = new object();
@@ -25,6 +34,7 @@ public class PipelineRunner<T, CntxtTp> : IPipelineRunner<T, CntxtTp> where T : 
 
         _logger.LogInformation("Running pipeline application for context type {contextType} and inokerType {invokerType}", _contextType.FullName, _invokerType.FullName);
         await app(context);
+        _pipeline_runner_count.WithLabels( _contextType.FullName, _invokerType.FullName).Inc();
         _logger.LogInformation("Ran pipeline application for context type {contextType} and inokerType {invokerType}", _contextType.FullName, _invokerType.FullName);
         return context;
     }
