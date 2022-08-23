@@ -46,6 +46,8 @@ public static class HealthCheckProviderExtensionMethods
 
         //Used to pre load the Singleton IPipelinerunner - not actually needed, but makes first run quicker.
         services.AddHostedService<SetupPipelineHostedService<IHealthCheckProviderFilter, IHealthCheckContext>>();
+
+        services.AddTransient<ICholesterolCalculatorProvider,CholesterolCalculatorProvider>();
         return services;
     }
 

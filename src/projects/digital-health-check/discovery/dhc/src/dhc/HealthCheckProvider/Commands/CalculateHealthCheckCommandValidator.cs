@@ -12,5 +12,8 @@ public class CalculateHealthCheckCommandValidator : AbstractValidator<CalculateH
         RuleFor(x => x.HealthCheckData.BasicObs.Height.Meters).GreaterThan(0);
         RuleFor(x => x.HealthCheckData.BasicObs.Waist.Meters).GreaterThan(0);
         RuleFor(x => x.HealthCheckData.BasicObs.Mass.Kilograms).GreaterThan(0);
+
+        RuleFor(x=>x.HealthCheckData.CholesterolData.Hdl).GreaterThan(0);
+        RuleFor(x=>x.HealthCheckData.CholesterolData.NonHdl).GreaterThan(0);
     }
 }

@@ -18,7 +18,11 @@ public class HealthCheckRequestDataSchemaFilter : ISchemaFilter
             [ "Diastolic" ] = new OpenApiInteger(70),
             [ "Postcode" ] = new OpenApiString("SW1W 0NY"),
             [ "SmokePerDay" ] = new OpenApiInteger(0),            
-            [ "UsedToSmoke" ] = new OpenApiBoolean(false)          
+            [ "UsedToSmoke" ] = new OpenApiBoolean(false),
+            [ "CholesterolHDL" ] = new OpenApiDouble(10.5),
+            [ "CholesterolNonHDL" ] = new OpenApiDouble(2.3), 
         };
     }
 }
+
+

@@ -21,6 +21,8 @@ namespace dhcapi;
 /// <param name="Postcode">UK Postcode</param>
 /// <param name="SmokePerDay">Number smoked per day now.</param>
 /// <param name="UsedToSmoke">If used to smoke</param>
+/// <param name="CholesterolHDL"></param>
+/// <param name="CholesterolNonHDL"></param>
 [SwaggerSchemaFilter(typeof(HealthCheckRequestDataSchemaFilter))]
 public record HealthCheckRequestData(
     //Note, bug with Model Validation, if this is a record struct validation attributes are ignored and validation allways passes.
@@ -49,4 +51,10 @@ public record HealthCheckRequestData(
     int? Diastolic3, 
     string Postcode, 
     int SmokePerDay,
-    bool UsedToSmoke);
+    bool UsedToSmoke,
+    double CholesterolHDL,
+    double CholesterolNonHDL);
+
+
+
+

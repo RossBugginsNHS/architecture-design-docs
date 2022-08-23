@@ -19,6 +19,11 @@ public static class HealthCheckProviderOptionsDefaults
         options.HealthCheckDataBuilders.Add<HealthCheckDataBuilderBuildFilterSmoking>();
    
         options.SetBmiProvider<BmiCalculatorProvider>();
+
+        //Cholesterol
+        options.HealthCheckDataBuilders.Add<HealthCheckDataBuilderBuildFilterCholesterol>();
+        options.Filters.Add<HealthCheckFilterCholesterol>();
+        options.GuidanceFilters.Add<HealthCheckGuidanceFilterCholesterol>();
         return options;
     }
 }
