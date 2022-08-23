@@ -29,7 +29,7 @@ public class PipelineRunner<T, CntxtTp> : IPipelineRunner<T, CntxtTp> where T : 
         return context;
     }
 
-    private void BuildIfNeeded()
+    public void BuildIfNeeded()
     {
         lock (locker)
         {

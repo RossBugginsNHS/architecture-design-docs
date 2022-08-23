@@ -59,6 +59,10 @@ builder.Services.AddCors(options =>
             .WithMethods("PUT", "POST", "GET");
     });
 });
+
+
+
+
 var app = builder.Build();
 var provider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
 if (app.Environment.IsDevelopment())
@@ -91,3 +95,4 @@ app.UseEndpoints(endpoints =>
 app.MapHealthChecks("/healthz");
 app.UseHttpMetrics();
 app.Run();
+

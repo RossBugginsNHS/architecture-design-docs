@@ -9,14 +9,15 @@ public static class HealthCheckProviderExtensionMethods
 {
     public static IServiceCollection AddHealthCheck(this IServiceCollection services)
     {
-        return AddHealthCheck(services, (o)=>{});
+        return AddHealthCheck(services, (o) => { });
     }
 
     public static IServiceCollection AddHealthCheck(this IServiceCollection services, Action<HealthCheckProviderOptions> configuration)
     {
         var options = HealthCheckProviderOptionsDefaults.Defaults(services);
         configuration(options);
-        return services    
+
+        return services
             .AddHealthCheckProviderFilters(options)
             .AddHealthCheckProviderGuidanceFilters(options)
             .AddHealthCheckHealthCheckDataBuilders(options)
@@ -26,11 +27,11 @@ public static class HealthCheckProviderExtensionMethods
             .AddValidatorsFromAssemblyContaining<HealthCheckProvider>();
     }
 
-        private static IServiceCollection AddOtherRequirements(this IServiceCollection services, HealthCheckProviderOptions options)
+    private static IServiceCollection AddOtherRequirements(this IServiceCollection services, HealthCheckProviderOptions options)
     {
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehaviour<,>));
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
-        services.AddTransient<IHealthCheckDataBuilder,HealthCheckDataBuilder>();
+        services.AddTransient<IHealthCheckDataBuilder, HealthCheckDataBuilder>();
         services.AddTransient<IHealthCheckDataBuilderProvider, HealthCheckDataBuilderProvider>();
         services.AddTransient<IBloodPressureProvider, BloodPressureProvider>();
         services.AddTransient<IBmiCalculatorProvider, BmiCalculatorProvider>();
@@ -38,29 +39,32 @@ public static class HealthCheckProviderExtensionMethods
         services.AddTransient<SmokingCalculator>();
         services.AddTransient(typeof(IPipelineBuilder<,>), typeof(PipelineBuilder<,>));
         services.AddSingleton(typeof(IPipelineRunner<,>), typeof(PipelineRunner<,>));
+        
         services.AddTransient<IHealthCheckContextFactory, HealthCheckContextFactory>();
         services.AddTransient<IHealthCheckContext, HealthCheckContext>();
         services.AddSingleton(typeof(IContextHandlerFactory<>), typeof(ContextHandlerFactory<>));
-        
+
+        //Used to pre load the Singleton IPipelinerunner - not actually needed, but makes first run quicker.
+        services.AddHostedService<SetupPipelineHostedService<IHealthCheckProviderFilter, IHealthCheckContext>>();
         return services;
     }
 
- 
+
 
     private static IServiceCollection AddBmiProvider(this IServiceCollection services, HealthCheckProviderOptions options)
     {
-        return services.AddTransient(typeof(IBmiCalculatorProvider),options.BmiProvider);        
+        return services.AddTransient(typeof(IBmiCalculatorProvider), options.BmiProvider);
     }
 
     private static IServiceCollection AddHealthCheckProviderFilters(this IServiceCollection services, HealthCheckProviderOptions options)
     {
-        return services.AddTransientTypesFrom<IHealthCheckProviderFilter>(options.Filters.Types);        
+        return services.AddTransientTypesFrom<IHealthCheckProviderFilter>(options.Filters.Types);
     }
 
     private static IServiceCollection AddHealthCheckProviderGuidanceFilters(this IServiceCollection services, HealthCheckProviderOptions options)
     {
         return services.AddTransientTypesFrom<IHealthCheckProviderFilter>(options.GuidanceFilters.Types);
-    }    
+    }
 
     private static IServiceCollection AddHealthCheckHealthCheckDataBuilders(this IServiceCollection services, HealthCheckProviderOptions options)
     {
@@ -70,11 +74,11 @@ public static class HealthCheckProviderExtensionMethods
 
     private static IServiceCollection AddTransientTypesFrom<T>(this IServiceCollection services, IEnumerable<Type> types)
     {
-        foreach(var t in types)
+        foreach (var t in types)
         {
             services.AddTransient(typeof(T), t);
-        }   
+        }
 
-        return services;       
-    }        
+        return services;
+    }
 }
