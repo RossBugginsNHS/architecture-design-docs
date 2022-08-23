@@ -27,6 +27,7 @@ public static class HealthCheckProviderOptionsDefaults
 
         options.Filters.Add<HealthCheckFilterDemographics>();
         options.Filters.Add<HealthCheckFilterQRisk>();
+        options.GuidanceFilters.Add<HealthCheckGuidanceFilterQrisk>();
         return options;
     }
 }

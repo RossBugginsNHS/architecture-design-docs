@@ -12,10 +12,14 @@ public class HealthCheckFilterQRisk: ProviderFilter<IHealthCheckContext>,IHealth
         _qrisk = qrisk;
     }
 
-    public async override Task Handle(IHealthCheckContext context)
+    public  override Task Handle(IHealthCheckContext context)
     {
-        await _qrisk.CalculateAsync(context.HealthCheckData, context.HealthCheckResult);
-        context.HealthCheckResult = Update(context.HealthCheckResult, context.HealthCheckData);
+        var result = _qrisk.Calculate(context.HealthCheckData, context.HealthCheckResult);
+        var r = context.HealthCheckResult.QriskResult with {Result = result};
+        var res = context.HealthCheckResult with {QriskResult = r};
+        context.HealthCheckResult = res;
+
+        return Task.CompletedTask;
     }
 
     public HealthCheckResult Update(HealthCheckResult current, HealthCheckData data)

@@ -17,10 +17,12 @@ public class LoadDataHostedService : IHostedService
 
     public async Task StartAsync(CancellationToken cancellationToken)
     {
+          _logger.LogInformation("Starting LoadDataHostedService");
         var buffer = new BufferBlock<string>();
         var consumerTask = ConsumeAsync(buffer);
         var finishedProduce = Produce(buffer);
         await Task.WhenAll(finishedProduce, consumerTask);
+        _logger.LogInformation("Finished starting LoadDataHostedService");
     }
 
     private async Task Produce(ITargetBlock<string> target)
