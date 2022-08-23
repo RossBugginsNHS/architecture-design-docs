@@ -24,6 +24,9 @@ public static class HealthCheckProviderOptionsDefaults
         options.HealthCheckDataBuilders.Add<HealthCheckDataBuilderBuildFilterCholesterol>();
         options.Filters.Add<HealthCheckFilterCholesterol>();
         options.GuidanceFilters.Add<HealthCheckGuidanceFilterCholesterol>();
+
+        options.Filters.Add<HealthCheckFilterDemographics>();
+        options.Filters.Add<HealthCheckFilterQRisk>();
         return options;
     }
 }

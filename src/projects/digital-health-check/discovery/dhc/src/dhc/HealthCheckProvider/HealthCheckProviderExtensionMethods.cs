@@ -39,7 +39,7 @@ public static class HealthCheckProviderExtensionMethods
         services.AddTransient<SmokingCalculator>();
         services.AddTransient(typeof(IPipelineBuilder<,>), typeof(PipelineBuilder<,>));
         services.AddSingleton(typeof(IPipelineRunner<,>), typeof(PipelineRunner<,>));
-        
+
         services.AddTransient<IHealthCheckContextFactory, HealthCheckContextFactory>();
         services.AddTransient<IHealthCheckContext, HealthCheckContext>();
         services.AddSingleton(typeof(IContextHandlerFactory<>), typeof(ContextHandlerFactory<>));
@@ -47,7 +47,14 @@ public static class HealthCheckProviderExtensionMethods
         //Used to pre load the Singleton IPipelinerunner - not actually needed, but makes first run quicker.
         services.AddHostedService<SetupPipelineHostedService<IHealthCheckProviderFilter, IHealthCheckContext>>();
 
-        services.AddTransient<ICholesterolCalculatorProvider,CholesterolCalculatorProvider>();
+        services.AddTransient<ICholesterolCalculatorProvider, CholesterolCalculatorProvider>();
+
+        services.AddHttpClient();
+        services.AddHostedService<LoadDataHostedService>();
+        services.AddSingleton<TdsDataProvider>();
+        services.AddTransient<QRiskProvider>();
+        services.AddTransient<DemographicsProvider>();
+
         return services;
     }
 

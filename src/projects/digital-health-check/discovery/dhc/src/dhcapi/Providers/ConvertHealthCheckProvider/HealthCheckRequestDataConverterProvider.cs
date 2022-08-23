@@ -27,6 +27,7 @@ public class HealthCheckRequestDataConverterProvider : IHealthCheckRequestDataCo
             .UsedToSmoke(data.UsedToSmoke)
             .CholesterolHDL(data.CholesterolHDL)
             .CholesterolNonHDL(data.CholesterolNonHDL)
+            .SexAtBirth(data.SexAtBirth.ToString())
             .KeyValue("UtcDateTimeCreated", DateTime.UtcNow);
 
         var healthCheckData = builder.Build();

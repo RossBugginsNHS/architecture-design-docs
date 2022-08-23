@@ -18,10 +18,10 @@ public class CalculateHealthCheckCommandHandler : IRequestHandler<CalculateHealt
         _publisher = publisher;
     }
 
-    public Task<HealthCheckResult> Handle(CalculateHealthCheckCommand request, CancellationToken cancellationToken)
+    public async Task<HealthCheckResult> Handle(CalculateHealthCheckCommand request, CancellationToken cancellationToken)
     {
-        var result = _healthCheckProvider.Calculate(request.HealthCheckData);
-        _publisher.Publish(new CalculateHealthCheckCommandHandledNotification(request.HealthCheckData, result));
-        return Task.FromResult(result);
+        var result = await _healthCheckProvider.CalculateAsync(request.HealthCheckData);
+        await _publisher.Publish(new CalculateHealthCheckCommandHandledNotification(request.HealthCheckData, result));
+        return result;
     }
 }

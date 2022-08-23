@@ -34,10 +34,10 @@
 //  * End of additional terms
 //  *
 //  */
-
+namespace dhc;
 public static class QRisk3
 {
-    static double cvd_female_raw(
+    public static double cvd_female_raw(
         int age,
         int b_AF, int b_atypicalantipsy, int b_corticosteroids, int b_migraine, int b_ra, int b_renal,
         int b_semi, int b_sle, int b_treatedhyp, int b_type1, int b_type2, double bmi,

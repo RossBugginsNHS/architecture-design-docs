@@ -53,7 +53,8 @@ public record HealthCheckRequestData(
     int SmokePerDay,
     bool UsedToSmoke,
     double CholesterolHDL,
-    double CholesterolNonHDL);
+    double CholesterolNonHDL,
+    SexAtBirthEnum SexAtBirth);
 
 
 

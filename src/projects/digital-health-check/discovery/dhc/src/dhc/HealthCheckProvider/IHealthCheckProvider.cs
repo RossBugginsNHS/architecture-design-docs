@@ -2,5 +2,5 @@ namespace dhc;
 
 public interface IHealthCheckProvider
 {
-    HealthCheckResult Calculate(HealthCheckData value);
+    Task<HealthCheckResult> CalculateAsync(HealthCheckData value);
 }

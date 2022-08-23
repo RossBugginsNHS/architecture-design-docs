@@ -26,6 +26,9 @@
 		},
 		{
 			"path": "src/bmiclient"
+		},
+		{
+			"path": "src/tdsapi"
 		}
 	],
 	"settings": {

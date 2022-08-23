@@ -62,7 +62,6 @@ builder.Services.AddCors(options =>
 
 
 
-
 var app = builder.Build();
 var provider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
 if (app.Environment.IsDevelopment())

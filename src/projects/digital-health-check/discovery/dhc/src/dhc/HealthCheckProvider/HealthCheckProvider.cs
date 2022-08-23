@@ -18,17 +18,17 @@ public class HealthCheckProvider : IHealthCheckProvider
         _builder = builder;
     }
 
-    public virtual HealthCheckResult Calculate(HealthCheckData value)
+    public virtual async Task<HealthCheckResult> CalculateAsync(HealthCheckData value)
     {
         var context = CreateContext(value);
-        var current = CalculateResults(context);
+        var current = await CalculateResultsAsync(context);
         return current;
     }
 
-    public virtual HealthCheckResult CalculateResults(IHealthCheckContext context)
+    public virtual async Task<HealthCheckResult> CalculateResultsAsync(IHealthCheckContext context)
     {
          _logger.LogDebug("Starting health check calculation on {healthCheckData}", context.HealthCheckData);
-        var result = _pipelineRunner.Run(context);
+        var result = await _pipelineRunner.Run(context);
         _logger.LogDebug("Finished health check calculation on {healthCheckData} with result {healthCheckResult}", context.HealthCheckData, context.HealthCheckResult);
         return context.HealthCheckResult;
     }

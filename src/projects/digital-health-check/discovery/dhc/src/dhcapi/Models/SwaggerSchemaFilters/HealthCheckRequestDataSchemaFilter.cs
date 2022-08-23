@@ -21,6 +21,7 @@ public class HealthCheckRequestDataSchemaFilter : ISchemaFilter
             [ "UsedToSmoke" ] = new OpenApiBoolean(false),
             [ "CholesterolHDL" ] = new OpenApiDouble(10.5),
             [ "CholesterolNonHDL" ] = new OpenApiDouble(2.3), 
+            [ "SexAtBirth" ] = new OpenApiString("Male"),
         };
     }
 }
