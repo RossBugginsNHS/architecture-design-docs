@@ -50,6 +50,7 @@ public static class HealthCheckProviderExtensionMethods
         services.AddTransient<ICholesterolCalculatorProvider, CholesterolCalculatorProvider>();
 
         services.AddHttpClient();
+
         services.AddHostedService<LoadDataHostedService>();
         services.AddSingleton<TdsDataProvider>();
         services.AddTransient<QRiskProvider>();

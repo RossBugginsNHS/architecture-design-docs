@@ -7,7 +7,7 @@ public static class HealthCheckProviderBmiWebApiProviderExtensionMethods
 {
 
 
-    public static HealthCheckProviderOptions SetWebBpProvider(this HealthCheckProviderOptions options, IConfiguration config)
+    public static HealthCheckProviderOptions AddWebBpProvider(this HealthCheckProviderOptions options, IConfiguration config)
     {
         var settings = new BpWebApiSettings();
         config.GetSection(BpWebApiSettings.Position).Bind(settings);

@@ -48,8 +48,14 @@ builder.Services.AddHealthCheck((config) =>
     config.Services.AddValidatorsFromAssemblyContaining<ConvertHealthCheckCommandHandler>();   
     config.Services.AddMediatR(typeof(ConvertHealthCheckCommandHandler));
     config.Services.AddTransient<IHealthCheckRequestDataConverterProvider, HealthCheckRequestDataConverterProvider>();
-    config.SetWebBpProvider(builder.Configuration);
+    config
+        .AddWebBpProvider(builder.Configuration)
+        .AddPostCodeApi(builder.Configuration);
+
+    config.Services.AddDistributedMemoryCache();
 });
+
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AnyOrigin", builder =>
