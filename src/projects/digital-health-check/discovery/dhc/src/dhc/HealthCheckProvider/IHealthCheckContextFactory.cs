@@ -1,6 +1,6 @@
 namespace dhc;
 
-public interface IHealthCheckContextBuilder
+public interface IHealthCheckContextFactory
 {
      IHealthCheckContext Create();
 }

@@ -1,9 +1,9 @@
 namespace dhc;
 
-public class HealthCheckContextBuilder : IHealthCheckContextBuilder
+public class HealthCheckContextFactory : IHealthCheckContextFactory
 {
     IServiceProvider _sp;
-    public HealthCheckContextBuilder(IServiceProvider sp)
+    public HealthCheckContextFactory(IServiceProvider sp)
     {
         _sp = sp;
     }

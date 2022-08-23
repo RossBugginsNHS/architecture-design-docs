@@ -2,13 +2,22 @@ namespace dhc;
 
 public class PipelineBuilder<T, CntxtTp> : IPipelineBuilder<T, CntxtTp> where T : IHandlingInvoker<CntxtTp>
 {
-
+    Type _invokerType;
+    Type _contextType;
+    IContextHandlerFactory<CntxtTp> _contextFactory;
     ContextDelegate<CntxtTp> app;
-    public PipelineBuilder(IEnumerable<T> filters)
+    ILogger<PipelineBuilder<T, CntxtTp>> _logger;
+    public PipelineBuilder(
+        IEnumerable<T> filters, 
+        ILogger<PipelineBuilder<T, CntxtTp>> logger,
+        IContextHandlerFactory<CntxtTp> contextFactory)
     {
+        _invokerType = typeof(T);
+        _contextType= typeof(CntxtTp);
+        _logger = logger;
+        _contextFactory = contextFactory;
         foreach (var filter in filters)
             Use(filter);
-        app = Build();
     }
 
     protected List<ContextHandlerChainDelegate<CntxtTp>> wares = new List<ContextHandlerChainDelegate<CntxtTp>>();
@@ -30,6 +39,7 @@ public class PipelineBuilder<T, CntxtTp> : IPipelineBuilder<T, CntxtTp> where T 
 
         });
     }
+
     public void Use<T>()
     {
         Use(typeof(T));
@@ -38,6 +48,7 @@ public class PipelineBuilder<T, CntxtTp> : IPipelineBuilder<T, CntxtTp> where T 
     public void Use(Type filter)
     {
         var middleware = (IHandlingInvoker<CntxtTp>)Activator.CreateInstance(filter);
+         _logger.LogInformation("Adding pipeline {pipelineName} to application for context type {contextType} and inokerType {invokerType}",middleware.GetType().FullName, _contextType.FullName, _invokerType.FullName);
         Use(middleware);
     }
 
@@ -59,24 +70,20 @@ public class PipelineBuilder<T, CntxtTp> : IPipelineBuilder<T, CntxtTp> where T 
         this.Use(nextChain);
     }
 
-
-
-
     public ContextDelegate<CntxtTp> Build()
     {
-
-        var l = new ContextHandler<CntxtTp>();
-        ContextDelegate<CntxtTp> first = l.Handle;
+        _logger.LogInformation("Building pipeline application for context type {contextType} and inokerType {invokerType}", _contextType.FullName, _invokerType.FullName);
+        var contextHandler = _contextFactory.Create();
+        _logger.LogInformation("Building pipeline application for context type {contextType} and inokerType {invokerType} adding handler of {handlerName}", _contextType.FullName, _invokerType.FullName, contextHandler.GetType().FullName);
+        ContextDelegate<CntxtTp> first = contextHandler.Handle;
+        int pipelineCount = 0;
         foreach (var x in wares.AsEnumerable().Reverse())
         {
+            pipelineCount ++;
+             _logger.LogInformation("Building pipeline application for context type {contextType} and inokerType {invokerType} adding pipeline delegate {pipelineCount}",  _contextType.FullName, _invokerType.FullName, pipelineCount);
             first = x(first);
         }
+        _logger.LogInformation("Built pipeline application for context type {contextType} and inokerType {invokerType} with  {pipelineCount} pipeline delegates",  _contextType.FullName, _invokerType.FullName, pipelineCount);
         return first;
-    }
-
-    public async Task<CntxtTp> Run(CntxtTp context)
-    {
-        await app(context);
-        return context;
     }
 }

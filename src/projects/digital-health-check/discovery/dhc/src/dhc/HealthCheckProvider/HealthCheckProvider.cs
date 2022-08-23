@@ -4,16 +4,16 @@ namespace dhc;
 
 public class HealthCheckProvider : IHealthCheckProvider
 {
-    private readonly IPipelineBuilder<IHealthCheckProviderFilter, IHealthCheckContext> _pipelineWrapper;
+    private readonly IPipelineRunner<IHealthCheckProviderFilter, IHealthCheckContext> _pipelineRunner;
     private readonly ILogger<HealthCheckProvider> _logger;
-    private readonly IHealthCheckContextBuilder _builder;
+    private readonly IHealthCheckContextFactory _builder;
 
     public HealthCheckProvider(
-        IPipelineBuilder<IHealthCheckProviderFilter, IHealthCheckContext> pipelineWrapper,
+        IPipelineRunner<IHealthCheckProviderFilter, IHealthCheckContext> pipelineRunner,
         ILogger<HealthCheckProvider> logger,
-        IHealthCheckContextBuilder builder)
+        IHealthCheckContextFactory builder)
     {
-        _pipelineWrapper = pipelineWrapper;
+        _pipelineRunner = pipelineRunner;
         _logger = logger;
         _builder = builder;
     }
@@ -28,7 +28,7 @@ public class HealthCheckProvider : IHealthCheckProvider
     public virtual HealthCheckResult CalculateResults(IHealthCheckContext context)
     {
          _logger.LogDebug("Starting health check calculation on {healthCheckData}", context.HealthCheckData);
-        var result = _pipelineWrapper.Run(context);
+        var result = _pipelineRunner.Run(context);
         _logger.LogDebug("Finished health check calculation on {healthCheckData} with result {healthCheckResult}", context.HealthCheckData, context.HealthCheckResult);
         return context.HealthCheckResult;
     }
