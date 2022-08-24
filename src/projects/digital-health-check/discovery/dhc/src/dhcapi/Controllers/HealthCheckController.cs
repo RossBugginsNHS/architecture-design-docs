@@ -6,6 +6,8 @@ using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
 using UnitsNet.Serialization.JsonNet;
 using System.Text;
+using EventStore.Client;
+using Microsoft.Extensions.Options;
 
 namespace dhcapi.Controllers;
 
@@ -16,12 +18,14 @@ public readonly record struct HealthCheckRequestDataResponse(Guid Id);
 public class HealthCheckController : ControllerBase
 {
     private readonly ISender _sender;
+    IOptions<EventStoreSettings> _settings;
     IDistributedCache _cache;
     public HealthCheckController(
-        ISender sender, IDistributedCache cache)
+        ISender sender, IDistributedCache cache,IOptions<EventStoreSettings> settings)
     {
         _sender = sender;
         _cache = cache;
+        _settings = settings;
     }
 
     [Consumes("application/json")]
@@ -41,6 +45,28 @@ public class HealthCheckController : ControllerBase
           Guid healthCheckId)
     {
         var result = await _cache.GetAsync(healthCheckId.ToString());
+
+        var settings = EventStoreClientSettings
+    .Create(_settings.Value.ConnectionString);
+        var client = new EventStoreClient(settings);
+
+        var managementClient = new EventStoreProjectionManagementClient(settings);
+        var events = client.ReadStreamAsync(
+              Direction.Backwards,
+            "healthcheck-" + healthCheckId.ToString(),
+                StreamPosition.End);
+
+
+        if (await events.ReadState == ReadState.Ok)
+        {
+            var resolved = await events.FirstAsync();
+            var str = Encoding.UTF8.GetString(resolved.Event.Data.ToArray());
+            var jsonSerializerSettings = new JsonSerializerSettings { Formatting = Formatting.Indented };
+            jsonSerializerSettings.Converters.Add(new UnitsNetIQuantityJsonConverter());
+            var obj = JsonConvert.DeserializeObject<HealthCheckResult>(str);
+            return obj;
+        }
+
         if (result != null)
         {
             var jsonSerializerSettings = new JsonSerializerSettings { Formatting = Formatting.Indented };

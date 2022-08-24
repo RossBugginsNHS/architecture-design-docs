@@ -61,7 +61,7 @@ builder.Services.AddHealthCheck((config) =>
 
 
 builder.Services.Configure<RabbitMqSettings>(builder.Configuration.GetSection(RabbitMqSettings.Location));
-
+builder.Services.Configure<EventStoreSettings>(builder.Configuration.GetSection(EventStoreSettings.Position));
 
 builder.Services.AddCors(options =>
 {

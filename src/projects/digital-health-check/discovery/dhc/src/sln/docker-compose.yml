@@ -26,6 +26,7 @@ services:
 
   dhcapi:
     image: dhcapi
+    restart: on-failure:10
     build:
       context: ../
       dockerfile: ./dhcapi/Dockerfile
@@ -35,13 +36,67 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:5118
       - BpWebApiSettings__BaseUrl=http://bmiapi:5116/
+      - EventStoreClient__ConnectionString=esdb://admin:changeit@eventstore:2113?tls=false
+      - RabbitMq__RabbitHost=rabbitmq
+      - RabbitMq__RabbitUserName=guest
+      - RabbitMq__RabbitPassword=guest
+      - RabbitMq__RabbitPort=5672
+      - PostCodeApi__BaseUrl=https://api.postcodes.io/postcodes/
+      - PostCodeApi__SlidingCacheLength=00:10:00
+      - PostCodeApi__AbsoluteCacheLength=01:00:00
+    depends_on:
+      - rabbitmq
+      - eventstore
+      - bmiapi
+      - bpapi
 
   rabbitmq:
-    image: rabbitmq:3.10.7-management-alpine
-    container_name: 'rabbitmq'
+    image: rabbitmq-custom
+    build:
+      context: .
+      dockerfile: ./rabbitmq/Dockerfile    
     ports:
         - 5672:5672
         - 15672:15672
     volumes:
-        - ~/.docker-conf/rabbitmq/data/:/var/lib/rabbitmq/
-        - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
+        - ~/.docker-conf/rabbitmq/data/:/var/rabbitmq/lib/
+        - ~/.docker-conf/rabbitmq/log/:/var/rabbitmq/log/
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 30s
+      timeout: 30s
+      retries: 3
+
+  eventstore:
+      image: eventstore/eventstore:20.10.2-buster-slim
+      environment:
+        - EVENTSTORE_CLUSTER_SIZE=1
+        - EVENTSTORE_RUN_PROJECTIONS=All
+        - EVENTSTORE_START_STANDARD_PROJECTIONS=true
+        - EVENTSTORE_EXT_TCP_PORT=1113
+        - EVENTSTORE_HTTP_PORT=2113
+        - EVENTSTORE_INSECURE=true
+        - EVENTSTORE_ENABLE_EXTERNAL_TCP=true
+        - EVENTSTORE_ENABLE_ATOM_PUB_OVER_HTTP=true
+      ports:
+        - "1113:1113"
+        - "2113:2113"
+      volumes:
+        - type: volume
+          source: eventstore-volume-data
+          target: /var/lib/eventstore
+        - type: volume
+          source: eventstore-volume-logs
+          target: /var/log/eventstore        
+      healthcheck:
+        test:
+          [
+              'CMD-SHELL',
+              'curl --fail --insecure https://eventstore:2113/health/live || exit 1',
+          ]
+        interval: 30s
+        timeout: 30s
+        retries: 3          
+volumes:
+  eventstore-volume-data:
+  eventstore-volume-logs:          
