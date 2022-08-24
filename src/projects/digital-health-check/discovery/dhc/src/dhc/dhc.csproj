@@ -24,7 +24,9 @@
     <PackageReference Include="Polly" Version="7.2.3" />
     <PackageReference Include="Polly.Contrib.WaitAndRetry" Version="1.1.1" />
     <PackageReference Include="prometheus-net" Version="6.0.0" />
+    <PackageReference Include="RabbitMQ.Client" Version="6.4.0" />
     <PackageReference Include="UnitsNet" Version="4.144.0" />
+    <PackageReference Include="UnitsNet.Serialization.JsonNet" Version="4.6.0" />
 
 
   </ItemGroup>

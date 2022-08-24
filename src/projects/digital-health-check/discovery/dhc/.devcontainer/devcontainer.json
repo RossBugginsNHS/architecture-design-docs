@@ -2,16 +2,15 @@
 // https://github.com/microsoft/vscode-dev-containers/tree/v0.245.0/containers/dotnet
 {
 	"name": "DHC dev container",
-	"build": {
-		"dockerfile": "Dockerfile",
-		"args": { 
-			// Update 'VARIANT' to pick a .NET Core version: 3.1, 6.0
-			// Append -bullseye or -focal to pin to an OS version.
-			"VARIANT": "6.0-bullseye",
-			// Options
-			"NODE_VERSION": "none"
-		}
-	},
+
+	"dockerComposeFile": [
+		"docker-compose.yml"
+	],
+
+	// The 'service' property is the name of the service for the container that VS Code should
+	// use. Update this value and .devcontainer/docker-compose.yml to the real service name.
+	"service": "dev",
+
 	// Configure tool-specific properties.
 	"customizations": {
 		// Configure properties specific to VS Code.
@@ -26,6 +25,8 @@
 			]
 		}
 	},
+
+	"workspaceFolder": "/workspace",
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [5000, 5001],

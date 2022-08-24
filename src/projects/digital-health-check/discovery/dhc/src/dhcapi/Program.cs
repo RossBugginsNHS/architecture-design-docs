@@ -9,6 +9,7 @@ using MediatR;
 using FluentValidation;
 using Microsoft.OpenApi.Models;
 using Microsoft.OpenApi.Any;
+using UnitsNet.Serialization.JsonNet;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers()
@@ -53,7 +54,13 @@ builder.Services.AddHealthCheck((config) =>
         .AddPostCodeApi(builder.Configuration);
 
     config.Services.AddDistributedMemoryCache();
+
+    config.Services.AddSingleton<RabbitMqClient>();
+    config.Services.AddHostedService<CalculateHealthCheckRabbitMqListener>();
 });
+
+
+builder.Services.Configure<RabbitMqSettings>(builder.Configuration.GetSection(RabbitMqSettings.Location));
 
 
 builder.Services.AddCors(options =>

@@ -29,6 +29,9 @@
 		},
 		{
 			"path": "src/tdsapi"
+		},
+		{
+			"path": ".devcontainer"
 		}
 	],
 	"settings": {

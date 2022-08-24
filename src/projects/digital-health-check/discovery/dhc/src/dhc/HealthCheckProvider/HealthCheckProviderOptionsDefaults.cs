@@ -7,6 +7,8 @@ public static class HealthCheckProviderOptionsDefaults
     public static HealthCheckProviderOptions Defaults(IServiceCollection services)
     {
         var options = new HealthCheckProviderOptions(services);
+        options.HealthCheckDataBuilders.Add<HealthCheckDataBuilderBuildFilterId>();
+
         options.Filters.Add<HealthCheckFilterBp>();
         options.Filters.Add<HealthCheckFilterBmi>();
         options.Filters.Add<HealthCheckFilterSmoking>();
@@ -28,6 +30,7 @@ public static class HealthCheckProviderOptionsDefaults
         options.Filters.Add<HealthCheckFilterDemographics>();
         options.Filters.Add<HealthCheckFilterQRisk>();
         options.GuidanceFilters.Add<HealthCheckGuidanceFilterQrisk>();
+        
         return options;
     }
 }
