@@ -2,5 +2,5 @@ namespace dhc;
 
 public interface IHealthCheckFilter : IHealthCheckProviderFilter
 {
-    HealthCheckResult Update(HealthCheckResult current, HealthCheckData data);
+    Task<HealthCheckResult> Update(HealthCheckResult current, HealthCheckData data);
 }

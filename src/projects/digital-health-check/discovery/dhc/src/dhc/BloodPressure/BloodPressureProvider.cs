@@ -18,14 +18,14 @@ public class BloodPressureProvider : IBloodPressureProvider
         _logger = logger;
     }
 
-    public BloodPressure CalculateBloodPressure(double systolic, double diastolic)
+    public Task<BloodPressure> CalculateBloodPressure(double systolic, double diastolic)
     {
-        ;
+        
         _logger.LogTrace("Calculating BP result for {systolic}/{diastolic}", systolic, diastolic);
         var bp = new BloodPressure(systolic, diastolic);
         _c_calculate_bp.WithLabels(bp.BloodPressureDescription).Inc();
         _logger.LogTrace("Result for BP {systolic}/{diastolic} of {bpResult}", systolic, diastolic, bp.BloodPressureDescription);
-        return bp;
+        return Task.FromResult(bp);
     }
 
     public BloodPressure CalculateBloodPressure(IEnumerable<BloodPressure> bloodPressures)

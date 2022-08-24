@@ -19,9 +19,9 @@ public class HealthCheckFilterDemographics: ProviderFilter<IHealthCheckContext>,
         context.HealthCheckResult = result;
     }
 
-    public HealthCheckResult Update(HealthCheckResult current, HealthCheckData data)
+    public Task<HealthCheckResult> Update(HealthCheckResult current, HealthCheckData data)
     {
-       return current;
+       return Task.FromResult(current);
     }
 }
 

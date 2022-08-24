@@ -23,7 +23,7 @@ public class BmiCalculatorProvider : IBmiCalculatorProvider
         _logger = logger;
     }
 
-    public Bmi CalculateBmi(Length height, Mass mass)
+    public Task<Bmi> CalculateBmi(Length height, Mass mass)
     {
         _c_calculate_bmi.Inc();
         _logger.LogTrace("Using {bmiProviderName} in{bmiProviderAssemblyName} as BMI Provider", typeof(BmiCalculatorProvider).FullName, typeof(BmiCalculatorProvider).AssemblyQualifiedName);
@@ -40,7 +40,7 @@ public class BmiCalculatorProvider : IBmiCalculatorProvider
         _c_calculate_bmi_with_result.WithLabels(bmiObj.BmiDescription.ToString()).Inc();
         _logger.LogDebug("BMI value {bmiValue}", bmiObj.BmiValue);
         _logger.LogDebug("BMI result {bmiResult}", bmiObj.BmiDescription);
-        return bmiObj;
+        return Task.FromResult(bmiObj);
     }
 
     public Bmi BmiDescription(decimal bmi)

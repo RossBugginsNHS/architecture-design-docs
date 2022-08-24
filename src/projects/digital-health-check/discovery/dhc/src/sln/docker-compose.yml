@@ -24,9 +24,38 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development    
       - ASPNETCORE_URLS=http://+:5116      
 
+
+  
+  dhcsilo:
+    image: dhcsilo
+    build:
+      context: ../
+      dockerfile: ./Silo/Dockerfile    
+    restart: on-failure:20
+    environment:
+      - DOTNET_ENVIRONMENT=Development
+      - ASPNETCORE_ENVIRONMENT=Development
+      - BpWebApiSettings__BaseUrl=http://bmiapi:5116/
+      - EventStoreClient__ConnectionString=esdb://admin:changeit@eventstore:2113?tls=false
+      - RabbitMq__RabbitHost=rabbitmq
+      - RabbitMq__RabbitUserName=guest
+      - RabbitMq__RabbitPassword=guest
+      - RabbitMq__RabbitPort=5672
+      - PostCodeApi__BaseUrl=https://api.postcodes.io/postcodes/
+      - PostCodeApi__SlidingCacheLength=00:10:00
+      - PostCodeApi__AbsoluteCacheLength=01:00:00
+      - Logging__LogLevel__dhc=Trace
+      - Logging__LogLevel__Silo=Trace
+
+    depends_on:
+      - rabbitmq
+      - eventstore
+      - bmiapi
+      - bpapi
+
   dhcapi:
     image: dhcapi
-    restart: on-failure:10
+    restart: on-failure:20
     build:
       context: ../
       dockerfile: ./dhcapi/Dockerfile
@@ -44,11 +73,13 @@ services:
       - PostCodeApi__BaseUrl=https://api.postcodes.io/postcodes/
       - PostCodeApi__SlidingCacheLength=00:10:00
       - PostCodeApi__AbsoluteCacheLength=01:00:00
+      - OrleansConnection__Host=dhcsilo
     depends_on:
       - rabbitmq
       - eventstore
       - bmiapi
       - bpapi
+      - dhcsilo
 
   rabbitmq:
     image: rabbitmq-custom

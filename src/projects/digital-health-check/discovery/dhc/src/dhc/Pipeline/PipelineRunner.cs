@@ -33,7 +33,15 @@ public class PipelineRunner<T, CntxtTp> : IPipelineRunner<T, CntxtTp> where T : 
         BuildIfNeeded();
 
         _logger.LogInformation("Running pipeline application for context type {contextType} and inokerType {invokerType}", _contextType.FullName, _invokerType.FullName);
+        try
+        {
         await app(context);
+        }
+        catch(Exception ex)
+        {
+            _logger.LogError(ex, "Faile to run pipeline.");
+            throw;
+        }
         _pipeline_runner_count.WithLabels( _contextType.FullName, _invokerType.FullName).Inc();
         _logger.LogInformation("Ran pipeline application for context type {contextType} and inokerType {invokerType}", _contextType.FullName, _invokerType.FullName);
         return context;

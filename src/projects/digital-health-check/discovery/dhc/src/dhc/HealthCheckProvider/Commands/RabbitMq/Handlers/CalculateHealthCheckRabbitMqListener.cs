@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using UnitsNet.Serialization.JsonNet;
 using MediatR;
+using Orleans;
 
 namespace dhc;
 
@@ -48,16 +49,26 @@ namespace dhc;
             {
                 using (var scope = _services.CreateScope())
                 {
-                    var xxxService = scope.ServiceProvider.GetRequiredService<IHealthCheckProvider>();
+                    var _client = scope.ServiceProvider.GetRequiredService<IClusterClient>();
 
-                    var jsonSerializerSettings = new JsonSerializerSettings {Formatting = Formatting.Indented};
-                    jsonSerializerSettings.Converters.Add(new UnitsNetIQuantityJsonConverter());
 
-                    var obj = JsonConvert.DeserializeObject<HealthCheckData>(message, jsonSerializerSettings);
+                     var jsonSerializerSettings = new JsonSerializerSettings {Formatting = Formatting.Indented};
+                     jsonSerializerSettings.Converters.Add(new UnitsNetIQuantityJsonConverter());
 
-                    var result = await xxxService.CalculateAsync(obj);
-                            // var result = await _healthCheckProvider.CalculateAsync(request.HealthCheckData);
-                    await _publisher.Publish(new CalculateHealthCheckCommandHandledNotification(obj, result));
+                     var obj = JsonConvert.DeserializeObject<HealthCheckData>(message, jsonSerializerSettings);
+
+            // example of calling grains from the initialized client
+                   var friend = _client.GetGrain<IHealthCheckGrain>(obj.HealthCheckDataId.id);
+                
+                _logger.LogInformation("calling grains add data");
+                 await friend.AddData(obj);
+                 _logger.LogInformation("calling grains calculate");
+                 await friend.Calculate(default(CancellationToken));
+                 _logger.LogInformation("Called grains calculate data");
+
+                    // var result = await xxxService.CalculateAsync(obj);
+                    //         // var result = await _healthCheckProvider.CalculateAsync(request.HealthCheckData);
+                    // await _publisher.Publish(new CalculateHealthCheckCommandHandledNotification(obj, result));
                     return true;
                 }
 

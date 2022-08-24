@@ -10,6 +10,10 @@ using FluentValidation;
 using Microsoft.OpenApi.Models;
 using Microsoft.OpenApi.Any;
 using UnitsNet.Serialization.JsonNet;
+using Orleans;
+using Orleans.Configuration;
+using System.Net;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers()
@@ -33,7 +37,7 @@ builder.Services.AddEndpointsApiExplorer()
     })
 .AddSwaggerGen(c =>
     {
-        c.MapType<DateOnly>(() => new OpenApiSchema { Type = typeof(string).Name, Default = new OpenApiString("2020-01-01"), Format="date"});        
+        c.MapType<DateOnly>(() => new OpenApiSchema { Type = typeof(string).Name, Default = new OpenApiString("2020-01-01"), Format = "date" });
         var filePath = Path.Combine(System.AppContext.BaseDirectory, "dhcapi.xml");
         c.IncludeXmlComments(filePath);
         c.EnableAnnotations();
@@ -46,7 +50,7 @@ builder.Services.AddEndpointsApiExplorer()
 
 builder.Services.AddHealthCheck((config) =>
 {
-    config.Services.AddValidatorsFromAssemblyContaining<ConvertHealthCheckCommandHandler>();   
+    config.Services.AddValidatorsFromAssemblyContaining<ConvertHealthCheckCommandHandler>();
     config.Services.AddMediatR(typeof(ConvertHealthCheckCommandHandler));
     config.Services.AddTransient<IHealthCheckRequestDataConverterProvider, HealthCheckRequestDataConverterProvider>();
     config
@@ -60,8 +64,15 @@ builder.Services.AddHealthCheck((config) =>
 });
 
 
+builder.Services.Configure<OrleansConnection>(builder.Configuration.GetSection(OrleansConnection.Position));
 builder.Services.Configure<RabbitMqSettings>(builder.Configuration.GetSection(RabbitMqSettings.Location));
 builder.Services.Configure<EventStoreSettings>(builder.Configuration.GetSection(EventStoreSettings.Position));
+
+builder.Services.AddSingleton<ClusterClientHostedService>();
+builder.Services.AddSingleton<IHostedService>(sp => sp.GetService<ClusterClientHostedService>());
+builder.Services.AddSingleton<IClusterClient>(sp => sp.GetService<ClusterClientHostedService>().Client);
+builder.Services.AddSingleton<IGrainFactory>(sp => sp.GetService<ClusterClientHostedService>().Client);
+
 
 builder.Services.AddCors(options =>
 {
@@ -107,4 +118,49 @@ app.UseEndpoints(endpoints =>
 app.MapHealthChecks("/healthz");
 app.UseHttpMetrics();
 app.Run();
+
+
+public class ClusterClientHostedService : IHostedService
+{
+    public IClusterClient Client { get; }
+    IOptions<OrleansConnection> _orleansConfig;
+
+    public ClusterClientHostedService(ILogger<ClusterClientHostedService> logger, ILoggerProvider loggerProvider, IOptions<OrleansConnection> orleansConfig)
+    {
+        _orleansConfig = orleansConfig;
+
+        //var hostEntry = Dns.GetHostEntryAsync("host.docker.internal");
+        logger.LogInformation("Getting IP from DNS for {hostName}", _orleansConfig.Value.Host);
+        var hostEntry = Dns.GetHostEntry(_orleansConfig.Value.Host);
+        var ip = hostEntry.AddressList[0];
+        logger.LogInformation("Getting IP from DNS for {hostName} of {ip}", _orleansConfig.Value.Host, ip.ToString());
+
+        Client = new ClientBuilder()
+        // Appropriate client configuration here, e.g.:
+        .UseStaticClustering(new IPEndPoint(ip, 30000))
+
+          //.UseLocalhostClustering()
+          .Configure<ClusterOptions>(options =>
+            {
+
+                options.ClusterId = "dev";
+                options.ServiceId = "OrleansBasics";
+            })
+        .ConfigureLogging(builder => builder.AddProvider(loggerProvider))
+        .Build();
+    }
+
+    public async Task StartAsync(CancellationToken cancellationToken)
+    {
+        // A retry filter could be provided here.
+        await Client.Connect();
+    }
+
+    public async Task StopAsync(CancellationToken cancellationToken)
+    {
+        await Client.Close();
+
+        Client.Dispose();
+    }
+}
 

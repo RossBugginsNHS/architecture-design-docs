@@ -7,20 +7,23 @@ public class WebBmiProvider : IBmiCalculatorProvider
 {
     bmiclient.IBmiClient _client;
     IOptions<BpWebApiSettings> _options;
-    public WebBmiProvider(bmiclient.IBmiClient client, IOptions<BpWebApiSettings> options)
+    ILogger<WebBmiProvider> _logger;
+    public WebBmiProvider(bmiclient.IBmiClient client, IOptions<BpWebApiSettings> options, ILogger<WebBmiProvider> logger)
     {
         _options = options;
         _client = client;
+        _logger = logger;
     }
     public Bmi BmiDescription(decimal bmi)
     {
         throw new NotImplementedException();
     }
 
-    public Bmi CalculateBmi(Length height, Mass mass)
+    public async Task<Bmi> CalculateBmi(Length height, Mass mass)
     {
-        var a = _client.GetBmiAsync(height.Meters, mass.Kilograms);
-        var r = a.GetAwaiter().GetResult();
+        _logger.LogInformation("Before calling web bmi api");
+        var r = await _client.GetBmiAsync(height.Meters, mass.Kilograms);
+        _logger.LogInformation("After calling web bmi api");
         return new Bmi((decimal)r.Bmi);
     }
 }

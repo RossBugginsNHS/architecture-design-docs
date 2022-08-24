@@ -7,12 +7,12 @@ public class CholesterolCalculatorProvider:ICholesterolCalculatorProvider
         _logger = logger;
     }
 
-    public CholesterolResult Calculate(CholesterolObservation obs)
+    public Task<CholesterolResult> Calculate(CholesterolObservation obs)
     {
         _logger.LogInformation("Calculating cholesterol result for {CholesterolObservation}", obs);
         var ratio = obs.Hdl / obs.NonHdl;
         var result = new CholesterolResult(ratio);
         _logger.LogInformation("Calculated cholesterol result of {CholesterolResult} for {CholesterolObservation}", result, obs);
-        return result;
+        return Task.FromResult(result);
     }
 }

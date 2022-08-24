@@ -11,15 +11,14 @@ public class HealthCheckFilterCholesterol: ProviderFilter<IHealthCheckContext>,I
       _calculator = calculator;
     }
 
-    public override Task Handle(IHealthCheckContext context)
+    public async override Task Handle(IHealthCheckContext context)
     {
-        context.HealthCheckResult = Update(context.HealthCheckResult, context.HealthCheckData);
-        return Task.CompletedTask;
+        context.HealthCheckResult = await Update(context.HealthCheckResult, context.HealthCheckData);
     }
 
-    public HealthCheckResult Update(HealthCheckResult current, HealthCheckData data)
+    public async Task<HealthCheckResult> Update(HealthCheckResult current, HealthCheckData data)
     {
-        var cholesterol = _calculator.Calculate(data.CholesterolData);
+        var cholesterol = await _calculator.Calculate(data.CholesterolData);
         return current with {Cholesterol = cholesterol};
     }
 }

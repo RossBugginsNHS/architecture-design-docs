@@ -1,5 +1,5 @@
 
 public interface ICholesterolCalculatorProvider
 {
-    CholesterolResult Calculate(CholesterolObservation obs);
+    Task<CholesterolResult> Calculate(CholesterolObservation obs);
 }

@@ -12,15 +12,17 @@ public class HealthCheckFilterBmi: ProviderFilter<IHealthCheckContext>,IHealthCh
         _bmiCalculatorProvider = bmiCalculatorProvider;
     }
 
-    public override Task Handle(IHealthCheckContext context)
+    public async override Task Handle(IHealthCheckContext context)
     {
-        context.HealthCheckResult = Update(context.HealthCheckResult, context.HealthCheckData);
-        return Task.CompletedTask;
+        base._logger.LogInformation("in the health check bmi filter");
+        context.HealthCheckResult = await Update(context.HealthCheckResult, context.HealthCheckData);
+        base._logger.LogInformation("after the health check bmi filter has updated the result");
+
     }
 
-    public HealthCheckResult Update(HealthCheckResult current, HealthCheckData data)
+    public async Task<HealthCheckResult> Update(HealthCheckResult current, HealthCheckData data)
     {
-        var bmi = _bmiCalculatorProvider.CalculateBmi(data.BasicObs.Height, data.BasicObs.Mass);
+        var bmi = await _bmiCalculatorProvider.CalculateBmi(data.BasicObs.Height, data.BasicObs.Mass);
         return current with {Bmi = bmi};
     }
 }

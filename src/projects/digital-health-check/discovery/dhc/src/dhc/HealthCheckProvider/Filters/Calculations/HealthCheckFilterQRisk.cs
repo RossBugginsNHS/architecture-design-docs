@@ -22,10 +22,10 @@ public class HealthCheckFilterQRisk: ProviderFilter<IHealthCheckContext>,IHealth
         return Task.CompletedTask;
     }
 
-    public HealthCheckResult Update(HealthCheckResult current, HealthCheckData data)
+    public Task<HealthCheckResult> Update(HealthCheckResult current, HealthCheckData data)
     {
 
-        return current ;
+        return Task.FromResult(current);
     }
 }
 

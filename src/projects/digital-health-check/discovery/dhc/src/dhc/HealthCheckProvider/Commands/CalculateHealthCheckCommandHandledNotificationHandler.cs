@@ -3,7 +3,9 @@ namespace dhc;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+
 using EventStore.Client;
+using Orleans;
 using MediatR;
 using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
@@ -20,7 +22,7 @@ public class CalculateHealthCheckCommandHandledNotificationHandler : INotificati
 
     IDistributedCache _cache;
     IOptions<EventStoreSettings> _settings;
-    public CalculateHealthCheckCommandHandledNotificationHandler(IDistributedCache cache, IOptions<EventStoreSettings> settings)
+    public CalculateHealthCheckCommandHandledNotificationHandler(IDistributedCache cache, IOptions<EventStoreSettings> settings )
     {
         _cache = cache;
         _settings = settings;
@@ -28,6 +30,10 @@ public class CalculateHealthCheckCommandHandledNotificationHandler : INotificati
     public async Task Handle(CalculateHealthCheckCommandHandledNotification notification, CancellationToken cancellationToken)
     {
         _c_get_health_check.Inc();
+
+ 
+      
+
 
         var jsonSerializerSettings = new JsonSerializerSettings { Formatting = Formatting.Indented };
         jsonSerializerSettings.Converters.Add(new UnitsNetIQuantityJsonConverter());

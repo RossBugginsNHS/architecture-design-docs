@@ -10,16 +10,16 @@ public class HealthCheckFilterSmoking: ProviderFilter<IHealthCheckContext>,IHeal
         _calculator = calculator;
     }
 
-    public override Task Handle(IHealthCheckContext context)
+    public async override Task Handle(IHealthCheckContext context)
     {
-        context.HealthCheckResult = Update(context.HealthCheckResult, context.HealthCheckData);
-        return Task.CompletedTask;
+        context.HealthCheckResult = await Update(context.HealthCheckResult, context.HealthCheckData);
+        
     }
 
-    public HealthCheckResult Update(HealthCheckResult current, HealthCheckData data)
+    public Task<HealthCheckResult> Update(HealthCheckResult current, HealthCheckData data)
     {
         var smoke = _calculator.Calculate(data.SmokingData.CigarettesPerDay, data.SmokingData.UsedToSmoke);
-        return current with {Smoking = new SmokingResult(data.SmokingData, smoke)};
+        return Task.FromResult(current with {Smoking = new SmokingResult(data.SmokingData, smoke)});
     }
 }
 
