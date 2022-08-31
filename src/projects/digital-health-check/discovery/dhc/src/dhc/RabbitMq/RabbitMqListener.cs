@@ -15,67 +15,55 @@ namespace dhc;
     public class RabbitListener : IHostedService
     {
 
-        private readonly IConnection connection;
-        private readonly IModel channel;
+       
+        private readonly RabbitMqChannel _model;
+        private readonly ILogger<RabbitListener> _logger;
 
 
-        public RabbitListener(IOptions<RabbitMqSettings> options)
+        public RabbitListener(RabbitMqChannel model, ILogger<RabbitListener> logger)
         {
-            try
-            {
-                var factory = new ConnectionFactory()
-                {
-                    // This is my configuration. Just change it to my own use
-                    HostName = options.Value.RabbitHost,
-                    UserName = options.Value.RabbitUserName,
-                    Password = options.Value.RabbitPassword,
-                    Port = options.Value.RabbitPort,
-                };
-                this.connection = factory.CreateConnection();
-                this.channel = connection.CreateModel();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"RabbitListener init error,ex:{ex.Message}");
-            }
+            _logger = logger;
+            _model = model;
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            await Register();
+            await Register(cancellationToken);
         }
-
-
-
-
 
         protected string RouteKey;
         protected string QueueName;
 
         // How to process messages
-        public virtual Task<bool> Process(string message)
+        public virtual Task<bool> Process(string message,  CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
 
         // Registered consumer monitoring here
-        public async Task Register()
+        public async Task Register(CancellationToken cancellationToken)
         {
-            Console.WriteLine($"RabbitListener register,routeKey:{RouteKey}");
-            channel.ExchangeDeclare(exchange: QueueName, type: "topic");
+            var channel = await _model.GetModel(cancellationToken);
+            _logger.LogInformation("RabbitListener register,routeKey:{RouteKey}", RouteKey);
+            var exchangeType = "topic";
+            channel.ExchangeDeclare(exchange: QueueName, type: exchangeType);
+            _logger.LogInformation("RabbitListener exchange declared, Exchange:{exchange}, Type{exchangeType}", QueueName, exchangeType);
             channel.QueueDeclare(queue:QueueName, 
                                     autoDelete: false, 
                                     durable: false,
                                     exclusive: false);
+            _logger.LogInformation("RabbitListener queue declared, QueueName:{QueueName}", QueueName);                              
             channel.QueueBind(queue: QueueName,
                               exchange: QueueName,
                               routingKey: RouteKey);
+            _logger.LogInformation("RabbitListener queue bind, QueueName:{QueueName}  Exchange:{exchange}, RouteKey {routingKey}", QueueName, QueueName, RouteKey);     
+            
             var consumer = new EventingBasicConsumer(channel);
             consumer.Received += async (model, ea) =>
             {
                 var body = ea.Body;
                 var message = Encoding.UTF8.GetString(body.ToArray());
-                var result = await Process(message);
+                var result = await Process(message, cancellationToken);
                 if (result)
                 {
                     channel.BasicAck(ea.DeliveryTag, false);
@@ -86,15 +74,11 @@ namespace dhc;
             
         }
 
-        public void DeRegister()
-        {
-            this.connection.Close();
-        }
-
+   
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            this.connection.Close();
+            _model.Close();
             return Task.CompletedTask;
         }
     }

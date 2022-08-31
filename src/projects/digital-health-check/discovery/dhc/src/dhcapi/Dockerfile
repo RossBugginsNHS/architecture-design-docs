@@ -13,6 +13,7 @@ FROM mcr.microsoft.com/dotnet/sdk:6.0-focal AS build
 WORKDIR /src
 COPY ["dhcapi/dhcapi.csproj", "./dhcapi/"]
 COPY ["bmiclient/bmiclient.csproj", "./bmiclient/"]
+COPY ["bpclient/bpclient.csproj", "./bpclient/"]
 COPY ["dhc/dhc.csproj", "./dhc/"]
 RUN dotnet restore "dhcapi/dhcapi.csproj"
 COPY . .

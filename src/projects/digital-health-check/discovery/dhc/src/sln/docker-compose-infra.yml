@@ -4,6 +4,17 @@ version: '3.4'
 
 services:
 
+  db:
+    image: sqlserver
+    build:
+      context: ./sql
+      dockerfile: Dockerfile
+    environment:
+        SA_PASSWORD: "Yukon900"
+        ACCEPT_EULA: "Y"
+    ports:
+      - 1433:1433 
+
   rabbitmq:
     image: rabbitmq:3.10.7-management-alpine
     container_name: 'rabbitmq'

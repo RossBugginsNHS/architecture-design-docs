@@ -39,7 +39,7 @@ public class PostCodeHttpClient
             var str = await result.Content.ReadAsStringAsync();
             var bytes = Encoding.UTF8.GetBytes(str);
             var obj = Newtonsoft.Json.JsonConvert.DeserializeObject<PostcodeInfo>(str);
-
+            _logger.LogDebug("Got postcode of {PostcodeInfoStr}", str);
             await _cache.SetAsync(stdPostCode, bytes, new DistributedCacheEntryOptions()
             {
                 SlidingExpiration = _settings.Value.SlidingCacheLength,

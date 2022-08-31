@@ -28,8 +28,5 @@
     <ProjectReference Include="..\bmiclient\bmiclient.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Include="data.tsv" CopyToOutputDirectory="Always" />
-  </ItemGroup>
 
 </Project>

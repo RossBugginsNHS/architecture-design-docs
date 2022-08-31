@@ -8,6 +8,10 @@ public class HealthCheckProviderOptions
 
     public Type BmiProvider {get{return _bmiProvider;}}
 
+        private Type _bpProvider;
+
+    public Type BpProvider {get{return _bpProvider;}}
+
     public HealthCheckProviderOptions(IServiceCollection services)
     {
         Services = services;
@@ -19,6 +23,11 @@ public class HealthCheckProviderOptions
     public void SetBmiProvider<T>() where T : IBmiCalculatorProvider
     {
         _bmiProvider = typeof(T);
+    }
+
+        public void SetBpProvider<T>() where T : IBloodPressureProvider
+    {
+        _bpProvider = typeof(T);
     }
 
 

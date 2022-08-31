@@ -1,8 +1,6 @@
 FROM mcr.microsoft.com/dotnet/aspnet:6.0-focal AS base
 WORKDIR /app
-EXPOSE 5118
 
-ENV ASPNETCORE_URLS=http://+:5118
 
 # Creates a non-root user with an explicit UID and adds permission to access the /app folder
 # For more info, please refer to https://aka.ms/vscode-docker-dotnet-configure-containers
@@ -13,6 +11,7 @@ FROM mcr.microsoft.com/dotnet/sdk:6.0-focal AS build
 WORKDIR /src
 COPY ["dhcapi/dhcapi.csproj", "./dhcapi/"]
 COPY ["bmiclient/bmiclient.csproj", "./bmiclient/"]
+COPY ["bpclient/bpclient.csproj", "./bpclient/"]
 COPY ["dhc/dhc.csproj", "./dhc/"]
 COPY ["Silo/Silo.csproj", "./Silo/"]
 RUN dotnet restore "dhcapi/dhcapi.csproj"

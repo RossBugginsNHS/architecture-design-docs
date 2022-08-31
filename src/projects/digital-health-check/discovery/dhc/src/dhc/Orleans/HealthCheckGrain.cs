@@ -2,15 +2,10 @@
 using EventStore.Client;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Orleans;
 using UnitsNet.Serialization.JsonNet;
 
 namespace dhc;
-
-public class OrleansConnection
-{
-    public static readonly string Position = "OrleansConnection";
-    public string Host{get;set;}
-}
 
 public class HealthCheckGrain : Orleans.Grain, IHealthCheckGrain
 {
@@ -35,12 +30,48 @@ public class HealthCheckGrain : Orleans.Grain, IHealthCheckGrain
         return Task.FromResult($"\n Client said: '{data}', so HelloGrain says: Hello!");
     }
 
-    public async Task Calculate(CancellationToken cancellationToken = default)
+    public async Task Calculate(GrainCancellationToken cancellationToken)
     {
-           _logger.LogInformation("Grain starting its calculations");
-        var result = await _provider.CalculateAsync(Data);
+        var data = Data;
+        await StartedEvent(data, cancellationToken.CancellationToken);
+         _logger.LogInformation("Grain starting its calculations");
+        var result = await _provider.CalculateAsync(data);
         _logger.LogInformation("Grain has done all its calculations");
+        await CompletedEvent(result, cancellationToken.CancellationToken);
+    }
 
+    public async Task StartedEvent(HealthCheckData data, CancellationToken cancellationToken = default)
+    {
+        _logger.LogInformation("Grain will now create event");
+        var jsonSerializerSettings = new JsonSerializerSettings { Formatting = Formatting.Indented };
+        jsonSerializerSettings.Converters.Add(new UnitsNetIQuantityJsonConverter());
+
+        string msgJson = JsonConvert.SerializeObject(data, jsonSerializerSettings);
+        var bytes = Encoding.UTF8.GetBytes(msgJson);
+
+        var settings = EventStoreClientSettings
+            .Create(_settings.Value.ConnectionString);
+        var client = new EventStoreClient(settings);
+
+
+        var eventData = new EventData(
+            Uuid.NewUuid(),
+            "HealthCheckStartedEvent",
+            bytes);
+
+        await client.AppendToStreamAsync(
+    "healthcheck-" + Data.HealthCheckDataId.id.ToString(),
+    StreamState.Any,
+    new[] { eventData },
+    cancellationToken: cancellationToken);
+
+    _logger.LogInformation("Grain has created event");
+    }
+
+
+  public async Task CompletedEvent(HealthCheckResult result, CancellationToken cancellationToken = default)
+    {
+       
         _logger.LogInformation("Grain will now create event");
         var jsonSerializerSettings = new JsonSerializerSettings { Formatting = Formatting.Indented };
         jsonSerializerSettings.Converters.Add(new UnitsNetIQuantityJsonConverter());
@@ -65,7 +96,5 @@ public class HealthCheckGrain : Orleans.Grain, IHealthCheckGrain
     cancellationToken: cancellationToken);
 
     _logger.LogInformation("Grain has created event");
-
-
-    }
+    }    
 }

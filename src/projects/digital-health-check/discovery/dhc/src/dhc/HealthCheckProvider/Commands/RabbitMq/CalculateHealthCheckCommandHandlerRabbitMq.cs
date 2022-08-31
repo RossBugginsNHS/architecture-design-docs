@@ -20,7 +20,7 @@ public class CalculateHealthCheckCommandHandlerRabbitMq : IRequestHandler<Calcul
 
     public async  Task<HealthCheckResult> Handle(CalculateHealthCheckCommand request, CancellationToken cancellationToken)
     {
-        _client.PushMessage("dhc.healthchecks", request.HealthCheckData.HealthCheckDataId.id.ToString(), request.HealthCheckData);
+        await _client.PushMessage("dhc.healthchecks", request.HealthCheckData.HealthCheckDataId.id.ToString(), request.HealthCheckData);
         var result = default(HealthCheckResult);
 
         return result;

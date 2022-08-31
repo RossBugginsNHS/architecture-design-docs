@@ -1,0 +1,142 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Blood Pressure API",
+    "version": "0.2"
+  },
+  "paths": {
+    "/v0.2/BloodPressure/{systolic}/{diastolic}": {
+      "get": {
+        "tags": [
+          "BloodPressure"
+        ],
+        "summary": "Retrieves a Blood Pressure result.",
+        "description": "Returns a text representation of the Blood Pressure results from the provided values.",
+        "operationId": "GetBpResult",
+        "parameters": [
+          {
+            "name": "systolic",
+            "in": "path",
+            "description": "The systolic (top)",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "example": 100
+          },
+          {
+            "name": "diastolic",
+            "in": "path",
+            "description": "The diastolic (bottom)",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "example": 99
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The blood pressure result was returned",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BloodPressureResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "An error generating the blood pressure result."
+          }
+        }
+      }
+    },
+    "/v0.2/BloodPressure": {
+      "post": {
+        "tags": [
+          "BloodPressure"
+        ],
+        "operationId": "GetBloodPressures",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/BloodPressureObservation"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BloodPressureResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "BloodPressureObservation": {
+        "type": "object",
+        "properties": {
+          "systolic": {
+            "type": "number",
+            "format": "double"
+          },
+          "diastolic": {
+            "type": "number",
+            "format": "double"
+          },
+          "dateTaken": {
+            "type": "String",
+            "format": "date",
+            "default": "2020-01-01"
+          },
+          "locationTaken": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "BloodPressureResult": {
+        "type": "object",
+        "properties": {
+          "bloodPressure": {
+            "type": "string",
+            "description": "The result of the blood pressure.",
+            "nullable": true,
+            "example": "Normal"
+          },
+          "systolic": {
+            "type": "integer",
+            "description": "The Systolic portion of the blood pressure.",
+            "format": "int32",
+            "example": 100
+          },
+          "diastolic": {
+            "type": "integer",
+            "description": "The Diastolic portion of the blood pressure.",
+            "format": "int32",
+            "example": 75
+          }
+        },
+        "additionalProperties": false,
+        "description": "A Blood Pressure result"
+      }
+    }
+  }
+}

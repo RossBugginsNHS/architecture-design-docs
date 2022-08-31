@@ -48,30 +48,26 @@ builder.Services.AddEndpointsApiExplorer()
     .AddCheck<SampleHealthCheck>("Sample")
     .ForwardToPrometheus();
 
-builder.Services.AddHealthCheck((config) =>
-{
-    config.Services.AddValidatorsFromAssemblyContaining<ConvertHealthCheckCommandHandler>();
-    config.Services.AddMediatR(typeof(ConvertHealthCheckCommandHandler));
-    config.Services.AddTransient<IHealthCheckRequestDataConverterProvider, HealthCheckRequestDataConverterProvider>();
-    config
-        .AddWebBmiProvider(builder.Configuration)
-        .AddPostCodeApi(builder.Configuration);
+builder.Services.AddTransient<IHealthCheckDataBuilder, HealthCheckDataBuilder>();
+builder.Services.AddTransient<IHealthCheckDataBuilderProvider, HealthCheckDataBuilderProvider>();
+var options = new HealthCheckProviderOptions(builder.Services);
+options.HealthCheckDataBuilders.Add<HealthCheckDataBuilderBuildFilterId>();
+options.HealthCheckDataBuilders.Add<HealthCheckDataBuilderBuildFilterBasicObs>();
+options.HealthCheckDataBuilders.Add<HealthCheckDataBuilderBuildFilterDemographics>();
+options.HealthCheckDataBuilders.Add<HealthCheckDataBuilderBuildFilterBloodPressure>();
+options.HealthCheckDataBuilders.Add<HealthCheckDataBuilderBuildFilterSmoking>();
+options.HealthCheckDataBuilders.Add<HealthCheckDataBuilderBuildFilterCholesterol>();
+builder.Services.AddHealthCheckHealthCheckDataBuilders(options);
+builder.Services.AddValidatorsFromAssemblyContaining<ConvertHealthCheckCommandHandler>();
+builder.Services.AddMediatR(typeof(ConvertHealthCheckCommandHandler));
+builder.Services.AddMediatR(typeof(CalculateHealthCheckCommandHandlerRabbitMq));
+builder.Services.AddTransient<IHealthCheckRequestDataConverterProvider, HealthCheckRequestDataConverterProvider>();
 
-    config.Services.AddDistributedMemoryCache();
-
-    config.Services.AddSingleton<RabbitMqClient>();
-    config.Services.AddHostedService<CalculateHealthCheckRabbitMqListener>();
-});
-
-
-builder.Services.Configure<OrleansConnection>(builder.Configuration.GetSection(OrleansConnection.Position));
+builder.Services.AddSingleton<RabbitMqChannel>();
+builder.Services.AddSingleton<RabbitMqClient>();
+builder.Services.AddDistributedMemoryCache();
 builder.Services.Configure<RabbitMqSettings>(builder.Configuration.GetSection(RabbitMqSettings.Location));
 builder.Services.Configure<EventStoreSettings>(builder.Configuration.GetSection(EventStoreSettings.Position));
-
-builder.Services.AddSingleton<ClusterClientHostedService>();
-builder.Services.AddSingleton<IHostedService>(sp => sp.GetService<ClusterClientHostedService>());
-builder.Services.AddSingleton<IClusterClient>(sp => sp.GetService<ClusterClientHostedService>().Client);
-builder.Services.AddSingleton<IGrainFactory>(sp => sp.GetService<ClusterClientHostedService>().Client);
 
 
 builder.Services.AddCors(options =>
@@ -118,49 +114,4 @@ app.UseEndpoints(endpoints =>
 app.MapHealthChecks("/healthz");
 app.UseHttpMetrics();
 app.Run();
-
-
-public class ClusterClientHostedService : IHostedService
-{
-    public IClusterClient Client { get; }
-    IOptions<OrleansConnection> _orleansConfig;
-
-    public ClusterClientHostedService(ILogger<ClusterClientHostedService> logger, ILoggerProvider loggerProvider, IOptions<OrleansConnection> orleansConfig)
-    {
-        _orleansConfig = orleansConfig;
-
-        //var hostEntry = Dns.GetHostEntryAsync("host.docker.internal");
-        logger.LogInformation("Getting IP from DNS for {hostName}", _orleansConfig.Value.Host);
-        var hostEntry = Dns.GetHostEntry(_orleansConfig.Value.Host);
-        var ip = hostEntry.AddressList[0];
-        logger.LogInformation("Getting IP from DNS for {hostName} of {ip}", _orleansConfig.Value.Host, ip.ToString());
-
-        Client = new ClientBuilder()
-        // Appropriate client configuration here, e.g.:
-        .UseStaticClustering(new IPEndPoint(ip, 30000))
-
-          //.UseLocalhostClustering()
-          .Configure<ClusterOptions>(options =>
-            {
-
-                options.ClusterId = "dev";
-                options.ServiceId = "OrleansBasics";
-            })
-        .ConfigureLogging(builder => builder.AddProvider(loggerProvider))
-        .Build();
-    }
-
-    public async Task StartAsync(CancellationToken cancellationToken)
-    {
-        // A retry filter could be provided here.
-        await Client.Connect();
-    }
-
-    public async Task StopAsync(CancellationToken cancellationToken)
-    {
-        await Client.Close();
-
-        Client.Dispose();
-    }
-}
 

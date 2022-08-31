@@ -71,12 +71,18 @@ public class BloodPressureController : ControllerBase
     [Consumes("application/json")]
     [Produces("application/json")]
     [HttpPost(Name = "GetBloodPressures"), MapToApiVersion("0.2")]
-    public  ActionResult<BloodPressureResult> GetResult(IEnumerable<BloodPressureObservation> bps)
+    public async Task<ActionResult<BloodPressureResult>> GetResult(IEnumerable<BloodPressureObservation> bps)
     {
-        var targetList = bps
-          .Select(x => _bpProvider.CalculateBloodPressure(x.Systolic, x.Diastolic));
+        var targetListTasks =  bps
+          .Select((x) => 
+          {
+            var a =  _bpProvider.CalculateBloodPressure(x.Systolic, x.Diastolic);
+            return a;
+            });
 
-        var bpResult = _bpProvider.CalculateBloodPressure(targetList);
+        var targetList = await Task.WhenAll(targetListTasks);
+
+        var bpResult =  _bpProvider.CalculateBloodPressure(targetList.ToList());
 
         if(bpResult.BloodPressureDescription == "Error")
             return BadRequest();

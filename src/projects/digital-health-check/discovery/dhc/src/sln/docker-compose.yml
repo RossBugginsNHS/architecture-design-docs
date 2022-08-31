@@ -3,50 +3,88 @@
 version: '3.4'
 
 services:
+  db:
+    image: sqlserver
+    build:
+      context: ./sql
+      dockerfile: Dockerfile
+    environment:
+        SA_PASSWORD: "Yukon900"
+        ACCEPT_EULA: "Y"
+    ports:
+      - 1433:1433 
+      
   bpapi:
     image: bpapi
     build:
       context: ../
       dockerfile: ./bpapi/Dockerfile
-    ports:
-      - 5117:5117
+    deploy:
+      mode: replicated
+      replicas: 2      
+ #   ports:
+ #     - 5117:5117
     environment:
       - ASPNETCORE_ENVIRONMENT=Development    
       - ASPNETCORE_URLS=http://+:5117
+
   bmiapi:
     image: bmiapi
     build:
       context: ../
       dockerfile: ./bmiapi/Dockerfile
-    ports:
-      - 5116:5116
+    deploy:
+      mode: replicated
+      replicas: 2      
+#    ports:
+#      - 5116:5116
     environment:
       - ASPNETCORE_ENVIRONMENT=Development    
       - ASPNETCORE_URLS=http://+:5116      
 
+  dhccmdhandler:
+    image: dhccmdhandler
+    build:
+      context: ../
+      dockerfile: ./dhccmdhandler/Dockerfile
+    deploy:
+      mode: replicated
+      replicas: 2      
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development    
+      - DOTNET_ENVIRONMENT=Development      
+      - Logging__LogLevel__dhc=Trace
+      - Logging__LogLevel__dhccmdhandler=Trace
+      - RabbitMq__RabbitHost=rabbitmq
+      - RabbitMq__RabbitUserName=guest
+      - RabbitMq__RabbitPassword=guest
+      - RabbitMq__RabbitPort=5672
+      - OrleansConnection__Host=dhcsilo
+    depends_on:
+      - dhcsilo
+      - db
 
-  
   dhcsilo:
     image: dhcsilo
     build:
       context: ../
       dockerfile: ./Silo/Dockerfile    
     restart: on-failure:20
+    deploy:
+      mode: replicated
+      replicas: 2
     environment:
       - DOTNET_ENVIRONMENT=Development
       - ASPNETCORE_ENVIRONMENT=Development
       - BmiWebApiSettings__BaseUrl=http://bmiapi:5116/
+      - BpWebApiSettings__BaseUrl=http://bpapi:5117/      
       - EventStoreClient__ConnectionString=esdb://admin:changeit@eventstore:2113?tls=false
-      - RabbitMq__RabbitHost=rabbitmq
-      - RabbitMq__RabbitUserName=guest
-      - RabbitMq__RabbitPassword=guest
-      - RabbitMq__RabbitPort=5672
       - PostCodeApi__BaseUrl=https://api.postcodes.io/postcodes/
       - PostCodeApi__SlidingCacheLength=00:10:00
       - PostCodeApi__AbsoluteCacheLength=01:00:00
       - Logging__LogLevel__dhc=Trace
       - Logging__LogLevel__Silo=Trace
-
+      - OrleansConnection__DbHost=db
     depends_on:
       - rabbitmq
       - eventstore
@@ -59,21 +97,20 @@ services:
     build:
       context: ../
       dockerfile: ./dhcapi/Dockerfile
+    deploy:
+      mode: replicated
+      replicas: 1      
     ports:
-      - 5118:5118
+      - 5118:5118      
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:5118
-      - BmiWebApiSettings__BaseUrl=http://bmiapi:5116/
       - EventStoreClient__ConnectionString=esdb://admin:changeit@eventstore:2113?tls=false
       - RabbitMq__RabbitHost=rabbitmq
       - RabbitMq__RabbitUserName=guest
       - RabbitMq__RabbitPassword=guest
       - RabbitMq__RabbitPort=5672
-      - PostCodeApi__BaseUrl=https://api.postcodes.io/postcodes/
-      - PostCodeApi__SlidingCacheLength=00:10:00
-      - PostCodeApi__AbsoluteCacheLength=01:00:00
-      - OrleansConnection__Host=dhcsilo
+
     depends_on:
       - rabbitmq
       - eventstore
@@ -113,12 +150,8 @@ services:
         - "1113:1113"
         - "2113:2113"
       volumes:
-        - type: volume
-          source: eventstore-volume-data
-          target: /var/lib/eventstore
-        - type: volume
-          source: eventstore-volume-logs
-          target: /var/log/eventstore        
+        - ~/.docker-conf/eventstore/data:/var/lib/eventstore
+        - ~/.docker-conf/eventstore/logs:/var/log/eventstore     
       healthcheck:
         test:
           [
@@ -128,6 +161,3 @@ services:
         interval: 30s
         timeout: 30s
         retries: 3          
-volumes:
-  eventstore-volume-data:
-  eventstore-volume-logs:          

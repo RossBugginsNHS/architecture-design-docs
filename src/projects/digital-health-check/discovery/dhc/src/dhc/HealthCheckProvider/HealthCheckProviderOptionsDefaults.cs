@@ -12,6 +12,7 @@ public static class HealthCheckProviderOptionsDefaults
         options.Filters.Add<HealthCheckFilterBp>();
         options.Filters.Add<HealthCheckFilterSmoking>();
         options.Filters.Add<HealthCheckFilterBmiResult>();
+        options.Filters.Add<HealthCheckFilterBpResult>();
         options.GuidanceFilters.Add<HealthCheckGuidanceFilterBp>();
         options.GuidanceFilters.Add<HealthCheckGuidanceFilterWeight>();
         options.GuidanceFilters.Add<HealthCheckGuidanceFilterSmoking>();

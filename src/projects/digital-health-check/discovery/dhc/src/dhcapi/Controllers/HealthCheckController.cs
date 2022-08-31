@@ -21,7 +21,7 @@ public class HealthCheckController : ControllerBase
     IOptions<EventStoreSettings> _settings;
     IDistributedCache _cache;
     public HealthCheckController(
-        ISender sender, IDistributedCache cache,IOptions<EventStoreSettings> settings)
+        ISender sender, IDistributedCache cache, IOptions<EventStoreSettings> settings)
     {
         _sender = sender;
         _cache = cache;
@@ -46,6 +46,15 @@ public class HealthCheckController : ControllerBase
     {
         var result = await _cache.GetAsync(healthCheckId.ToString());
 
+        if (result != null)
+        {
+            var jsonSerializerSettings = new JsonSerializerSettings { Formatting = Formatting.Indented };
+            jsonSerializerSettings.Converters.Add(new UnitsNetIQuantityJsonConverter());
+            var str = Encoding.UTF8.GetString(result);
+            var obj = JsonConvert.DeserializeObject<HealthCheckResult>(str);
+            return obj;
+        }
+
         var settings = EventStoreClientSettings
     .Create(_settings.Value.ConnectionString);
         var client = new EventStoreClient(settings);
@@ -59,22 +68,28 @@ public class HealthCheckController : ControllerBase
 
         if (await events.ReadState == ReadState.Ok)
         {
-            var resolved = await events.FirstAsync();
-            var str = Encoding.UTF8.GetString(resolved.Event.Data.ToArray());
-            var jsonSerializerSettings = new JsonSerializerSettings { Formatting = Formatting.Indented };
-            jsonSerializerSettings.Converters.Add(new UnitsNetIQuantityJsonConverter());
-            var obj = JsonConvert.DeserializeObject<HealthCheckResult>(str);
-            return obj;
+            while (await events.MoveNextAsync())
+            {
+                var resolved = events.Current;
+                if (resolved.Event.EventType == "HealthCheckCompleteEvent")
+                {
+                    var data = resolved.Event.Data.ToArray();
+                    var str = Encoding.UTF8.GetString(data);
+                    var jsonSerializerSettings = new JsonSerializerSettings { Formatting = Formatting.Indented };
+                    jsonSerializerSettings.Converters.Add(new UnitsNetIQuantityJsonConverter());
+                    var obj = JsonConvert.DeserializeObject<HealthCheckResult>(str);
+
+                    await _cache.SetAsync(healthCheckId.ToString(), data, new DistributedCacheEntryOptions()
+                    {
+                        SlidingExpiration = TimeSpan.FromSeconds(10),
+                        AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(20),
+                    });
+                    return obj;
+                }
+            }
         }
 
-        if (result != null)
-        {
-            var jsonSerializerSettings = new JsonSerializerSettings { Formatting = Formatting.Indented };
-            jsonSerializerSettings.Converters.Add(new UnitsNetIQuantityJsonConverter());
-            var str = Encoding.UTF8.GetString(result);
-            var obj = JsonConvert.DeserializeObject<HealthCheckResult>(str);
-            return obj;
-        }
+
 
         return default(HealthCheckResult);
     }

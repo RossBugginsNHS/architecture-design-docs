@@ -21,9 +21,9 @@ public class WebBmiProvider : IBmiCalculatorProvider
 
     public async Task<Bmi> CalculateBmi(Length height, Mass mass)
     {
-        _logger.LogInformation("Before calling web bmi api");
+        _logger.LogInformation("Before calling web bmi api with {height}m and {weight}kg",height.Meters, mass.Kilograms);
         var r = await _client.GetBmiAsync(height.Meters, mass.Kilograms);
-        _logger.LogInformation("After calling web bmi api");
-        return new Bmi((decimal)r.Bmi);
+        _logger.LogInformation("After calling web bmi api with {height}m and {weight}kg and result of {bmi} ({bmiDescription}) bmi",height.Meters, mass.Kilograms, r.Bmi, r.BmiDescription);
+        return new Bmi((decimal)r.Bmi, Enum.Parse<BmiEnum>(r.BmiDescription));
     }
 }

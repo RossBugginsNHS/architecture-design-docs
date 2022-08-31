@@ -42,6 +42,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\bmiclient\bmiclient.csproj" />
+    <ProjectReference Include="..\bpclient\bpclient.csproj" />
   </ItemGroup>
 
 </Project>

@@ -12,17 +12,17 @@ public class HealthCheckFilterBp: ProviderFilter<IHealthCheckContext>,IHealthChe
         _bloodPressureProvider = bloodPressureProvider;
     }
 
-    public async override Task Handle(IHealthCheckContext context)
+    public override Task Handle(IHealthCheckContext context)
     {
-        context.HealthCheckResult =await Update(context.HealthCheckResult, context.HealthCheckData);
-      
+        var t =  _bloodPressureProvider.CalculateBloodPressure(context.HealthCheckData.BloodPressure.Systolic, context.HealthCheckData.BloodPressure.Diastolic);
+        context.SetContextObject("HealthCheckFilterBp_GetBp_Task", t);
+        return Task.CompletedTask;
     }
 
     
 
     public async Task<HealthCheckResult> Update(HealthCheckResult current, HealthCheckData data)
     {
-        var bp = await _bloodPressureProvider.CalculateBloodPressure(data.BloodPressure.Systolic, data.BloodPressure.Diastolic);
-        return current with {BloodPressure = bp};
+        throw new NotImplementedException();
     }
 }

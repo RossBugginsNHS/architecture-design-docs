@@ -36,7 +36,7 @@ public class BmiCalculatorProvider : IBmiCalculatorProvider
         _logger.LogTrace("Using {bmiCalculatorName} in{bmiCaclulatorAssemblyName} for BMI Calculation", typeof(BmiCalculator).FullName, typeof(BmiCalculator).AssemblyQualifiedName);
         var bmi = BmiCalculator.Calculate(height, mass);
         _logger.LogDebug("BMI {bmi}", bmi);
-        var bmiObj = new Bmi(bmi);
+        var bmiObj = new Bmi(bmi, BmiResultConverter.GetResult(bmi));
         _c_calculate_bmi_with_result.WithLabels(bmiObj.BmiDescription.ToString()).Inc();
         _logger.LogDebug("BMI value {bmiValue}", bmiObj.BmiValue);
         _logger.LogDebug("BMI result {bmiResult}", bmiObj.BmiDescription);
@@ -45,7 +45,7 @@ public class BmiCalculatorProvider : IBmiCalculatorProvider
 
     public Bmi BmiDescription(decimal bmi)
     {
-        var bmiObj = new Bmi(bmi);
+        var bmiObj = new Bmi(bmi, BmiResultConverter.GetResult(bmi));
         _logger.LogDebug("BMI value {bmiValue}", bmiObj.BmiValue);
         _logger.LogDebug("BMI result {bmiResult}", bmiObj.BmiDescription);
         return bmiObj;

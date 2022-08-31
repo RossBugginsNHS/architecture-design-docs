@@ -1,6 +1,6 @@
 namespace dhc;
 
-public readonly record struct Bmi(decimal BmiValue)
+public readonly record struct Bmi(decimal BmiValue, BmiEnum BmiDescription)
 {
-    public readonly BmiEnum BmiDescription => BmiResultConverter.GetResult(BmiValue);
+    //public readonly BmiEnum BmiDescription => BmiResultConverter.GetResult(BmiValue);
 }

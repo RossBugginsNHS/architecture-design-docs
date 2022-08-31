@@ -35,6 +35,12 @@
 		},
 		{
 			"path": "src/Silo"
+		},
+		{
+			"path": "src/dhccmdhandler"
+		},
+		{
+			"path": "src/bpclient"
 		}
 	],
 	"settings": {

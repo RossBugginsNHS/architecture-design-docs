@@ -23,6 +23,7 @@ public static class HealthCheckProviderExtensionMethods
             .AddHealthCheckHealthCheckDataBuilders(options)
             .AddOtherRequirements(options)
             .AddBmiProvider(options)
+            .AddBpProvider(options)
             .AddMediatR(typeof(HealthCheckProvider))
             .AddValidatorsFromAssemblyContaining<HealthCheckProvider>();
     }
@@ -61,22 +62,27 @@ public static class HealthCheckProviderExtensionMethods
 
 
 
-    private static IServiceCollection AddBmiProvider(this IServiceCollection services, HealthCheckProviderOptions options)
+    public static IServiceCollection AddBmiProvider(this IServiceCollection services, HealthCheckProviderOptions options)
     {
         return services.AddTransient(typeof(IBmiCalculatorProvider), options.BmiProvider);
     }
 
-    private static IServiceCollection AddHealthCheckProviderFilters(this IServiceCollection services, HealthCheckProviderOptions options)
+    public static IServiceCollection AddBpProvider(this IServiceCollection services, HealthCheckProviderOptions options)
+    {
+        return services.AddTransient(typeof(IBloodPressureProvider), options.BpProvider);
+    }    
+
+    public static IServiceCollection AddHealthCheckProviderFilters(this IServiceCollection services, HealthCheckProviderOptions options)
     {
         return services.AddTransientTypesFrom<IHealthCheckProviderFilter>(options.Filters.Types);
     }
 
-    private static IServiceCollection AddHealthCheckProviderGuidanceFilters(this IServiceCollection services, HealthCheckProviderOptions options)
+    public static IServiceCollection AddHealthCheckProviderGuidanceFilters(this IServiceCollection services, HealthCheckProviderOptions options)
     {
         return services.AddTransientTypesFrom<IHealthCheckProviderFilter>(options.GuidanceFilters.Types);
     }
 
-    private static IServiceCollection AddHealthCheckHealthCheckDataBuilders(this IServiceCollection services, HealthCheckProviderOptions options)
+    public static IServiceCollection AddHealthCheckHealthCheckDataBuilders(this IServiceCollection services, HealthCheckProviderOptions options)
     {
         return services.AddTransientTypesFrom<IHealthCheckDataBuilderBuildFilter>(options.HealthCheckDataBuilders.Types);
     }

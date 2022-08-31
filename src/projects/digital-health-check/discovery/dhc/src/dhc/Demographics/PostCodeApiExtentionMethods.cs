@@ -18,7 +18,7 @@ public static class PostCodeApiExtentionMethods
                 {
                     return HttpClientRetryPolicies.GetRetryPolicy<PostCodeHttpClient>(sp);
                 })
-            .AddTimerAndLoggerHandler<bmiclient.BmiClient>()
+            .AddTimerAndLoggerHandler<PostCodeHttpClient>()
             .UseHttpClientMetrics(o =>
             {
                 o.InProgress.Enabled = true;

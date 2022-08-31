@@ -26,11 +26,13 @@ builder.ConfigureServices((hostContext, services) =>
 
             config
                 .AddWebBmiProvider(hostContext.Configuration)
+                .AddWebBpProvider(hostContext.Configuration)
                 .AddPostCodeApi(hostContext.Configuration);
 
             config.Services.AddDistributedMemoryCache();
 
             config.Services.AddSingleton<RabbitMqClient>();
+            config.Services.AddSingleton<RabbitMqChannel>();
         });
 
         services.Configure<OrleansConnection>(hostContext.Configuration.GetSection(OrleansConnection.Position));
@@ -43,18 +45,30 @@ builder.ConfigureServices((hostContext, services) =>
         var orleansConnection = new OrleansConnection();
         hostContext.Configuration.GetSection(OrleansConnection.Position).Bind(orleansConnection);
         
-        var hostEntry = Dns.GetHostEntry(Dns.GetHostName());
+        var hostEntry = Dns.GetHostEntry(orleansConnection.DbHost);
         var ip = hostEntry.AddressList[0];
 
-        var primarySiloEndpoint = new IPEndPoint(ip, 11112);
+        //var primarySiloEndpoint = new IPEndPoint(ip, 11112);
+        builder.AddAdoNetGrainStorageAsDefault(options =>
+        {
+            options.Invariant = "System.Data.SqlClient";
+            options.ConnectionString = $"Server={orleansConnection.DbHost};Database=orleans;User Id=sa;Password=Yukon900;";
+            options.UseJsonFormat = true;
+        });
 
-        builder.UseDevelopmentClustering(primarySiloEndpoint)
-        .Configure<ClusterOptions>(options =>
+        builder.UseAdoNetClustering(options =>
+        {
+            options.Invariant = "System.Data.SqlClient";
+            options.ConnectionString = $"Server={orleansConnection.DbHost};Database=orleans;User Id=sa;Password=Yukon900;";
+        });
+
+       // builder.UseDevelopmentClustering(primarySiloEndpoint)
+        builder.Configure<ClusterOptions>(options =>
         {
             options.ClusterId = "dev";
             options.ServiceId = "OrleansBasics";
         })
-        .ConfigureEndpoints(siloPort: 11112, gatewayPort: 30000)
+        .ConfigureEndpoints(siloPort: 11111, gatewayPort: 30000)
         .ConfigureApplicationParts(parts => parts.AddApplicationPart(typeof(HealthCheckGrain).Assembly).WithReferences())
         .ConfigureLogging(logging => logging.AddConsole());
     });

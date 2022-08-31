@@ -9,10 +9,10 @@ public class CalculateBloodPressureCommandHandler: IRequestHandler<CalculateBloo
     {
         _bpProvider = bpProvider;
     }
-    public Task<BloodPressure> Handle(CalculateBloodPressureCommand request, CancellationToken cancellationToken)
+    public async Task<BloodPressure> Handle(CalculateBloodPressureCommand request, CancellationToken cancellationToken)
     {
         var obs = request.RequestData;
-        var bpResult = _bpProvider.CalculateBloodPressure(obs.Systolic,obs.Diastolic);
-        return Task.FromResult(bpResult);
+        var bpResult = await _bpProvider.CalculateBloodPressure(obs.Systolic,obs.Diastolic);
+        return bpResult;
     }
 }
