@@ -54,7 +54,7 @@ builder.Services.AddHealthCheck((config) =>
     config.Services.AddMediatR(typeof(ConvertHealthCheckCommandHandler));
     config.Services.AddTransient<IHealthCheckRequestDataConverterProvider, HealthCheckRequestDataConverterProvider>();
     config
-        .AddWebBpProvider(builder.Configuration)
+        .AddWebBmiProvider(builder.Configuration)
         .AddPostCodeApi(builder.Configuration);
 
     config.Services.AddDistributedMemoryCache();

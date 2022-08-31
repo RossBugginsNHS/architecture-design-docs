@@ -35,7 +35,7 @@ services:
     environment:
       - DOTNET_ENVIRONMENT=Development
       - ASPNETCORE_ENVIRONMENT=Development
-      - BpWebApiSettings__BaseUrl=http://bmiapi:5116/
+      - BmiWebApiSettings__BaseUrl=http://bmiapi:5116/
       - EventStoreClient__ConnectionString=esdb://admin:changeit@eventstore:2113?tls=false
       - RabbitMq__RabbitHost=rabbitmq
       - RabbitMq__RabbitUserName=guest
@@ -64,7 +64,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:5118
-      - BpWebApiSettings__BaseUrl=http://bmiapi:5116/
+      - BmiWebApiSettings__BaseUrl=http://bmiapi:5116/
       - EventStoreClient__ConnectionString=esdb://admin:changeit@eventstore:2113?tls=false
       - RabbitMq__RabbitHost=rabbitmq
       - RabbitMq__RabbitUserName=guest

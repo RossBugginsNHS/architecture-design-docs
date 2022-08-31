@@ -6,9 +6,9 @@ namespace dhc;
 public class WebBmiProvider : IBmiCalculatorProvider
 {
     bmiclient.IBmiClient _client;
-    IOptions<BpWebApiSettings> _options;
+    IOptions<BmiWebApiSettings> _options;
     ILogger<WebBmiProvider> _logger;
-    public WebBmiProvider(bmiclient.IBmiClient client, IOptions<BpWebApiSettings> options, ILogger<WebBmiProvider> logger)
+    public WebBmiProvider(bmiclient.IBmiClient client, IOptions<BmiWebApiSettings> options, ILogger<WebBmiProvider> logger)
     {
         _options = options;
         _client = client;

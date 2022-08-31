@@ -9,7 +9,7 @@ public class HealthCheckContextFactory : IHealthCheckContextFactory
     }
     public IHealthCheckContext Create()
     {
-        return ActivatorUtilities.GetServiceOrCreateInstance<IHealthCheckContext>(_sp);
-
+        var ctx= ActivatorUtilities.GetServiceOrCreateInstance<IHealthCheckContext>(_sp);
+        return ctx;
     }
 }

@@ -33,11 +33,12 @@ public class BmiController : ControllerBase
 
     [Produces("application/json")]
     [HttpGet("{height}/{weight}", Name = "GetBmi"), MapToApiVersion("0.2")]
-    public ActionResult<BmiResult> GetBmi(
+    public async Task<ActionResult<BmiResult>> GetBmi(
         [SwaggerParameter("Height (Meters)", Required = true)]double height, 
         [SwaggerParameter("Weight/Mass (KG)", Required = true)]double weight)
     {
-        var result= _bmiProvider.CalculateBmi(Length.FromMeters(height), Mass.FromKilograms(weight));
+        var result = await _bmiProvider.CalculateBmi(Length.FromMeters(height), Mass.FromKilograms(weight));
+
         _logger.LogTrace("Description of {result} for {heightM} m and {weightKg} kg", result.BmiDescription.ToString(), height, weight);
         var bmiResult = new BmiResult(result.BmiValue, result.BmiDescription.ToString());
         

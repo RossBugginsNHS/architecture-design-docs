@@ -25,7 +25,7 @@ builder.ConfigureServices((hostContext, services) =>
         {
 
             config
-                .AddWebBpProvider(hostContext.Configuration)
+                .AddWebBmiProvider(hostContext.Configuration)
                 .AddPostCodeApi(hostContext.Configuration);
 
             config.Services.AddDistributedMemoryCache();

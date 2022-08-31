@@ -3,9 +3,9 @@ using Microsoft.Extensions.Configuration;
 namespace dhc;
 
 
-public class BpWebApiSettings
+public class BmiWebApiSettings
 {
-    public static string Position = "BpWebApiSettings";
+    public static string Position = "BmiWebApiSettings";
     public string BaseUrl{get;set;}
 
 }

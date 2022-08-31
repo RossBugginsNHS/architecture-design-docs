@@ -7,13 +7,13 @@ public static class HealthCheckProviderBmiWebApiProviderExtensionMethods
 {
 
 
-    public static HealthCheckProviderOptions AddWebBpProvider(this HealthCheckProviderOptions options, IConfiguration config)
+    public static HealthCheckProviderOptions AddWebBmiProvider(this HealthCheckProviderOptions options, IConfiguration config)
     {
-        var settings = new BpWebApiSettings();
-        config.GetSection(BpWebApiSettings.Position).Bind(settings);
+        var settings = new BmiWebApiSettings();
+        config.GetSection(BmiWebApiSettings.Position).Bind(settings);
         if (!string.IsNullOrWhiteSpace(settings.BaseUrl))
         {
-            options.Services.Configure<BpWebApiSettings>(config.GetSection(BpWebApiSettings.Position));
+            options.Services.Configure<BmiWebApiSettings>(config.GetSection(BmiWebApiSettings.Position));
             options.SetBmiProvider<WebBmiProvider>();
             options.Services.AddTransient(typeof(TimeRequestHeaderHandler<>));
 
