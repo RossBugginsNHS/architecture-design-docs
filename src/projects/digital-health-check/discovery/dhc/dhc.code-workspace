@@ -41,6 +41,9 @@
 		},
 		{
 			"path": "src/bpclient"
+		},
+		{
+			"path": "src/dhccachepreloader"
 		}
 	],
 	"settings": {

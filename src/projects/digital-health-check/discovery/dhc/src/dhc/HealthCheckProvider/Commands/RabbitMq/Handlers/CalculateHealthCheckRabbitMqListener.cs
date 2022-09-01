@@ -97,22 +97,57 @@ public class CalculateHealthCheckRabbitMqListener : RabbitListener
                     var cancelledSource = new TaskCompletionSource();
                     using var _ = ct.Register(() => cancelledSource.SetResult());
 
+                    var cancellationTokenSource = new CancellationTokenSource(); 
                     if (!ct.IsCancellationRequested)
-                    {
-                        var calculateTask = friend.Calculate(tsc.Token);
-                        
-                        Task completedTask = await Task.WhenAny(
-                             calculateTask,
-                            cancelledSource.Task).ConfigureAwait(false);
-
-                        if(completedTask == cancelledSource.Task)
+                    {                        
+                        try
                         {
+                            var statusTask = Task.Run(async ()=>
+                            {
+                                int counter =1;
+                                while(!cancellationTokenSource.Token.IsCancellationRequested)
+                                {
+                                    _logger.LogDebug("Check {counter}: Waiting on response from grain Calculate for {HealthCheckDataId}", counter, obj.HealthCheckDataId.id);
+                                    counter++;
+                                    await Task.Delay(1000);
+                                }
+                                _logger.LogDebug("Status logger for Waiting on response from grain Calculate has finished for {HealthCheckDataId}", obj.HealthCheckDataId.id);
+                            });
+
+                            var calculateTask = friend.Calculate(tsc.Token);
+                            Task completedTask = await Task.WhenAny(
+                               calculateTask,
+                               cancelledSource.Task);
+
+                            cancellationTokenSource.Cancel(); 
+                            await statusTask;
+
+                            await completedTask;
+
+
+                            if(completedTask == cancelledSource.Task)
+                            {
+                               _logger.LogInformation("Sending CANCEL message to Orleans.");
+                               await tsc.Cancel();
+                               _logger.LogInformation("Sent CANCEL message to Orleans.");
+
+                            }
+                           else if(completedTask == calculateTask)
+                           {
+                                _logger.LogInformation("Sent message to Orleans.");
+                           }
+                        }
+                        catch(Exception ex)
+                        {
+                             _logger.LogError(ex, "Exception in grain response");
                             _logger.LogInformation("Sending CANCEL message to Orleans.");
                             await tsc.Cancel();
-                             _logger.LogInformation("Sent CANCEL message to Orleans.");
+                             _logger.LogInformation("Sent CANCEL message to Orleans.");                 
+                           
+                            throw;
                         }
-                        else if(completedTask == calculateTask)
-                            _logger.LogInformation("Sent message to Orleans.");
+
+               
                     }
                 }, cancellationToken);
 

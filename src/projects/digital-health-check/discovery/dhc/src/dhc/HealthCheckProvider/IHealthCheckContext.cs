@@ -2,6 +2,7 @@ namespace dhc;
 
 public interface IHealthCheckContext
 {
+    CancellationToken CancellationToken {get;set;}
     HealthCheckData HealthCheckData { get; set; }
     HealthCheckResult HealthCheckResult { get; set; }
 

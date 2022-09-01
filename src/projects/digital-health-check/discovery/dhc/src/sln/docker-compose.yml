@@ -3,15 +3,32 @@
 version: '3.4'
 
 services:
+
+  dhccachepreloader:
+    image: dhccachepreloader
+    build:
+      context: ../
+      dockerfile: ./dhccachepreloader/Dockerfile
+    deploy:
+      mode: replicated
+      replicas: 1      
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development    
+      - DOTNET_ENVIRONMENT=Development      
+      - Logging__LogLevel__dhc=Trace
+      - Logging__LogLevel__dhccachepreloader=Trace
+      - EventStoreClient__ConnectionString=esdb://admin:changeit@eventstore:2113?tls=false
+      - Redis__ConnectionString=redis:6379
+
   redis:
     image: "redis:7.0.4"
     ports:
       - 6379:6379
     volumes:
     - ~/.docker-conf/redis/data:/data
+
   traefik:
     image: "traefik:v2.8"
-    container_name: "traefik"
     command:
       #- "--log.level=DEBUG"
       - "--api.insecure=true"
@@ -59,7 +76,7 @@ services:
       dockerfile: ./bpapi/Dockerfile
     deploy:
       mode: replicated
-      replicas: 2    
+      replicas: 1   
     #ports:
       #- 5117:80       
     environment:
@@ -83,7 +100,7 @@ services:
       dockerfile: ./bmiapi/Dockerfile
     deploy:
       mode: replicated
-      replicas: 2      
+      replicas: 1     
 #    ports:
 #      - 5116:5116
     environment:
@@ -105,7 +122,7 @@ services:
       dockerfile: ./dhccmdhandler/Dockerfile
     deploy:
       mode: replicated
-      replicas: 2      
+      replicas: 1      
     environment:
       - ASPNETCORE_ENVIRONMENT=Development    
       - DOTNET_ENVIRONMENT=Development      
@@ -128,7 +145,9 @@ services:
     restart: on-failure:20
     deploy:
       mode: replicated
-      replicas: 2
+      replicas: 1
+    ports:
+      - 30000:30000      
     environment:
       - DOTNET_ENVIRONMENT=Development
       - ASPNETCORE_ENVIRONMENT=Development
@@ -156,7 +175,7 @@ services:
       dockerfile: ./dhcapi/Dockerfile
     deploy:
       mode: replicated
-      replicas: 2      
+      replicas: 1      
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
@@ -185,8 +204,8 @@ services:
     build:
       context: .
       dockerfile: ./rabbitmq/Dockerfile    
-#    ports:
-#        - 5672:5672
+    ports:
+      - 5672:5672
 #        - 15672:15672
     volumes:
         - ~/.docker-conf/rabbitmq/data/:/var/rabbitmq/lib/

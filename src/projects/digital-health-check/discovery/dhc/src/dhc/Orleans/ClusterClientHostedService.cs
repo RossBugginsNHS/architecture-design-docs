@@ -7,48 +7,25 @@ using Polly.Contrib.WaitAndRetry;
 
 public class ClusterClientHostedService : IHostedService
 {
-    public IClusterClient Client { get; }
+
+    public IClusterClient Client { get; private set; }
+    //public IClientBuilder ClientBuilder { get; }
     IOptions<OrleansConnection> _orleansConfig;
 
     ILogger<ClusterClientHostedService> _logger;
+    ILoggerProvider _loggerProvider;
+
     public ClusterClientHostedService(ILogger<ClusterClientHostedService> logger, ILoggerProvider loggerProvider, IOptions<OrleansConnection> orleansConfig)
     {
+        _loggerProvider = loggerProvider;
         _logger = logger;
         _orleansConfig = orleansConfig;
 
         //var hostEntry = Dns.GetHostEntryAsync("host.docker.internal");
-        logger.LogInformation("Getting IP from DNS for {hostName}", _orleansConfig.Value.Host);
-        var hostEntry = Dns.GetHostEntry(_orleansConfig.Value.Host);
-        var ips = hostEntry.AddressList;
-        var endpoints = new List<IPEndPoint>();
-        foreach(var ip in ips)
-        {
-            logger.LogInformation("Getting IP from DNS for {hostName} of {ip}", _orleansConfig.Value.Host, ip.ToString());
-            endpoints.Add(new IPEndPoint(ip, 30000));
-        }
-        Client = new ClientBuilder()
-        // Appropriate client configuration here, e.g.:
-        .UseStaticClustering(endpoints.ToArray())
 
-          //.UseLocalhostClustering()
-          .Configure<ClusterOptions>(options =>
-            {
 
-                options.ClusterId = "dev";
-                options.ServiceId = "OrleansBasics";
-            })
-        .ConfigureLogging(builder => builder.AddProvider(loggerProvider))
-     //   .Configure<ConnectionOptions>(o=>
-      //  {
-      //      o.ConnectionRetryDelay = TimeSpan.FromSeconds(10);
-      //      o.OpenConnectionTimeout = TimeSpan.FromSeconds(10);
-            
-      //  }).Configure<GatewayOptions>(o=>
-      //  {
-      //      o.
-      //  })
-        
-        .Build();
+
+
     }
 
     public async Task StartAsync(CancellationToken cancellationToken)
@@ -64,14 +41,45 @@ public class ClusterClientHostedService : IHostedService
                    context["totalRetries"] = retryAttempt;
                    context["retryWaitTime"] = timespan;
                    _logger
-                       .LogWarning(outcome, "Delaying Orleans client connect to Orleans silo due to {message} for {delay}ms, then making retry {retry}.",outcome.Message, timespan.TotalMilliseconds, retryAttempt);
+                       .LogWarning(outcome, "Delaying Orleans client connect to Orleans silo due to {message} for {delay}ms, then making retry {retry}.", outcome.Message, timespan.TotalMilliseconds, retryAttempt);
                }
            );
 
         await policy.ExecuteAsync(async (ct) =>
         {
-            await Client.Connect();
+            var oleansHostValue = _orleansConfig.Value.Host;
+            _logger.LogInformation("Getting IP from DNS for {hostName}", oleansHostValue);
+            
+            if(string.IsNullOrEmpty(oleansHostValue))
+                oleansHostValue = Dns.GetHostName();
+            var hostEntry = Dns.GetHostEntry(oleansHostValue);
+            var ips = hostEntry.AddressList;
+            var endpoints = new List<IPEndPoint>();
+            foreach (var ip in ips)
+            {
+                _logger.LogInformation("Getting IP from DNS for {hostName} of {ip}", oleansHostValue, ip.ToString());
+                endpoints.Add(new IPEndPoint(ip, 30000));
+            }
+
+
+            var clientBuilder = new ClientBuilder()
+
+           .UseStaticClustering(endpoints.ToArray())
+
+           .Configure<ClusterOptions>(options =>
+               {
+
+                   options.ClusterId = "dev";
+                   options.ServiceId = "OrleansBasics";
+               })
+           .ConfigureLogging(builder => builder.AddProvider(_loggerProvider));
+
+            var built = clientBuilder.Build();
+            await built.Connect();
+            Client = built;
             _logger.LogInformation("Connected to Orleans. IsInitilized {IsInitilized}", Client.IsInitialized);
+
+
         }, cancellationToken);
     }
 

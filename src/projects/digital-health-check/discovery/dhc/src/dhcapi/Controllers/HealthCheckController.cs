@@ -43,6 +43,9 @@ public class HealthCheckController : ControllerBase
 
     [Produces("application/json")]
     [HttpGet("{healthCheckId}", Name = "GetHealthCheck"), MapToApiVersion("0.1")]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status202Accepted)]
     public async Task<ActionResult<HealthCheckResult>> Get(
           Guid healthCheckId)
     {
@@ -96,9 +99,18 @@ public class HealthCheckController : ControllerBase
             }
         }
 
+        //check to see if started but not finished
+        var started_result = await _cache.GetAsync("HealthCheckStartedEvent_" + healthCheckId.ToString());
 
+        if (started_result != null)
+        {
+            _logger.LogInformation("Health Check {healthCheckId} has started but not completed", healthCheckId);
+            return Accepted();
+        }
 
-        return default(HealthCheckResult);
+        _logger.LogInformation("Health Check {healthCheckId} can not be found", healthCheckId);
+        
+        return NotFound();
     }
 
     [Consumes("application/json")]

@@ -61,12 +61,27 @@ namespace dhc;
             var consumer = new EventingBasicConsumer(channel);
             consumer.Received += async (model, ea) =>
             {
-                var body = ea.Body;
-                var message = Encoding.UTF8.GetString(body.ToArray());
-                var result = await Process(message, cancellationToken);
+                 var result = false;
+                try
+                {
+                    var body = ea.Body;
+                    var message = Encoding.UTF8.GetString(body.ToArray());
+                    result = await Process(message, cancellationToken);
+                }
+                catch(Exception ex)
+                {
+                    _logger.LogError(ex, "Failed on processing rabbit mq command");
+                }
+
                 if (result)
                 {
                     channel.BasicAck(ea.DeliveryTag, false);
+                    _logger.LogInformation("Sent a ACK after success to process rabbit mq command");
+                }
+                else
+                {
+                    channel.BasicNack(ea.DeliveryTag, false, false);
+                    _logger.LogError("Sent a NACK after false result on process rabbit mq command");
                 }
             };
             channel.BasicConsume(queue: QueueName, consumer: consumer);

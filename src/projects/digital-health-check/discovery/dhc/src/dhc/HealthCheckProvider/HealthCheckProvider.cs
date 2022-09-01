@@ -18,9 +18,9 @@ public class HealthCheckProvider : IHealthCheckProvider
         _builder = builder;
     }
 
-    public virtual async Task<HealthCheckResult> CalculateAsync(HealthCheckData value)
+    public virtual async Task<HealthCheckResult> CalculateAsync(HealthCheckData value, CancellationToken cancellationToken)
     {
-        var context = CreateContext(value);
+        var context = CreateContext(value, cancellationToken);
         var current = await CalculateResultsAsync(context);
         return current;
     }
@@ -33,9 +33,10 @@ public class HealthCheckProvider : IHealthCheckProvider
         return context.HealthCheckResult;
     }
 
-    private IHealthCheckContext CreateContext(HealthCheckData value)
+    private IHealthCheckContext CreateContext(HealthCheckData value, CancellationToken cancellationToken)
     {
         var context = _builder.Create();
+        context.CancellationToken = cancellationToken;
         context.HealthCheckResult = default(HealthCheckResult);
         context.HealthCheckData = value;
         return context;

@@ -18,7 +18,7 @@ public class BloodPressureProvider : IBloodPressureProvider
         _logger = logger;
     }
 
-    public Task<BloodPressure> CalculateBloodPressure(double systolic, double diastolic)
+    public Task<BloodPressure> CalculateBloodPressure(double systolic, double diastolic,  CancellationToken cancellationToken)
     {
         
         _logger.LogTrace("Calculating BP result for {systolic}/{diastolic}", systolic, diastolic);

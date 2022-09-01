@@ -18,9 +18,12 @@ Console.WriteLine("Hello, World!");
 
 var builder = Host.CreateDefaultBuilder(args);
 
+
+
 builder.ConfigureServices((hostContext, services) =>
     {
         
+   
 services.AddStackExchangeRedisCache(options =>
  {
     
@@ -44,7 +47,9 @@ services.AddStackExchangeRedisCache(options =>
         services.Configure<OrleansConnection>(hostContext.Configuration.GetSection(OrleansConnection.Position));
         services.Configure<RabbitMqSettings>(hostContext.Configuration.GetSection(RabbitMqSettings.Location));
         services.Configure<EventStoreSettings>(hostContext.Configuration.GetSection(EventStoreSettings.Position));
+        services.AddHostedService<GracefulShutdownHosted>();
     })
+    
     .UseOrleans((hostContext, builder) =>
     {
         
@@ -77,14 +82,37 @@ services.AddStackExchangeRedisCache(options =>
         .ConfigureEndpoints(siloPort: 11111, gatewayPort: 30000)
         .ConfigureApplicationParts(parts => parts.AddApplicationPart(typeof(HealthCheckGrain).Assembly).WithReferences())
         .ConfigureLogging(logging => logging.AddConsole());
+      
     });
 
 
 var app = builder.Build();
+
 var loggerTest = app.Services.GetService<ILogger<OrleansConnection>>();
 loggerTest.LogTrace("Test a trace message 123");
 loggerTest.LogInformation("Test an info message 123");
 loggerTest.LogWarning("Test a warning message 123");
 loggerTest.LogError("Test an error message 123");
+
 await app.RunAsync();
 
+public class GracefulShutdownHosted : IHostedService
+{
+    ISiloHost _siloHost;
+    ILogger<GracefulShutdownHosted> _logger;
+    public GracefulShutdownHosted(ISiloHost siloHost, ILogger<GracefulShutdownHosted> logger)
+    {
+        _siloHost = siloHost;
+        _logger = logger;
+    }
+    public Task StartAsync(CancellationToken cancellationToken)
+    {
+       return Task.CompletedTask;
+    }
+
+    public async Task StopAsync(CancellationToken cancellationToken)
+    {
+        _logger.LogInformation("Shutting down silo host gracefully");
+       await _siloHost.StopAsync();
+    }
+}

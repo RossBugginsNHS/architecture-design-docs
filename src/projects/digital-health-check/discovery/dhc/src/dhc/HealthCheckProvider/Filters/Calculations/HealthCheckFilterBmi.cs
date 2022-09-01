@@ -17,7 +17,7 @@ public class HealthCheckFilterBmi: ProviderFilter<IHealthCheckContext>,IHealthCh
     public override Task Handle(IHealthCheckContext context)
     {
         base._logger.LogInformation("in the health check bmi filter");
-        var t = _bmiCalculatorProvider.CalculateBmi(context.HealthCheckData.BasicObs.Height, context.HealthCheckData.BasicObs.Mass); //Update(context.HealthCheckResult, context.HealthCheckData);
+        var t = _bmiCalculatorProvider.CalculateBmi(context.HealthCheckData.BasicObs.Height, context.HealthCheckData.BasicObs.Mass, context.CancellationToken); //Update(context.HealthCheckResult, context.HealthCheckData);
         context.SetContextObject("HealthCheckFilterBmi_GetBmi_Task", t);
         //Must pair with HealthCheckFilterBmiResult which gets this task and awaits it.
         base._logger.LogInformation("after the health check bmi filter has started the send");

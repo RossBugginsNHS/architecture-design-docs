@@ -32,12 +32,24 @@ public class HealthCheckGrain : Orleans.Grain, IHealthCheckGrain
 
     public async Task Calculate(GrainCancellationToken cancellationToken)
     {
-        var data = Data;
-        await StartedEvent(data, cancellationToken.CancellationToken);
-         _logger.LogInformation("Grain starting its calculations");
-        var result = await _provider.CalculateAsync(data);
-        _logger.LogInformation("Grain has done all its calculations");
-        await CompletedEvent(result, cancellationToken.CancellationToken);
+        
+        using var _ = cancellationToken.CancellationToken.Register(() => 
+             _logger.LogInformation("Grain execution has been requested to be cancelled."));
+
+        try
+        {
+            var data = Data;
+            await StartedEvent(data, cancellationToken.CancellationToken);
+            _logger.LogInformation("Grain starting its calculations");
+            var result = await _provider.CalculateAsync(data, cancellationToken.CancellationToken);
+            _logger.LogInformation("Grain has done all its calculations");
+            await CompletedEvent(result, cancellationToken.CancellationToken);
+        }
+        catch(Exception ex)
+        {
+            _logger.LogError(ex, "failed when running grain");
+            throw;
+        }
     }
 
     public async Task StartedEvent(HealthCheckData data, CancellationToken cancellationToken = default)

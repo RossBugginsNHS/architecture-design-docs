@@ -2,6 +2,7 @@ namespace dhc;
 
 public class HealthCheckContext : IHealthCheckContext
 {
+    public     CancellationToken CancellationToken {get;set;}
     public Guid ContextId {get;}
     private readonly ILogger<HealthCheckContext> _logger;
     public HealthCheckData HealthCheckData { get; set; }

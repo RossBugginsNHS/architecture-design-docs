@@ -16,10 +16,10 @@ public class WebBpProvider : IBloodPressureProvider
     }
 
 
-    public async Task<BloodPressure> CalculateBloodPressure(double systolic, double diastolic)
+    public async Task<BloodPressure> CalculateBloodPressure(double systolic, double diastolic,  CancellationToken cancellationToken)
     {
         _logger.LogInformation("Before calling web bp api");
-        var r = await _client.GetBpResultAsync((int)systolic, (int)diastolic);
+        var r = await _client.GetBpResultAsync((int)systolic, (int)diastolic, cancellationToken);
         _logger.LogInformation("After calling web bp api");
         return new BloodPressure(r.Systolic, r.Diastolic);       
     }

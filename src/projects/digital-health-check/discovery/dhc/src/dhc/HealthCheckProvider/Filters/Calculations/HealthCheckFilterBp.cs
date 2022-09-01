@@ -14,7 +14,7 @@ public class HealthCheckFilterBp: ProviderFilter<IHealthCheckContext>,IHealthChe
 
     public override Task Handle(IHealthCheckContext context)
     {
-        var t =  _bloodPressureProvider.CalculateBloodPressure(context.HealthCheckData.BloodPressure.Systolic, context.HealthCheckData.BloodPressure.Diastolic);
+        var t =  _bloodPressureProvider.CalculateBloodPressure(context.HealthCheckData.BloodPressure.Systolic, context.HealthCheckData.BloodPressure.Diastolic, context.CancellationToken);
         context.SetContextObject("HealthCheckFilterBp_GetBp_Task", t);
         return Task.CompletedTask;
     }

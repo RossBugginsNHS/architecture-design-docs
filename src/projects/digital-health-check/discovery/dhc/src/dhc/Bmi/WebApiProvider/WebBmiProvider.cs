@@ -19,10 +19,10 @@ public class WebBmiProvider : IBmiCalculatorProvider
         throw new NotImplementedException();
     }
 
-    public async Task<Bmi> CalculateBmi(Length height, Mass mass)
+    public async Task<Bmi> CalculateBmi(Length height, Mass mass, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Before calling web bmi api with {height}m and {weight}kg",height.Meters, mass.Kilograms);
-        var r = await _client.GetBmiAsync(height.Meters, mass.Kilograms);
+        var r = await _client.GetBmiAsync(height.Meters, mass.Kilograms, cancellationToken);
         _logger.LogInformation("After calling web bmi api with {height}m and {weight}kg and result of {bmi} ({bmiDescription}) bmi",height.Meters, mass.Kilograms, r.Bmi, r.BmiDescription);
         return new Bmi((decimal)r.Bmi, Enum.Parse<BmiEnum>(r.BmiDescription));
     }
