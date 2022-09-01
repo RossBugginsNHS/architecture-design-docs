@@ -3,15 +3,16 @@ using System.Text.Json.Serialization;
 using bpapi;
 using FluentValidation;
 using MediatR;
+using Microsoft.AspNetCore.HttpLogging;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers()
-    .AddJsonOptions(options=>
+    .AddJsonOptions(options =>
         options.JsonSerializerOptions.Converters.Add(new DateOnlyJsonConverter()));
 
 builder.Services.AddEndpointsApiExplorer();
@@ -26,9 +27,9 @@ builder.Services.AddApiVersioning(options =>
         options.ReportApiVersions = true;
         options.DefaultApiVersion = new ApiVersion(0, 2);
     });
-builder.Services.AddSwaggerGen(c=>
+builder.Services.AddSwaggerGen(c =>
     {
-        c.MapType<DateOnly>(() => new OpenApiSchema { Type = typeof(string).Name, Default = new OpenApiString("2020-01-01"), Format="date"});
+        c.MapType<DateOnly>(() => new OpenApiSchema { Type = typeof(string).Name, Default = new OpenApiString("2020-01-01"), Format = "date" });
         var filePath = Path.Combine(System.AppContext.BaseDirectory, "bpapi.xml");
         c.IncludeXmlComments(filePath);
         c.EnableAnnotations();
@@ -36,7 +37,7 @@ builder.Services.AddSwaggerGen(c=>
 builder.Services.AddSwaggerExamplesFromAssemblyOf<Program>();
 builder.Services.ConfigureOptions<ConfigureSwaggerOptions>();
 builder.Services.AddMediatR(typeof(CalculateBloodPressureCommandHandler));
-builder.Services.AddValidatorsFromAssemblyContaining<CalculateBloodPressureCommandHandler>();  
+builder.Services.AddValidatorsFromAssemblyContaining<CalculateBloodPressureCommandHandler>();
 builder.Services.AddTransient<IBloodPressureProvider, BloodPressureProvider>();
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehaviour<,>));
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
@@ -50,27 +51,35 @@ builder.Services.AddCors(options =>
             .AllowAnyMethod();
     });
 });
+
+builder.Services.AddHttpLogging(logging =>
+{
+    logging.LoggingFields = HttpLoggingFields.All;
+    logging.RequestBodyLogLimit = 4096;
+    logging.ResponseBodyLogLimit = 4096;
+
+});
+
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders =
+        ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+});
+
 var app = builder.Build();
-var provider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
+
+
+app.UseForwardedHeaders();
+app.UseHttpLogging();
+
+app.UseForwardedPrefixBasePath();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseCors("AnyOrigin");
-    app.UseSwagger();
-    app.UseSwaggerUI(options=>
-    {
-          var versionDescriptions = provider
-                    .ApiVersionDescriptions
-                    .OrderByDescending(desc => desc.ApiVersion)
-                    .ToList();
-
-        foreach (var description in versionDescriptions)
-       {
-            options.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json", description.GroupName.ToUpperInvariant()); 
-        }
-        options.RoutePrefix ="";
-    }
-    );
+    app.UseRelativePathBaseSwaggerAndVersioning();
 }
+
 app.UseHttpsRedirection();
 app.UseRouting();
 app.UseAuthorization();
@@ -82,5 +91,3 @@ app.UseEndpoints(endpoints =>
 
 app.UseHttpMetrics();
 app.Run();
-
-

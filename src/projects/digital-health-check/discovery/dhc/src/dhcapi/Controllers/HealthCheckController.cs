@@ -18,14 +18,16 @@ public readonly record struct HealthCheckRequestDataResponse(Guid Id);
 public class HealthCheckController : ControllerBase
 {
     private readonly ISender _sender;
+    private readonly ILogger<HealthCheckController> _logger;
     IOptions<EventStoreSettings> _settings;
     IDistributedCache _cache;
     public HealthCheckController(
-        ISender sender, IDistributedCache cache, IOptions<EventStoreSettings> settings)
+        ISender sender, IDistributedCache cache, IOptions<EventStoreSettings> settings, ILogger<HealthCheckController> logger)
     {
         _sender = sender;
         _cache = cache;
         _settings = settings;
+        _logger = logger;
     }
 
     [Consumes("application/json")]
@@ -48,11 +50,16 @@ public class HealthCheckController : ControllerBase
 
         if (result != null)
         {
+            _logger.LogInformation("Got {key} from cache", healthCheckId);
             var jsonSerializerSettings = new JsonSerializerSettings { Formatting = Formatting.Indented };
             jsonSerializerSettings.Converters.Add(new UnitsNetIQuantityJsonConverter());
             var str = Encoding.UTF8.GetString(result);
             var obj = JsonConvert.DeserializeObject<HealthCheckResult>(str);
             return obj;
+        }
+        else
+        {
+            _logger.LogWarning("Failed to get {key} from cache", healthCheckId);
         }
 
         var settings = EventStoreClientSettings
@@ -68,22 +75,22 @@ public class HealthCheckController : ControllerBase
 
         if (await events.ReadState == ReadState.Ok)
         {
+            _logger.LogInformation("Read some data for {key} from event store", healthCheckId);
             while (await events.MoveNextAsync())
             {
                 var resolved = events.Current;
                 if (resolved.Event.EventType == "HealthCheckCompleteEvent")
                 {
+                    _logger.LogInformation("Read HealthCheckCompleteEvent for {key} from event store", healthCheckId);
                     var data = resolved.Event.Data.ToArray();
                     var str = Encoding.UTF8.GetString(data);
                     var jsonSerializerSettings = new JsonSerializerSettings { Formatting = Formatting.Indented };
                     jsonSerializerSettings.Converters.Add(new UnitsNetIQuantityJsonConverter());
                     var obj = JsonConvert.DeserializeObject<HealthCheckResult>(str);
 
-                    await _cache.SetAsync(healthCheckId.ToString(), data, new DistributedCacheEntryOptions()
-                    {
-                        SlidingExpiration = TimeSpan.FromSeconds(10),
-                        AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(20),
-                    });
+                    await _cache.SetAsync(healthCheckId.ToString(), data, new DistributedCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(10)).SetSlidingExpiration(TimeSpan.FromSeconds(30)));
+                     _logger.LogInformation("Added HealthCheckCompleteEvent data for {key} to cache", healthCheckId);
+
                     return obj;
                 }
             }

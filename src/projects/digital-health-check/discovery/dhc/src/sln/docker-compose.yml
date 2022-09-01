@@ -3,6 +3,44 @@
 version: '3.4'
 
 services:
+  redis:
+    image: "redis:7.0.4"
+    ports:
+      - 6379:6379
+    volumes:
+    - ~/.docker-conf/redis/data:/data
+  traefik:
+    image: "traefik:v2.8"
+    container_name: "traefik"
+    command:
+      #- "--log.level=DEBUG"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entryPoints.web-secure.address=:443"
+      - "--log.level=DEBUG"
+      - "--accesslog=true"
+      - "--metrics.prometheus=true"
+      - "--metrics.prometheus.addrouterslabels=true"
+      - "--entryPoints.metrics.address=:8082"
+      - "--metrics.prometheus.entryPoint=metrics"
+     #- "--providers.docker.tls.insecureskipverify=true"
+    ports:
+      - "80:80"
+      - "443:443"      
+      - "8080:8080"
+      - "8082:8082"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.middlewares.our-slash.chain.middlewares=strip-prefix-1,strip-prefix-2"
+      - "traefik.http.middlewares.strip-prefix-1.redirectregex.regex=^(https?://[^/]+/[a-z0-9_]+)$$"
+      - "traefik.http.middlewares.strip-prefix-1.redirectregex.replacement=$${1}/"
+      - "traefik.http.middlewares.strip-prefix-1.redirectregex.permanent=false"
+      - "traefik.http.middlewares.strip-prefix-2.stripprefixregex.regex=/[a-z0-9_]+"  
+
   db:
     image: sqlserver
     build:
@@ -21,12 +59,22 @@ services:
       dockerfile: ./bpapi/Dockerfile
     deploy:
       mode: replicated
-      replicas: 2      
- #   ports:
- #     - 5117:5117
+      replicas: 2    
+    #ports:
+      #- 5117:80       
     environment:
       - ASPNETCORE_ENVIRONMENT=Development    
-      - ASPNETCORE_URLS=http://+:5117
+      - ASPNETCORE_URLS=http://+:80
+      - Logging__LogLevel__Default=Debug
+      - Logging__LogLevel__Microsoft__AspNetCore=Information
+      - Logging__LogLevel__Microsoft__AspNetCore__HttpLogging__HttpLoggingMiddleware=Warning
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.bpapi.rule=PathPrefix(`/bp`)"
+      - "traefik.http.routers.bpapi.entrypoints=web"
+      - "traefik.http.routers.bpapi.tls=false"     
+      - "traefik.http.services.bpapi.loadbalancer.server.port=80"
+      - "traefik.http.routers.bpapi.middlewares=our-slash"  
 
   bmiapi:
     image: bmiapi
@@ -40,7 +88,15 @@ services:
 #      - 5116:5116
     environment:
       - ASPNETCORE_ENVIRONMENT=Development    
-      - ASPNETCORE_URLS=http://+:5116      
+      - ASPNETCORE_URLS=http://+:80      
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.bmiapi.rule=PathPrefix(`/bmi`)"
+      - "traefik.http.routers.bmiapi.entrypoints=web"
+      - "traefik.http.routers.bmiapi.tls=false"        
+      - "traefik.http.services.bmiapi.loadbalancer.server.port=80"
+      - "traefik.http.routers.bmiapi.middlewares=our-slash"        
+
 
   dhccmdhandler:
     image: dhccmdhandler
@@ -76,8 +132,8 @@ services:
     environment:
       - DOTNET_ENVIRONMENT=Development
       - ASPNETCORE_ENVIRONMENT=Development
-      - BmiWebApiSettings__BaseUrl=http://bmiapi:5116/
-      - BpWebApiSettings__BaseUrl=http://bpapi:5117/      
+      - BmiWebApiSettings__BaseUrl=http://bmiapi:80/
+      - BpWebApiSettings__BaseUrl=http://bpapi:80/      
       - EventStoreClient__ConnectionString=esdb://admin:changeit@eventstore:2113?tls=false
       - PostCodeApi__BaseUrl=https://api.postcodes.io/postcodes/
       - PostCodeApi__SlidingCacheLength=00:10:00
@@ -85,6 +141,7 @@ services:
       - Logging__LogLevel__dhc=Trace
       - Logging__LogLevel__Silo=Trace
       - OrleansConnection__DbHost=db
+      - Redis__ConnectionString=redis:6379      
     depends_on:
       - rabbitmq
       - eventstore
@@ -99,33 +156,38 @@ services:
       dockerfile: ./dhcapi/Dockerfile
     deploy:
       mode: replicated
-      replicas: 1      
-    ports:
-      - 5118:5118      
+      replicas: 2      
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:5118
+      - ASPNETCORE_URLS=http://+:80
       - EventStoreClient__ConnectionString=esdb://admin:changeit@eventstore:2113?tls=false
       - RabbitMq__RabbitHost=rabbitmq
       - RabbitMq__RabbitUserName=guest
       - RabbitMq__RabbitPassword=guest
       - RabbitMq__RabbitPort=5672
-
+      - Redis__ConnectionString=redis:6379
     depends_on:
       - rabbitmq
       - eventstore
       - bmiapi
       - bpapi
       - dhcsilo
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.dhcapi.rule=PathPrefix(`/dhc`)"
+      - "traefik.http.routers.dhcapi.entrypoints=web"
+      - "traefik.http.routers.dhcapi.tls=false"        
+      - "traefik.http.services.dhcapi.loadbalancer.server.port=80"
+      - "traefik.http.routers.dhcapi.middlewares=our-slash"    
 
   rabbitmq:
     image: rabbitmq-custom
     build:
       context: .
       dockerfile: ./rabbitmq/Dockerfile    
-    ports:
-        - 5672:5672
-        - 15672:15672
+#    ports:
+#        - 5672:5672
+#        - 15672:15672
     volumes:
         - ~/.docker-conf/rabbitmq/data/:/var/rabbitmq/lib/
         - ~/.docker-conf/rabbitmq/log/:/var/rabbitmq/log/
@@ -134,30 +196,43 @@ services:
       interval: 30s
       timeout: 30s
       retries: 3
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.rabbitmq.rule=PathPrefix(`/rabbitmq`)"
+      - "traefik.http.routers.rabbitmq.entrypoints=web"
+      - "traefik.http.routers.rabbitmq.tls=false"
+      - "traefik.http.routers.rabbitmq.middlewares=our-slash"         
+      - "traefik.http.services.rabbitmq.loadbalancer.server.port=15672"
 
   eventstore:
-      image: eventstore/eventstore:20.10.2-buster-slim
-      environment:
-        - EVENTSTORE_CLUSTER_SIZE=1
-        - EVENTSTORE_RUN_PROJECTIONS=All
-        - EVENTSTORE_START_STANDARD_PROJECTIONS=true
-        - EVENTSTORE_EXT_TCP_PORT=1113
-        - EVENTSTORE_HTTP_PORT=2113
-        - EVENTSTORE_INSECURE=true
-        - EVENTSTORE_ENABLE_EXTERNAL_TCP=true
-        - EVENTSTORE_ENABLE_ATOM_PUB_OVER_HTTP=true
-      ports:
-        - "1113:1113"
-        - "2113:2113"
-      volumes:
-        - ~/.docker-conf/eventstore/data:/var/lib/eventstore
-        - ~/.docker-conf/eventstore/logs:/var/log/eventstore     
-      healthcheck:
-        test:
-          [
-              'CMD-SHELL',
-              'curl --fail --insecure https://eventstore:2113/health/live || exit 1',
-          ]
-        interval: 30s
-        timeout: 30s
-        retries: 3          
+    image: eventstore/eventstore:20.10.2-buster-slim
+    environment:
+      - EVENTSTORE_CLUSTER_SIZE=1
+      - EVENTSTORE_RUN_PROJECTIONS=All
+      - EVENTSTORE_START_STANDARD_PROJECTIONS=true
+      - EVENTSTORE_EXT_TCP_PORT=1113
+      - EVENTSTORE_HTTP_PORT=2113
+      - EVENTSTORE_INSECURE=true
+      - EVENTSTORE_ENABLE_EXTERNAL_TCP=true
+      - EVENTSTORE_ENABLE_ATOM_PUB_OVER_HTTP=true
+    ports:
+      - "2113:2113"
+    volumes:
+      - ~/.docker-conf/eventstore/data:/var/lib/eventstore
+      - ~/.docker-conf/eventstore/logs:/var/log/eventstore     
+    healthcheck:
+      test:
+        [
+            'CMD-SHELL',
+            'curl --fail --insecure https://eventstore:2113/health/live || exit 1',
+        ]
+      interval: 30s
+      timeout: 30s
+      retries: 3      
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.eventstore.rule=PathPrefix(`/eventstore`)"
+      - "traefik.http.routers.eventstore.entrypoints=web"
+      - "traefik.http.routers.eventstore.tls=false"
+      - "traefik.http.routers.eventstore.middlewares=our-slash"         
+      - "traefik.http.services.eventstore.loadbalancer.server.port=2113"            

@@ -20,6 +20,14 @@ var builder = Host.CreateDefaultBuilder(args);
 
 builder.ConfigureServices((hostContext, services) =>
     {
+        
+services.AddStackExchangeRedisCache(options =>
+ {
+    
+     options.Configuration = hostContext.Configuration.GetSection("Redis")["ConnectionString"];
+     options.InstanceName = "dhcsilo";
+ });
+
 
         services.AddHealthCheck((config) =>
         {
@@ -28,8 +36,6 @@ builder.ConfigureServices((hostContext, services) =>
                 .AddWebBmiProvider(hostContext.Configuration)
                 .AddWebBpProvider(hostContext.Configuration)
                 .AddPostCodeApi(hostContext.Configuration);
-
-            config.Services.AddDistributedMemoryCache();
 
             config.Services.AddSingleton<RabbitMqClient>();
             config.Services.AddSingleton<RabbitMqChannel>();

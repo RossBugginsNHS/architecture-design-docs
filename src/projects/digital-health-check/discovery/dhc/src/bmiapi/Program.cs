@@ -1,4 +1,5 @@
 using dhc;
+using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Swashbuckle.AspNetCore.Filters;
@@ -17,7 +18,7 @@ builder.Services.AddApiVersioning(options =>
         options.ReportApiVersions = true;
         options.DefaultApiVersion = new ApiVersion(0, 2);
     });
-builder.Services.AddSwaggerGen(c=>
+builder.Services.AddSwaggerGen(c =>
     {
         var filePath = Path.Combine(System.AppContext.BaseDirectory, "bmiapi.xml");
         c.IncludeXmlComments(filePath);
@@ -38,27 +39,28 @@ builder.Services.AddCors(options =>
     });
 });
 
+builder.Services.AddHttpLogging(logging =>
+{
+    logging.LoggingFields = HttpLoggingFields.All;
+    logging.RequestBodyLogLimit = 4096;
+    logging.ResponseBodyLogLimit = 4096;
+
+});
+
+
 var app = builder.Build();
 var provider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
+
+app.UseForwardedHeaders();
+app.UseHttpLogging();
+app.UseForwardedPrefixBasePath();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseCors("AnyOrigin");
-    app.UseSwagger();
-    app.UseSwaggerUI(options=>
-    {
-          var versionDescriptions = provider
-                    .ApiVersionDescriptions
-                    .OrderByDescending(desc => desc.ApiVersion)
-                    .ToList();
-
-        foreach (var description in versionDescriptions)
-       {
-            options.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json", description.GroupName.ToUpperInvariant()); 
-        }
-        options.RoutePrefix ="";
-    }
-    );
+    app.UseRelativePathBaseSwaggerAndVersioning();
 }
+
 app.UseHttpsRedirection();
 app.UseRouting();
 app.UseAuthorization();

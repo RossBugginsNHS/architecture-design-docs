@@ -14,6 +14,7 @@ using Orleans;
 using Orleans.Configuration;
 using System.Net;
 using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.HttpLogging;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers()
@@ -65,7 +66,14 @@ builder.Services.AddTransient<IHealthCheckRequestDataConverterProvider, HealthCh
 
 builder.Services.AddSingleton<RabbitMqChannel>();
 builder.Services.AddSingleton<RabbitMqClient>();
-builder.Services.AddDistributedMemoryCache();
+
+
+builder.Services.AddStackExchangeRedisCache(options =>
+ {
+     options.Configuration = builder.Configuration.GetSection("Redis")["ConnectionString"];
+     options.InstanceName = "dhcapi";
+ });
+
 builder.Services.Configure<RabbitMqSettings>(builder.Configuration.GetSection(RabbitMqSettings.Location));
 builder.Services.Configure<EventStoreSettings>(builder.Configuration.GetSection(EventStoreSettings.Position));
 
@@ -80,29 +88,28 @@ builder.Services.AddCors(options =>
     });
 });
 
+builder.Services.AddHttpLogging(logging =>
+{
+    logging.LoggingFields = HttpLoggingFields.All;
+    logging.RequestBodyLogLimit = 4096;
+    logging.ResponseBodyLogLimit = 4096;
+
+});
+
 
 
 var app = builder.Build();
-var provider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
+
+app.UseForwardedHeaders();
+app.UseHttpLogging();
+app.UseForwardedPrefixBasePath();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseCors("AnyOrigin");
-    app.UseSwagger();
-    app.UseSwaggerUI(options =>
-    {
-        var versionDescriptions = provider
-                .ApiVersionDescriptions
-                .OrderByDescending(desc => desc.ApiVersion)
-                .ToList();
-
-        foreach (var description in versionDescriptions)
-        {
-            options.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json", description.GroupName.ToUpperInvariant());
-        }
-        options.RoutePrefix = "";
-    }
-    );
+    app.UseRelativePathBaseSwaggerAndVersioning();
 }
+
 app.UseHttpsRedirection();
 app.UseRouting();
 app.UseAuthorization();
