@@ -24,8 +24,9 @@ builder.ConfigureServices((hostContext, services) =>
         services.Configure<RabbitMqSettings>(hostContext.Configuration.GetSection(RabbitMqSettings.Location));
         services.AddSingleton<ClusterClientHostedService>();
         services.AddSingleton<IHostedService>(sp => sp.GetService<ClusterClientHostedService>());
-        services.AddSingleton<IClusterClient>(sp => sp.GetService<ClusterClientHostedService>().Client);
-        services.AddSingleton<IGrainFactory>(sp => sp.GetService<ClusterClientHostedService>().Client);
+        services.AddSingleton<ClusterClientFactory>();
+       // services.AddSingleton<IClusterClient>(sp => sp.GetService<ClusterClientHostedService>().GetClientAsync());
+       // services.AddSingleton<IGrainFactory>(sp => sp.GetService<ClusterClientHostedService>().Client);
 });
 
 var app = builder.Build();

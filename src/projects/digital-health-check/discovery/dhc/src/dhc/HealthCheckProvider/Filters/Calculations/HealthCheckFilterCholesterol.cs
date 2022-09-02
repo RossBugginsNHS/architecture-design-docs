@@ -13,7 +13,7 @@ public class HealthCheckFilterCholesterol: ProviderFilter<IHealthCheckContext>,I
 
     public async override Task Handle(IHealthCheckContext context)
     {
-        context.HealthCheckResult = await Update(context.HealthCheckResult, context.HealthCheckData);
+        context.SetHealthCheckResult(await Update(context.HealthCheckResult, context.HealthCheckData));
     }
 
     public async Task<HealthCheckResult> Update(HealthCheckResult current, HealthCheckData data)

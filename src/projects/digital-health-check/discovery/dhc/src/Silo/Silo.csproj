@@ -20,7 +20,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\dhc\dhc.csproj" />
-  </ItemGroup>
+    <ProjectReference Include="..\dhcgrains\dhcgrains.csproj" />   
+    </ItemGroup>  
   <ItemGroup>
     <None Include="data.tsv" CopyToOutputDirectory="Always" />
   </ItemGroup>

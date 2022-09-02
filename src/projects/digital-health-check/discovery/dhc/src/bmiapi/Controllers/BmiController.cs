@@ -12,10 +12,10 @@ namespace bmiapi.Controllers;
 public class BmiController : ControllerBase
 {
     private readonly ILogger<BmiController> _logger;
-    private readonly BmiCalculatorProvider _bmiProvider;
+    private readonly IBmiCalculatorProvider _bmiProvider;
     public BmiController(
         ILogger<BmiController> logger,
-        BmiCalculatorProvider bmiProvider)
+        IBmiCalculatorProvider bmiProvider)
     {
         _logger = logger;
         _bmiProvider = bmiProvider;
@@ -35,9 +35,10 @@ public class BmiController : ControllerBase
     [HttpGet("{height}/{weight}", Name = "GetBmi"), MapToApiVersion("0.2")]
     public async Task<ActionResult<BmiResult>> GetBmi(
         [SwaggerParameter("Height (Meters)", Required = true)]double height, 
-        [SwaggerParameter("Weight/Mass (KG)", Required = true)]double weight)
+        [SwaggerParameter("Weight/Mass (KG)", Required = true)]double weight,
+        CancellationToken cancellationToken = default)
     {
-        var result = await _bmiProvider.CalculateBmi(Length.FromMeters(height), Mass.FromKilograms(weight));
+        var result = await _bmiProvider.CalculateBmi(Length.FromMeters(height), Mass.FromKilograms(weight), cancellationToken);
 
         _logger.LogTrace("Description of {result} for {heightM} m and {weightKg} kg", result.BmiDescription.ToString(), height, weight);
         var bmiResult = new BmiResult(result.BmiValue, result.BmiDescription.ToString());

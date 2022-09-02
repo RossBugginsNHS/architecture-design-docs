@@ -29,6 +29,7 @@ public class HealthCheckProvider : IHealthCheckProvider
     {
          _logger.LogDebug("Starting health check calculation on {healthCheckData}", context.HealthCheckData);
         var result = await _pipelineRunner.Run(context);
+        LogContextHistory(context);
         _logger.LogDebug("Finished health check calculation on {healthCheckData} with result {healthCheckResult}", context.HealthCheckData, context.HealthCheckResult);
         return context.HealthCheckResult;
     }
@@ -37,8 +38,22 @@ public class HealthCheckProvider : IHealthCheckProvider
     {
         var context = _builder.Create();
         context.CancellationToken = cancellationToken;
-        context.HealthCheckResult = default(HealthCheckResult);
-        context.HealthCheckData = value;
+        context.SetHealthCheckResult(default(HealthCheckResult));
+        context.SetHealthCheckData(value);
+        context.SetHealthCheckResult(context.HealthCheckResult with {HealthCheckResultId = new HealthCheckResultId(value.HealthCheckDataId.id)});
         return context;
+    }
+
+    private void LogContextHistory(IHealthCheckContext context)
+    {
+        foreach(var h in context.GetDataHistory())
+        {
+            _logger.LogDebug("Context data history {data}", h);
+        }
+
+        foreach(var h in context.GetResultsHistory())
+        {
+            _logger.LogDebug("Context data results {data}", h);
+        }        
     }
 }

@@ -11,11 +11,7 @@ using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
 using UnitsNet.Serialization.JsonNet;
 
-public class EventStoreSettings
-{
-    public static readonly string Position = "EventStoreClient";
-    public string ConnectionString{get;set;}
-}
+
 public class CalculateHealthCheckCommandHandledNotificationHandler : INotificationHandler<CalculateHealthCheckCommandHandledNotification>
 {
     private static readonly Counter _c_get_health_check = Metrics.CreateCounter("healthcheck_completed_counter", "Health Check Completed");

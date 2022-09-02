@@ -5,3 +5,4 @@ global using Prometheus;
 global using Microsoft.Extensions.DependencyInjection;
 global using dhc;
 global using Microsoft.Extensions.Options;
+global using System;

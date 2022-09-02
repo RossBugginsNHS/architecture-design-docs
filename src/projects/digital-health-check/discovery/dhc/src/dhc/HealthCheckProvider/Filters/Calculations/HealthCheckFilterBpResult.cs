@@ -16,7 +16,7 @@ public class HealthCheckFilterBpResult: ProviderFilter<IHealthCheckContext>,IHea
     {
         var t = context.GetContextObject<Task<BloodPressure>>("HealthCheckFilterBp_GetBp_Task");
         var bp = await t;
-        context.HealthCheckResult = context.HealthCheckResult  with {BloodPressure = bp};      
+        context.SetHealthCheckResult(context.HealthCheckResult  with {BloodPressure = bp});      
     }
 
     

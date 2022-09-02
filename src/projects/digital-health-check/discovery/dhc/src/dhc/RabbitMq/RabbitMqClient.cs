@@ -25,17 +25,29 @@ public class RabbitMqClient
 
 
 
+    public async virtual Task PushMessage(string exchangeName, string routingKey, object message, CancellationToken cancellationToken = default)
+    {
+            var exchangeType = "topic";
+            await PushMessage(exchangeName, routingKey, message, exchangeType, cancellationToken);
+    }
 
-    public async virtual Task PushMessage(string queueName, string routingKey, object message, CancellationToken cancellationToken = default)
+    public async virtual Task PushNotification(string exchangeName, string routingKey, object message, string exchangeType, CancellationToken cancellationToken = default)
     {
         var model = await _model.GetModel(cancellationToken);
         _logger.LogInformation($"PushMessage,routingKey:{routingKey}");
-        model.QueueDeclare(queue: queueName,
+
+    
+        model.ExchangeDeclare(exchange: exchangeName, type: exchangeType);
+
+        var queue = model.QueueDeclare(queue: "",
                                     durable: false,
-                                    exclusive: false,
+                                    exclusive: true,
                                     autoDelete: false,
                                     arguments: null);
 
+        model.QueueBind(queue: queue.QueueName,
+                              exchange: exchangeName ,
+                              routingKey: routingKey);
 
         var jsonSerializerSettings = new JsonSerializerSettings { Formatting = Formatting.Indented };
         jsonSerializerSettings.Converters.Add(new UnitsNetIQuantityJsonConverter());
@@ -43,7 +55,37 @@ public class RabbitMqClient
         string msgJson = JsonConvert.SerializeObject(message, jsonSerializerSettings);
 
         var body = Encoding.UTF8.GetBytes(msgJson);
-        model.BasicPublish(exchange: queueName,
+        model.BasicPublish(exchange: exchangeName,
+                                routingKey: routingKey,
+                                basicProperties: null,
+                                body: body);
+    }
+
+    public async virtual Task PushMessage(string exchangeName, string routingKey, object message, string exchangeType, CancellationToken cancellationToken = default)
+    {
+        var model = await _model.GetModel(cancellationToken);
+        _logger.LogInformation($"PushMessage,routingKey:{routingKey}");
+
+    
+        model.ExchangeDeclare(exchange: exchangeName, type: exchangeType);
+
+        var queue = model.QueueDeclare(queue: exchangeName,
+                                    durable: false,
+                                    exclusive: false,
+                                    autoDelete: false,
+                                    arguments: null);
+
+        model.QueueBind(queue: queue.QueueName,
+                              exchange: exchangeName ,
+                              routingKey: routingKey);
+
+        var jsonSerializerSettings = new JsonSerializerSettings { Formatting = Formatting.Indented };
+        jsonSerializerSettings.Converters.Add(new UnitsNetIQuantityJsonConverter());
+
+        string msgJson = JsonConvert.SerializeObject(message, jsonSerializerSettings);
+
+        var body = Encoding.UTF8.GetBytes(msgJson);
+        model.BasicPublish(exchange: exchangeName,
                                 routingKey: routingKey,
                                 basicProperties: null,
                                 body: body);

@@ -27,7 +27,7 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddSwaggerExamplesFromAssemblyOf<Program>();
 builder.Services.ConfigureOptions<ConfigureSwaggerOptions>();
 
-builder.Services.AddTransient<BmiCalculatorProvider>();
+builder.Services.AddTransient<IBmiCalculatorProvider, BmiCalculatorProvider>();
 
 builder.Services.AddCors(options =>
 {

@@ -12,7 +12,7 @@ public class HealthCheckGuidanceFilterCholesterol: ProviderFilter<IHealthCheckCo
     }
     public override Task Handle(IHealthCheckContext context)
     {
-        context.HealthCheckResult = Update(context.HealthCheckResult, context.HealthCheckData);
+        context.SetHealthCheckResult(Update(context.HealthCheckResult, context.HealthCheckData));
         return Task.CompletedTask;
     }
 

@@ -44,6 +44,21 @@
 		},
 		{
 			"path": "src/dhccachepreloader"
+		},
+		{
+			"path": "src/dhceventhandler"
+		},
+		{
+			"path": "src/dhcgrains"
+		},
+		{
+			"path": "src/dhcigrains"
+		},
+		{
+			"path": "src/dhcabstractions"
+		},
+		{
+			"path": "src"
 		}
 	],
 	"settings": {

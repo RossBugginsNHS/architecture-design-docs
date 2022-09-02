@@ -34,6 +34,10 @@ namespace dhc;
         protected string RouteKey;
         protected string QueueName;
 
+         protected string ExchangeName;
+
+        protected string ExchangeType = "topic";
+
         // How to process messages
         public virtual Task<bool> Process(string message,  CancellationToken cancellationToken = default)
         {
@@ -43,20 +47,24 @@ namespace dhc;
         // Registered consumer monitoring here
         public async Task Register(CancellationToken cancellationToken)
         {
+            if(string.IsNullOrEmpty(ExchangeName))
+                ExchangeName = QueueName;
+
             var channel = await _model.GetModel(cancellationToken);
             _logger.LogInformation("RabbitListener register,routeKey:{RouteKey}", RouteKey);
-            var exchangeType = "topic";
-            channel.ExchangeDeclare(exchange: QueueName, type: exchangeType);
-            _logger.LogInformation("RabbitListener exchange declared, Exchange:{exchange}, Type{exchangeType}", QueueName, exchangeType);
+            
+            channel.ExchangeDeclare(exchange: ExchangeName, type: ExchangeType);
+            _logger.LogInformation("RabbitListener exchange declared, Exchange:{exchange}, Type{exchangeType}", QueueName, ExchangeType);
+
             channel.QueueDeclare(queue:QueueName, 
                                     autoDelete: false, 
                                     durable: false,
                                     exclusive: false);
             _logger.LogInformation("RabbitListener queue declared, QueueName:{QueueName}", QueueName);                              
             channel.QueueBind(queue: QueueName,
-                              exchange: QueueName,
+                              exchange: ExchangeName ,
                               routingKey: RouteKey);
-            _logger.LogInformation("RabbitListener queue bind, QueueName:{QueueName}  Exchange:{exchange}, RouteKey {routingKey}", QueueName, QueueName, RouteKey);     
+            _logger.LogInformation("RabbitListener queue bind, QueueName:{QueueName}  Exchange:{exchange}, RouteKey {routingKey}", QueueName, ExchangeName, RouteKey);     
             
             var consumer = new EventingBasicConsumer(channel);
             consumer.Received += async (model, ea) =>

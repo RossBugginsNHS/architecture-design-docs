@@ -16,7 +16,7 @@ public class HealthCheckFilterDemographics: ProviderFilter<IHealthCheckContext>,
     {
         var newDemo = await _demographic.CalculateAsync(context.HealthCheckData, context.HealthCheckResult.Demographics);
         var result = context.HealthCheckResult with {Demographics = newDemo};
-        context.HealthCheckResult = result;
+        context.SetHealthCheckResult(result);
     }
 
     public Task<HealthCheckResult> Update(HealthCheckResult current, HealthCheckData data)

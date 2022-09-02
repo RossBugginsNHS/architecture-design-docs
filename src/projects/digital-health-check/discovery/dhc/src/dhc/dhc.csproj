@@ -8,11 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Orleans.CodeGenerator.MSBuild" Version="3.6.5">
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-    <PackageReference Include="Microsoft.Orleans.Core.Abstractions" Version="3.6.5" />
+    
   <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" Version="5.0.0" />
     <PackageReference Include="EventStore.Client.Grpc.ProjectionManagement" Version="21.*" />
     <PackageReference Include="EventStore.Client.Grpc.Streams" Version="21.2" />
@@ -34,8 +30,7 @@
     <PackageReference Include="Polly.Contrib.WaitAndRetry" Version="1.1.1" />
     <PackageReference Include="prometheus-net" Version="6.0.0" />
     <PackageReference Include="RabbitMQ.Client" Version="6.4.0" />
-    <PackageReference Include="UnitsNet" Version="4.144.0" />
-    <PackageReference Include="UnitsNet.Serialization.JsonNet" Version="4.6.0" />
+
   <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
 
   </ItemGroup>
@@ -45,6 +40,9 @@
   <ItemGroup>
     <ProjectReference Include="..\bmiclient\bmiclient.csproj" />
     <ProjectReference Include="..\bpclient\bpclient.csproj" />
+
+    <ProjectReference Include="..\dhcigrains\dhcigrains.csproj" />    
+     <ProjectReference Include="..\dhcabstractions\dhcabstractions.csproj" />    
   </ItemGroup>
 
 </Project>

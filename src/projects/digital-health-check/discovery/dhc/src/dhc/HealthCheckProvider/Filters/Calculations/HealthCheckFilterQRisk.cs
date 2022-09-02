@@ -17,7 +17,7 @@ public class HealthCheckFilterQRisk: ProviderFilter<IHealthCheckContext>,IHealth
         var result = _qrisk.Calculate(context.HealthCheckData, context.HealthCheckResult);
         var r = context.HealthCheckResult.QriskResult with {Result = result};
         var res = context.HealthCheckResult with {QriskResult = r};
-        context.HealthCheckResult = res;
+        context.SetHealthCheckResult(res);
 
         return Task.CompletedTask;
     }

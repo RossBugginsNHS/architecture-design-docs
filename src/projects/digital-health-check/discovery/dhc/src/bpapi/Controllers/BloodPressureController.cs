@@ -71,12 +71,12 @@ public class BloodPressureController : ControllerBase
     [Consumes("application/json")]
     [Produces("application/json")]
     [HttpPost(Name = "GetBloodPressures"), MapToApiVersion("0.2")]
-    public async Task<ActionResult<BloodPressureResult>> GetResult(IEnumerable<BloodPressureObservation> bps)
+    public async Task<ActionResult<BloodPressureResult>> GetResult(IEnumerable<BloodPressureObservation> bps, CancellationToken cancellationToken = default )
     {
         var targetListTasks =  bps
           .Select((x) => 
           {
-            var a =  _bpProvider.CalculateBloodPressure(x.Systolic, x.Diastolic);
+            var a =  _bpProvider.CalculateBloodPressure(x.Systolic, x.Diastolic, cancellationToken);
             return a;
             });
 

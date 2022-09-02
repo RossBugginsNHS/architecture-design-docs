@@ -12,8 +12,7 @@ public class HealthCheckFilterSmoking: ProviderFilter<IHealthCheckContext>,IHeal
 
     public async override Task Handle(IHealthCheckContext context)
     {
-        context.HealthCheckResult = await Update(context.HealthCheckResult, context.HealthCheckData);
-        
+        context.SetHealthCheckResult(await Update(context.HealthCheckResult, context.HealthCheckData));
     }
 
     public Task<HealthCheckResult> Update(HealthCheckResult current, HealthCheckData data)
@@ -38,15 +37,4 @@ public class SmokingCalculator
             (> 39, _)           => SmokingDescriptionEnum.VeryHeavy
         };
     }
-}
-
-public enum SmokingDescriptionEnum
-{
-    None,
-    Light,
-    Moderate,
-    Heavy,
-    VeryHeavy,
-    ExSmoker,
-    Error
 }

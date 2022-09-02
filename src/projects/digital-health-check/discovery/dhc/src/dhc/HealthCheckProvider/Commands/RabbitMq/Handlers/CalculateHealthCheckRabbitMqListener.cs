@@ -49,63 +49,71 @@ public class CalculateHealthCheckRabbitMqListener : RabbitListener
         }
         try
         {
-            using (var scope = _services.CreateScope())
+
+
+            var delay = Backoff.DecorrelatedJitterBackoffV2(medianFirstRetryDelay: TimeSpan.FromSeconds(1), retryCount: 10);
+
+            var policy = Policy.Handle<Exception>()
+            .WaitAndRetryAsync(
+                delay,
+                onRetry: (outcome, timespan, retryAttempt, context) =>
+                {
+                    context["totalRetries"] = retryAttempt;
+                    context["retryWaitTime"] = timespan;
+                    _logger
+                        .LogWarning("After {exception} Delaying Rabbit mq calling orleans client for {delay}ms, then making retry {retry}.", outcome, timespan.TotalMilliseconds, retryAttempt);
+                }
+            );
+
+
+            var jsonSerializerSettings = new JsonSerializerSettings { Formatting = Formatting.Indented };
+            jsonSerializerSettings.Converters.Add(new UnitsNetIQuantityJsonConverter());
+
+            var obj = JsonConvert.DeserializeObject<HealthCheckData>(message, jsonSerializerSettings);
+
+            _logger.LogInformation("calling grains add data");
+
+            await policy.ExecuteAsync(async (ct) =>
             {
-
-                var delay = Backoff.DecorrelatedJitterBackoffV2(medianFirstRetryDelay: TimeSpan.FromSeconds(1), retryCount: 10);
-
-                var policy = Policy.Handle<Exception>()
-                .WaitAndRetryAsync(
-                    delay,
-                    onRetry: (outcome, timespan, retryAttempt, context) =>
-                    {
-                        context["totalRetries"] = retryAttempt;
-                        context["retryWaitTime"] = timespan;
-                        _logger
-                            .LogWarning("After {exception} Delaying Rabbit mq calling orleans client for {delay}ms, then making retry {retry}.", outcome, timespan.TotalMilliseconds, retryAttempt);
-                    }
-                );
-
-
-                var jsonSerializerSettings = new JsonSerializerSettings { Formatting = Formatting.Indented };
-                jsonSerializerSettings.Converters.Add(new UnitsNetIQuantityJsonConverter());
-
-                var obj = JsonConvert.DeserializeObject<HealthCheckData>(message, jsonSerializerSettings);
-
-                _logger.LogInformation("calling grains add data");
-
-                await policy.ExecuteAsync(async (ct) =>
+                using (var scope = _services.CreateScope())
                 {
                     if (!ct.IsCancellationRequested)
                     {
-                        var _client = scope.ServiceProvider.GetRequiredService<IClusterClient>();
+                        var clientFactory = scope.ServiceProvider.GetRequiredService<ClusterClientFactory>();
+                        var _client = await clientFactory.GetClientAsync(TimeSpan.FromSeconds(10), ct);
                         var friend = _client.GetGrain<IHealthCheckGrain>(obj.HealthCheckDataId.id);
                         await friend.AddData(obj);
                         _logger.LogInformation("Sent message to Orleans.");
                     }
-                }, cancellationToken);
+                }
+            }, cancellationToken);
 
 
-                _logger.LogInformation("calling grains calculate");
-          
+            _logger.LogInformation("calling grains calculate");
 
-                await policy.ExecuteAsync(async (ct) =>
+
+            await policy.ExecuteAsync(async (ct) =>
+            {
+                using (var scope = _services.CreateScope())
                 {
-                    var _client = scope.ServiceProvider.GetRequiredService<IClusterClient>();
-                    var friend = _client.GetGrain<IHealthCheckGrain>(obj.HealthCheckDataId.id);
+                    var clientFactory = scope.ServiceProvider.GetRequiredService<ClusterClientFactory>();
+                        var _client = await clientFactory.GetClientAsync(TimeSpan.FromSeconds(10), ct);
+                    
+                        var friend = _client.GetGrain<IHealthCheckGrain>(obj.HealthCheckDataId.id);
+                    
                     var tsc = new GrainCancellationTokenSource();
                     var cancelledSource = new TaskCompletionSource();
                     using var _ = ct.Register(() => cancelledSource.SetResult());
 
-                    var cancellationTokenSource = new CancellationTokenSource(); 
+                    var cancellationTokenSource = new CancellationTokenSource();
                     if (!ct.IsCancellationRequested)
-                    {                        
+                    {
                         try
                         {
-                            var statusTask = Task.Run(async ()=>
+                            var statusTask = Task.Run(async () =>
                             {
-                                int counter =1;
-                                while(!cancellationTokenSource.Token.IsCancellationRequested)
+                                int counter = 1;
+                                while (!cancellationTokenSource.Token.IsCancellationRequested)
                                 {
                                     _logger.LogDebug("Check {counter}: Waiting on response from grain Calculate for {HealthCheckDataId}", counter, obj.HealthCheckDataId.id);
                                     counter++;
@@ -119,44 +127,49 @@ public class CalculateHealthCheckRabbitMqListener : RabbitListener
                                calculateTask,
                                cancelledSource.Task);
 
-                            cancellationTokenSource.Cancel(); 
+                            cancellationTokenSource.Cancel();
                             await statusTask;
-
-                            await completedTask;
-
-
-                            if(completedTask == cancelledSource.Task)
+                            try
                             {
-                               _logger.LogInformation("Sending CANCEL message to Orleans.");
-                               await tsc.Cancel();
-                               _logger.LogInformation("Sent CANCEL message to Orleans.");
+                                await completedTask;
+                            }
+                            catch(TimeoutException ex)
+                            {
+                                if(completedTask == calculateTask)
+                                    await tsc.Cancel();
+                            }
+
+                            if (completedTask == cancelledSource.Task)
+                            {
+                                _logger.LogInformation("Sending CANCEL message to Orleans.");
+                                await tsc.Cancel();
+                                _logger.LogInformation("Sent CANCEL message to Orleans.");
 
                             }
-                           else if(completedTask == calculateTask)
-                           {
+                            else if (completedTask == calculateTask)
+                            {
                                 _logger.LogInformation("Sent message to Orleans.");
-                           }
+                            }
                         }
-                        catch(Exception ex)
+                        catch (Exception ex)
                         {
-                             _logger.LogError(ex, "Exception in grain response");
+                            _logger.LogError(ex, "Exception in grain response");
                             _logger.LogInformation("Sending CANCEL message to Orleans.");
                             await tsc.Cancel();
-                             _logger.LogInformation("Sent CANCEL message to Orleans.");                 
-                           
+                            _logger.LogInformation("Sent CANCEL message to Orleans.");
+
                             throw;
                         }
-
-               
                     }
-                }, cancellationToken);
 
-                _logger.LogInformation("Called grains calculate data");
+                }
+            }, cancellationToken);
 
-                return true;
-            }
+            _logger.LogInformation("Called grains calculate data");
 
+            return true;
         }
+
         catch (Exception ex)
         {
             _logger.LogInformation($"Process fail,error:{ex.Message},stackTrace:{ex.StackTrace},message:{message}");

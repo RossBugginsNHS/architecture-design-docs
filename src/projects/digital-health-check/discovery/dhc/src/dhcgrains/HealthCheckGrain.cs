@@ -23,11 +23,11 @@ public class HealthCheckGrain : Orleans.Grain, IHealthCheckGrain
 
     public HealthCheckData Data { get; set; }
 
-    public Task AddData(HealthCheckData data)
+    public async Task AddData(HealthCheckData data)
     {
         Data = data;
+        await AddedDataEvent(data);
         _logger.LogInformation("Add Data message received: data = {data}", data);
-        return Task.FromResult($"\n Client said: '{data}', so HelloGrain says: Hello!");
     }
 
     public async Task Calculate(GrainCancellationToken cancellationToken)
@@ -50,6 +50,34 @@ public class HealthCheckGrain : Orleans.Grain, IHealthCheckGrain
             _logger.LogError(ex, "failed when running grain");
             throw;
         }
+    }
+
+    public async Task AddedDataEvent(HealthCheckData data, CancellationToken cancellationToken = default)
+    {
+        _logger.LogInformation("Grain will now create event");
+        var jsonSerializerSettings = new JsonSerializerSettings { Formatting = Formatting.Indented };
+        jsonSerializerSettings.Converters.Add(new UnitsNetIQuantityJsonConverter());
+
+        string msgJson = JsonConvert.SerializeObject(data, jsonSerializerSettings);
+        var bytes = Encoding.UTF8.GetBytes(msgJson);
+
+        var settings = EventStoreClientSettings
+            .Create(_settings.Value.ConnectionString);
+        var client = new EventStoreClient(settings);
+
+
+        var eventData = new EventData(
+            Uuid.NewUuid(),
+            "HealthCheckAddedDataEvent",
+            bytes);
+
+        await client.AppendToStreamAsync(
+    "healthcheck-" + Data.HealthCheckDataId.id.ToString(),
+    StreamState.Any,
+    new[] { eventData },
+    cancellationToken: cancellationToken);
+
+    _logger.LogInformation("Grain has created event");
     }
 
     public async Task StartedEvent(HealthCheckData data, CancellationToken cancellationToken = default)

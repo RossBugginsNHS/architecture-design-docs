@@ -79,7 +79,15 @@ services.AddStackExchangeRedisCache(options =>
             options.ClusterId = "dev";
             options.ServiceId = "OrleansBasics";
         })
-        .ConfigureEndpoints(siloPort: 11111, gatewayPort: 30000)
+           .Configure<EndpointOptions>(options =>
+                {
+                    var host = Dns.GetHostEntry(Dns.GetHostName());
+                    options.AdvertisedIPAddress =host.AddressList[0];
+                    options.SiloPort = 11111;
+                    options.GatewayPort = 30000;
+                    options.SiloListeningEndpoint = new IPEndPoint(IPAddress.Any, 11111);
+                    options.GatewayListeningEndpoint = new IPEndPoint(IPAddress.Any, 30000);
+                })
         .ConfigureApplicationParts(parts => parts.AddApplicationPart(typeof(HealthCheckGrain).Assembly).WithReferences())
         .ConfigureLogging(logging => logging.AddConsole());
       

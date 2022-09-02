@@ -3,6 +3,24 @@
 version: '3.4'
 
 services:
+  dhceventhandler:
+    image: dhceventhandler
+    build:
+      context: ../
+      dockerfile: ./dhceventhandler/Dockerfile
+    deploy:
+      mode: replicated
+      replicas: 1      
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development    
+      - DOTNET_ENVIRONMENT=Development      
+      - Logging__LogLevel__dhc=Trace
+      - Logging__LogLevel__dhceventhandler=Trace
+      - RabbitMq__RabbitHost=rabbitmq
+      - RabbitMq__RabbitUserName=guest
+      - RabbitMq__RabbitPassword=guest
+      - RabbitMq__RabbitPort=5672
+      - EventStoreClient__ConnectionString=esdb://admin:changeit@eventstore:2113?tls=false
 
   dhccachepreloader:
     image: dhccachepreloader
@@ -17,8 +35,11 @@ services:
       - DOTNET_ENVIRONMENT=Development      
       - Logging__LogLevel__dhc=Trace
       - Logging__LogLevel__dhccachepreloader=Trace
-      - EventStoreClient__ConnectionString=esdb://admin:changeit@eventstore:2113?tls=false
-      - Redis__ConnectionString=redis:6379
+      - RabbitMq__RabbitHost=rabbitmq
+      - RabbitMq__RabbitUserName=guest
+      - RabbitMq__RabbitPassword=guest
+      - RabbitMq__RabbitPort=5672
+      - Redis__ConnectionString=redis:6379  
 
   redis:
     image: "redis:7.0.4"
@@ -114,7 +135,6 @@ services:
       - "traefik.http.services.bmiapi.loadbalancer.server.port=80"
       - "traefik.http.routers.bmiapi.middlewares=our-slash"        
 
-
   dhccmdhandler:
     image: dhccmdhandler
     build:
@@ -206,7 +226,7 @@ services:
       dockerfile: ./rabbitmq/Dockerfile    
     ports:
       - 5672:5672
-#        - 15672:15672
+      - 15672:15672
     volumes:
         - ~/.docker-conf/rabbitmq/data/:/var/rabbitmq/lib/
         - ~/.docker-conf/rabbitmq/log/:/var/rabbitmq/log/

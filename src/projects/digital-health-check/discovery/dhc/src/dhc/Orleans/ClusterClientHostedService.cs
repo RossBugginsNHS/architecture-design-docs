@@ -7,30 +7,28 @@ using Polly.Contrib.WaitAndRetry;
 
 public class ClusterClientHostedService : IHostedService
 {
-
-    public IClusterClient Client { get; private set; }
+    IClusterClient _client;
     //public IClientBuilder ClientBuilder { get; }
     IOptions<OrleansConnection> _orleansConfig;
 
     ILogger<ClusterClientHostedService> _logger;
     ILoggerProvider _loggerProvider;
+    ClusterClientFactory _clientFactory;
 
-    public ClusterClientHostedService(ILogger<ClusterClientHostedService> logger, ILoggerProvider loggerProvider, IOptions<OrleansConnection> orleansConfig)
+    public ClusterClientHostedService(ILogger<ClusterClientHostedService> logger, ILoggerProvider loggerProvider, IOptions<OrleansConnection> orleansConfig, ClusterClientFactory clientFactory)
     {
         _loggerProvider = loggerProvider;
         _logger = logger;
         _orleansConfig = orleansConfig;
+        _clientFactory = clientFactory;
 
         //var hostEntry = Dns.GetHostEntryAsync("host.docker.internal");
 
-
-
-
     }
+
 
     public async Task StartAsync(CancellationToken cancellationToken)
     {
-
         var delay = Backoff.DecorrelatedJitterBackoffV2(medianFirstRetryDelay: TimeSpan.FromSeconds(1), retryCount: 10);
 
         var policy = Policy.Handle<Exception>()
@@ -76,8 +74,10 @@ public class ClusterClientHostedService : IHostedService
 
             var built = clientBuilder.Build();
             await built.Connect();
-            Client = built;
-            _logger.LogInformation("Connected to Orleans. IsInitilized {IsInitilized}", Client.IsInitialized);
+            _client = built;
+            _clientFactory.SetClient(_client);
+       
+            _logger.LogInformation("Connected to Orleans. IsInitilized {IsInitilized}", _client.IsInitialized);
 
 
         }, cancellationToken);
@@ -85,8 +85,8 @@ public class ClusterClientHostedService : IHostedService
 
     public async Task StopAsync(CancellationToken cancellationToken)
     {
-        await Client.Close();
-        Client.Dispose();
+        await _client.Close();
+        _client.Dispose();
     }
 }
 
