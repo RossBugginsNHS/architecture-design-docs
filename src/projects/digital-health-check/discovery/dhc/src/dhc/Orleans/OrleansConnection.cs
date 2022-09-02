@@ -6,4 +6,6 @@ public class OrleansConnection
     public string Host{get;set;}
 
     public string DbHost{get;set;}
+
+    public bool UseDashboard{get;set;}
 }

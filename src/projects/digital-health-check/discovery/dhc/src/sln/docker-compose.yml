@@ -165,9 +165,8 @@ services:
     restart: on-failure:20
     deploy:
       mode: replicated
-      replicas: 1
-    ports:
-      - 30000:30000      
+      replicas: 2
+    
     environment:
       - DOTNET_ENVIRONMENT=Development
       - ASPNETCORE_ENVIRONMENT=Development
@@ -180,12 +179,55 @@ services:
       - Logging__LogLevel__dhc=Trace
       - Logging__LogLevel__Silo=Trace
       - OrleansConnection__DbHost=db
+      - OrleansConnection__UseDashboard=false    
       - Redis__ConnectionString=redis:6379      
     depends_on:
       - rabbitmq
       - eventstore
       - bmiapi
       - bpapi
+
+  dhcsilo-withdash:
+    image: dhcsilo
+    build:
+      context: ../
+      dockerfile: ./Silo/Dockerfile    
+    restart: on-failure:20
+    ports:
+      - 30000:30000
+      - 5432:5432    
+    deploy:
+      mode: replicated
+      replicas: 1  
+    environment:
+      - DOTNET_ENVIRONMENT=Development
+      - ASPNETCORE_ENVIRONMENT=Development
+      - BmiWebApiSettings__BaseUrl=http://bmiapi:80/
+      - BpWebApiSettings__BaseUrl=http://bpapi:80/      
+      - EventStoreClient__ConnectionString=esdb://admin:changeit@eventstore:2113?tls=false
+      - PostCodeApi__BaseUrl=https://api.postcodes.io/postcodes/
+      - PostCodeApi__SlidingCacheLength=00:10:00
+      - PostCodeApi__AbsoluteCacheLength=01:00:00
+      - Logging__LogLevel__dhc=Trace
+      - Logging__LogLevel__Silo=Trace
+      - OrleansConnection__DbHost=db
+      - OrleansConnection__UseDashboard=true      
+      - Redis__ConnectionString=redis:6379      
+    depends_on:
+      - rabbitmq
+      - eventstore
+      - bmiapi
+      - bpapi
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.orleans.rule=PathPrefix(`/orleans`)"
+      - "traefik.http.routers.orleans.entrypoints=web"
+      - "traefik.http.routers.orleans.tls=false"        
+      - "traefik.http.services.orleans.loadbalancer.server.port=5432"
+      - "traefik.http.routers.orleans.middlewares=our-slash,test-auth"    
+      - "traefik.http.middlewares.test-auth.basicauth.users=USERNAME:$apr1$IvvdTIQg$K2bFkgFfqpU/jyar.KUy00"
+
+      
 
   dhcapi:
     image: dhcapi

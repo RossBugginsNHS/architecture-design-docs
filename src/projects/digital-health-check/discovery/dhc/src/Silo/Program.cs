@@ -56,6 +56,17 @@ services.AddStackExchangeRedisCache(options =>
         var orleansConnection = new OrleansConnection();
         hostContext.Configuration.GetSection(OrleansConnection.Position).Bind(orleansConnection);
         
+        if(orleansConnection.UseDashboard)
+        {
+             builder.UseDashboard(options => {
+                    options.Username = "USERNAME";
+                    options.Password = "PASSWORD";
+                    options.Host = "*";
+                    options.Port = 5432;
+                    options.HostSelf = true;
+                    options.CounterUpdateIntervalMs = 1000;
+            });
+        }
         var hostEntry = Dns.GetHostEntry(orleansConnection.DbHost);
         var ip = hostEntry.AddressList[0];
 
