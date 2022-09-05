@@ -79,9 +79,8 @@ public class HealthCheckController : ControllerBase
         if (await events.ReadState == ReadState.Ok)
         {
             _logger.LogInformation("Read some data for {key} from event store", healthCheckId);
-            while (await events.MoveNextAsync())
+            await foreach(var resolved in events)
             {
-                var resolved = events.Current;
                 if (resolved.Event.EventType == "HealthCheckCompleteEvent")
                 {
                     _logger.LogInformation("Read HealthCheckCompleteEvent for {key} from event store", healthCheckId);

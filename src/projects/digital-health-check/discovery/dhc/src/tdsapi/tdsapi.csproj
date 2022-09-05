@@ -7,7 +7,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\dhc\dhc.csproj" />
+    </ItemGroup>  
+  <ItemGroup>
+    <None Include="data.tsv" CopyToOutputDirectory="Always" />
   </ItemGroup>
 
 </Project>

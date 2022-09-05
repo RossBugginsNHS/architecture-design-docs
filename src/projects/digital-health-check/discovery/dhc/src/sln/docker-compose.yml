@@ -153,10 +153,7 @@ services:
       - RabbitMq__RabbitPassword=guest
       - RabbitMq__RabbitPort=5672
       - OrleansConnection__Host=dhcsilo
-    depends_on:
-      - dhcsilo
-      - db
-
+ 
   dhcsilo:
     image: dhcsilo
     build:
@@ -181,11 +178,7 @@ services:
       - OrleansConnection__DbHost=db
       - OrleansConnection__UseDashboard=false    
       - Redis__ConnectionString=redis:6379      
-    depends_on:
-      - rabbitmq
-      - eventstore
-      - bmiapi
-      - bpapi
+
 
   dhcsilo-withdash:
     image: dhcsilo
@@ -213,11 +206,7 @@ services:
       - OrleansConnection__DbHost=db
       - OrleansConnection__UseDashboard=true      
       - Redis__ConnectionString=redis:6379      
-    depends_on:
-      - rabbitmq
-      - eventstore
-      - bmiapi
-      - bpapi
+
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.orleans.rule=PathPrefix(`/orleans`)"
@@ -247,12 +236,7 @@ services:
       - RabbitMq__RabbitPassword=guest
       - RabbitMq__RabbitPort=5672
       - Redis__ConnectionString=redis:6379
-    depends_on:
-      - rabbitmq
-      - eventstore
-      - bmiapi
-      - bpapi
-      - dhcsilo
+
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.dhcapi.rule=PathPrefix(`/dhc`)"
@@ -286,7 +270,7 @@ services:
       - "traefik.http.services.rabbitmq.loadbalancer.server.port=15672"
 
   eventstore:
-    image: eventstore/eventstore:20.10.2-buster-slim
+    image: eventstore/eventstore:22.6.0-buster-slim
     environment:
       - EVENTSTORE_CLUSTER_SIZE=1
       - EVENTSTORE_RUN_PROJECTIONS=All

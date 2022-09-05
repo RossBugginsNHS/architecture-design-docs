@@ -59,11 +59,16 @@
 		},
 		{
 			"path": "src"
+		},
+		{
+			"path": ".",
+			"name": "DHC rootPath"
 		}
 	],
 	"settings": {
 		"omnisharp.projects": [
 			"src/sln/dhc.sln"
-		]
+		],
+		"omnisharp.loggingLevel": "information"
 	}
 }

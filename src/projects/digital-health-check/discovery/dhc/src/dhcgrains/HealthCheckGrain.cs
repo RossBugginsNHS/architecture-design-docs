@@ -32,7 +32,17 @@ public class HealthCheckGrain : Orleans.Grain, IHealthCheckGrain
 
     public async Task Calculate(GrainCancellationToken cancellationToken)
     {
+        var settings = EventStoreClientSettings
+            .Create(_settings.Value.ConnectionString);
+        var client = new EventStoreClient(settings);
+        var managementClient = new EventStoreProjectionManagementClient(settings);
+
+        var id = this.GetGrainIdentity();
+        var resKey =  "healthcheck-" + id.PrimaryKey;
+        var document = await managementClient.GetResultAsync("healthcheckstate", resKey);
         
+        _logger.LogInformation("Got from state {doc}", document.ToString());
+
         using var _ = cancellationToken.CancellationToken.Register(() => 
              _logger.LogInformation("Grain execution has been requested to be cancelled."));
 

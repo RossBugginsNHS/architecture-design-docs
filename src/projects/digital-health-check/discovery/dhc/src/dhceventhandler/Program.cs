@@ -14,6 +14,7 @@ using UnitsNet.Serialization.JsonNet;
 using Polly.Contrib.WaitAndRetry;
 using Polly;
 using RabbitMQ.Client;
+using MassTransit;
 
 // See https://aka.ms/new-console-template for more information
 Console.WriteLine("Hello, World!");
@@ -22,7 +23,23 @@ var builder = Host.CreateDefaultBuilder(args);
 
 builder.ConfigureServices((hostContext, services) =>
     {
-  
+        services.AddMassTransit(x =>
+        {
+            var o = new RabbitMqSettings();
+            hostContext.Configuration.GetSection(RabbitMqSettings.Location).Bind(o);
+            // elided...
+
+            x.UsingRabbitMq((context,cfg) =>
+            {
+                cfg.Host(o.RabbitHost, (ushort) o.RabbitPort, "/", h => {
+                    
+                    h.Username(o.RabbitUserName);
+                    h.Password(o.RabbitPassword);
+                });
+
+                cfg.ConfigureEndpoints(context);
+            });
+        });
 
         services.AddSingleton<RabbitMqChannel>();
         services.AddSingleton<RabbitMqClient>();

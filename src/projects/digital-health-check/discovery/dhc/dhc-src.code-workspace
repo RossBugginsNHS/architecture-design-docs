@@ -1,0 +1,18 @@
+{
+	"folders": [
+		{
+			"path": "src",
+			"name": "DHC source"
+		},
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"omnisharp.projects": [
+			"src/sln/dhc.sln"
+		],
+		"omnisharp.loggingLevel": "information",
+		"omnisharp.enableMsBuildLoadProjectsOnDemand": true
+	}
+}
