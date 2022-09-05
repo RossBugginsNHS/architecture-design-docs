@@ -21,11 +21,11 @@ public class HealthCheckGrain : Orleans.Grain, IHealthCheckGrain
         _settings = settings;
     }
 
-    public HealthCheckData Data { get; set; }
+ //   public HealthCheckData Data { get; set; }
 
     public async Task AddData(HealthCheckData data)
     {
-        Data = data;
+     //   Data = data;
         await AddedDataEvent(data);
         _logger.LogInformation("Add Data message received: data = {data}", data);
     }
@@ -39,16 +39,48 @@ public class HealthCheckGrain : Orleans.Grain, IHealthCheckGrain
 
         var id = this.GetGrainIdentity();
         var resKey =  "healthcheck-" + id.PrimaryKey;
-        var document = await managementClient.GetResultAsync("healthcheckstate", resKey);
+        HealthCheckData data = default;
+        var jsonDoc = await managementClient.GetResultAsync("healthcheckstate", resKey);
+        var jsonSerializerSettings = new JsonSerializerSettings { Formatting = Formatting.Indented };
+        jsonSerializerSettings.Converters.Add(new UnitsNetIQuantityJsonConverter());      
+        var str = jsonDoc.RootElement.ToString();
+        try
+        {
+            data = JsonConvert.DeserializeObject<HealthCheckData>(str, jsonSerializerSettings);
+            
+            if(data==default)
+                throw new Exception();
+            if(data.HealthCheckDataId.id!=id.PrimaryKey)
+                throw new Exception();
+        }
+        catch(Exception ex)
+        {
+            try
+            {
+                   var resultTry =  JsonConvert.DeserializeObject<HealthCheckResult>(str, jsonSerializerSettings);
+                   if(resultTry==default)
+                        throw new Exception();
+                   
+                    if(resultTry.HealthCheckResultId.Id!=id.PrimaryKey)
+                        throw new Exception();
+                   
+                   return;
+            }
+            catch(Exception ex2)
+            {
+                throw;
+            }
+        }
         
-        _logger.LogInformation("Got from state {doc}", document.ToString());
+        
+        _logger.LogInformation("Got from state {doc}", data.ToString());
 
         using var _ = cancellationToken.CancellationToken.Register(() => 
              _logger.LogInformation("Grain execution has been requested to be cancelled."));
 
         try
         {
-            var data = Data;
+          //  var data = Data;
             await StartedEvent(data, cancellationToken.CancellationToken);
             _logger.LogInformation("Grain starting its calculations");
             var result = await _provider.CalculateAsync(data, cancellationToken.CancellationToken);
@@ -82,7 +114,7 @@ public class HealthCheckGrain : Orleans.Grain, IHealthCheckGrain
             bytes);
 
         await client.AppendToStreamAsync(
-    "healthcheck-" + Data.HealthCheckDataId.id.ToString(),
+    "healthcheck-" + data.HealthCheckDataId.id.ToString(),
     StreamState.Any,
     new[] { eventData },
     cancellationToken: cancellationToken);
@@ -110,7 +142,7 @@ public class HealthCheckGrain : Orleans.Grain, IHealthCheckGrain
             bytes);
 
         await client.AppendToStreamAsync(
-    "healthcheck-" + Data.HealthCheckDataId.id.ToString(),
+    "healthcheck-" + data.HealthCheckDataId.id.ToString(),
     StreamState.Any,
     new[] { eventData },
     cancellationToken: cancellationToken);
@@ -140,7 +172,7 @@ public class HealthCheckGrain : Orleans.Grain, IHealthCheckGrain
             bytes);
 
         await client.AppendToStreamAsync(
-    "healthcheck-" + Data.HealthCheckDataId.id.ToString(),
+    "healthcheck-" + result.HealthCheckResultId.Id.ToString(),
     StreamState.Any,
     new[] { eventData },
     cancellationToken: cancellationToken);

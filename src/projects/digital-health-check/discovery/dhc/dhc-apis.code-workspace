@@ -1,0 +1,19 @@
+{
+	"folders": [
+		{
+			"path": "src/bmiapi"
+		},
+		{
+			"path": "src/bpapi"
+		},
+		{
+			"path": "src/dhcapi"
+		},
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"omnisharp.loggingLevel": "information"
+	}
+}

@@ -22,8 +22,6 @@ public class ClusterClientHostedService : IHostedService
         _orleansConfig = orleansConfig;
         _clientFactory = clientFactory;
 
-        //var hostEntry = Dns.GetHostEntryAsync("host.docker.internal");
-
     }
 
 

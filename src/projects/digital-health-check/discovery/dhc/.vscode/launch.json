@@ -1,0 +1,43 @@
+{
+    "configurations": [], // This line was needed
+    "compounds": [
+      {
+        "name": "APIs",
+        "configurations": [
+            {
+                "folder": "bmiapi",
+                "name": ".NET Core Launch (web)"
+              },
+            {
+              "folder": "bpapi",
+              "name": ".NET Core Launch (web)"
+            },
+            {
+                "folder": "dhcapi",
+                "name": ".NET Core Launch (web)"
+              },            
+        ]
+      },
+      {
+        "name": "DHC Microservices",
+        "configurations": [
+            {
+                "folder": "Silo",
+                "name": ".NET Core Launch (console)"
+              },
+            {
+              "folder": "dhccmdhandler",
+              "name": ".NET Core Launch (console)"
+            },
+            {
+                "folder": "dhccachepreloader",
+                "name": ".NET Core Launch (console)"
+              },      
+              {
+                "folder": "dhceventhandler",
+                "name": ".NET Core Launch (console)"
+              },                        
+        ]
+      }      
+    ]
+  }

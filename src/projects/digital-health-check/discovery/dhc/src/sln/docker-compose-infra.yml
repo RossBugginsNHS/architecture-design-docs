@@ -1,8 +1,14 @@
 # Please refer https://aka.ms/HTTPSinContainer on how to setup an https developer certificate for your ASP .NET Core service.
 
-version: '3.4'
-
+version: '3.8'
 services:
+
+  redis:
+    image: "redis:7.0.4"
+    ports:
+      - 6379:6379
+    volumes:
+    - ~/.docker-conf/redis/data:/data
 
   db:
     image: sqlserver
@@ -14,39 +20,60 @@ services:
         ACCEPT_EULA: "Y"
     ports:
       - 1433:1433 
-
+      
   rabbitmq:
-    image: rabbitmq:3.10.7-management-alpine
-    container_name: 'rabbitmq'
+    image: rabbitmq-custom
+    build:
+      context: .
+      dockerfile: ./rabbitmq/Dockerfile    
     ports:
-        - 5672:5672
-        - 15672:15672
+      - 5672:5672
+      - 15672:15672
     volumes:
         - ~/.docker-conf/rabbitmq/data/:/var/rabbitmq/lib/
         - ~/.docker-conf/rabbitmq/log/:/var/rabbitmq/log/
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 30s
+      timeout: 30s
+      retries: 3
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.rabbitmq.rule=PathPrefix(`/rabbitmq`)"
+      - "traefik.http.routers.rabbitmq.entrypoints=web"
+      - "traefik.http.routers.rabbitmq.tls=false"
+      - "traefik.http.routers.rabbitmq.middlewares=our-slash"         
+      - "traefik.http.services.rabbitmq.loadbalancer.server.port=15672"
 
-  eventstore.db:
-      image: eventstore/eventstore:20.10.2-buster-slim
-      environment:
-        - EVENTSTORE_CLUSTER_SIZE=1
-        - EVENTSTORE_RUN_PROJECTIONS=All
-        - EVENTSTORE_START_STANDARD_PROJECTIONS=true
-        - EVENTSTORE_EXT_TCP_PORT=1113
-        - EVENTSTORE_HTTP_PORT=2113
-        - EVENTSTORE_INSECURE=true
-        - EVENTSTORE_ENABLE_EXTERNAL_TCP=true
-        - EVENTSTORE_ENABLE_ATOM_PUB_OVER_HTTP=true
-      ports:
-        - "1113:1113"
-        - "2113:2113"
-      volumes:
-        - type: volume
-          source: eventstore-volume-data
-          target: /var/lib/eventstore
-        - type: volume
-          source: eventstore-volume-logs
-          target: /var/log/eventstore        
-
-volumes:
-  eventstore-volume-data:
-  eventstore-volume-logs:          
+  eventstore:
+    image: eventstore/eventstore:22.6.0-buster-slim
+    environment:
+      - EVENTSTORE_CLUSTER_SIZE=1
+      - EVENTSTORE_RUN_PROJECTIONS=All
+      - EVENTSTORE_START_STANDARD_PROJECTIONS=true
+      - EVENTSTORE_EXT_TCP_PORT=1113
+      - EVENTSTORE_HTTP_PORT=2113
+      - EVENTSTORE_INSECURE=true
+      - EVENTSTORE_ENABLE_EXTERNAL_TCP=true
+      - EVENTSTORE_ENABLE_ATOM_PUB_OVER_HTTP=true
+    ports:
+      - "2113:2113"
+    volumes:
+      - ~/.docker-conf/eventstore/data:/var/lib/eventstore
+      - ~/.docker-conf/eventstore/logs:/var/log/eventstore     
+    healthcheck:
+      test:
+        [
+            'CMD-SHELL',
+            'curl --fail --insecure https://eventstore:2113/health/live || exit 1',
+        ]
+      interval: 30s
+      timeout: 30s
+      retries: 3      
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.eventstore.rule=PathPrefix(`/eventstore`)"
+      - "traefik.http.routers.eventstore.entrypoints=web"
+      - "traefik.http.routers.eventstore.tls=false"
+      - "traefik.http.routers.eventstore.middlewares=our-slash"         
+      - "traefik.http.services.eventstore.loadbalancer.server.port=2113"            
