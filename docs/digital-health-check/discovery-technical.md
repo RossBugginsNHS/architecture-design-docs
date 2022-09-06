@@ -66,10 +66,10 @@ The technical requirements for a Digital Health Check are not novel, or overly c
 
 There are a number of clearly defined boundaries within the overall scope of the programme, that will allow for Agile delivery through incremental and iterative feature development.
 
+#### Components Identified
 - Digital Health Check Library Code
 - API for DHC tool
-- API for DHC completion
-- API for DHC results
+- API for DHC state management
 - API for invite management
 - Authorisation
 - End user UI
@@ -77,13 +77,106 @@ There are a number of clearly defined boundaries within the overall scope of the
 - Pre load service
 - Export to GP Service
 - Cohorting / Invite Service
+- Blood Test Labs / appointment booking integration
 
-Other considerations for beta
+Some of these components will be OHID specific, others could be available for other providers who wish to use the same Digital Health Check "Engine".
+
+#### Other considerations for beta
 - Storage Platform
 - Inter service communication / event bus / command handlers etc
 
 Many NHS digital programme requirements start with statements such as "must integrate with NHS App", or " must integrate with NHS.uk". Naive requirements such of this can be appreciated from non technical authors, however architectural and development work should take this and expand to really see the requirement for what it is. Focus on digital solutions should not just be on where they envisaged to be used right now. The NHS App in it's current form will not be around for ever, neither will the nhs web site. Digital solutions MUST be developed with a clear API first focus, that can then be integrated with the NHS app, or any other app.
 
+### Component Interaction Considerations for Alpha
+
+```mermaid
+C4Context
+  title NHS Digital Health Check Alpha Components
+
+    Boundary(ohidboundary, "OHID DHC", "System")
+    {
+        Boundary(ohiduiboundary, "OHID DHC User Interface", "System") {     
+        System(ohidui, "OHID DHC User Interface")       
+        }      
+
+        Boundary(ohidprocess, "OHID DHC State Management", "System") {     
+        System(ohiddhc, "OHID DHC")       
+        }   
+
+        Boundary(hpinterfaceboundary, "Health Professional Interface", "System") {    
+            System(hpinterface, "HP System")      
+            System(bimisystem, "BI / MI System")              
+        }
+    } 
+
+    Boundary(ohidintegratboundary, "OHID Integrations", "System")
+    {
+        Boundary(dhcpreload, "DHC Preload", "System") {  
+            System(dhcpreload, "Read data from GP Record")       
+        }   
+
+        Boundary(gpintegration, "GP Integration", "System") {  
+            System(gpint, "GP access to data")       
+        } 
+
+        Boundary(labsandappointments, "Labs and Appointments", "System") {          
+            System(labsapi, "Labs API integration")
+            System(appointmentapi, "Appointment booking integration ")
+        }            
+
+        Boundary(inviteandcohort, "Inivite and Elegability", "System")
+        {
+            Boundary(b0, "Invitation", "System") {
+            System(invitemanagement, "Invite Management")
+            }
+
+            Boundary(cohorting, "Cohorting", "System") {  
+            System(identifycitzens, "Identify Citizens")  
+            }
+        }
+    }                                       
+     
+    Boundary(dhc, "Digital Health Check", "System") { 
+
+        Boundary(dhcstatemanagement, "DHC Process and State Management", "System") {   
+          System(dhcapi, "DHC API Process")
+        } 
+
+        Boundary(dhctools, "DHC Tools", "System") {          
+        System(dhcapitool, "DHC API Tool")
+        System(dhctool, "DHC Alogorithm/Logic library")
+        Rel(dhcapitool, dhctool, "Uses")
+        }     
+
+        Boundary(generaltools, "Other Tools API", "System") {          
+        System(bpapi, "BP API Tool")
+        System(bmiapi,  "BMI API Tool")
+        System(qriskapi, "Qrisk API Tool")
+        }         
+    }
+   
+    Boundary(auth, "Authentication", "System") {          
+      System(nhsl, "NHSlogin")
+      System(cis2, "CIS2")
+      System(auth, "Authentication")
+    }  
+
+    Rel(invitemanagement, identifycitzens, "Gets data from")
+    Rel(dhcapi, dhcpreload, "Gets data from")
+    Rel(ohiddhc, gpint, "Sends data to")
+    Rel(dhcapi, dhcapitool, "Uses")
+    Rel(dhcapitool, bpapi, "Uses")
+    Rel(dhcapitool, bmiapi, "Uses")
+    Rel(dhcapitool, qriskapi, "Uses")
+
+    Rel(ohidui, ohiddhc, "")
+    Rel(ohiddhc, dhcapi, "")
+    Rel(ohiddhc, invitemanagement, "")    
+    Rel(ohiddhc, labsapi, "")        
+    Rel(ohiddhc, appointmentapi,"")     
+    Rel(ohiddhc, hpinterface,"")     
+           
+```
 
 
 ## Digital Health Check Library Code
@@ -96,6 +189,21 @@ flowchart LR;
     Out[Data Out]
     In -->Process
     Process -->Out
+```
+
+Can be broken down into:
+
+```mermaid
+flowchart LR;
+    ObsDataIn[Demographics & Observation Data In]
+    RawProcessData{Prepare Data}
+    Data[HC Data]
+    Calculate{Calculate Result}
+    Out[Result Out]
+    ObsDataIn -->RawProcessData
+    RawProcessData -->Data
+    Data -->Calculate
+    Calculate -->Out
 ```
 
 Event if an alpha achieves nothing more than this process being made available in a open source digital form (whether an API, or  just a code library that can be used in a CLI) the something positive has been achieved that future work can cleanly and easily build upon.
@@ -112,6 +220,14 @@ public static HealthCheckResult CalclateHealthCheck(HealthCheckData value)
     throw new NotImplementedException();
 }
 ```
+
+> **Step 1** 
+> 
+> Idempotent Library for Calculating DHC results from provided prepared data
+>
+>
+> 
+> .
 
 ### Incremental Health Check Library Development, Possible Routes
 - Start with just basic checks - add more data over time?
@@ -148,6 +264,90 @@ As such, there must be though given to if a FHIR data model is the best way to g
 FHIR has a key place in inter health system communication, but it is likely to be perceived as bloated and overly complex for exposing APIs to Citizens.
 
 The DHC API will require .....
+
+> **Step 2** 
+> 
+> API for consuming observation and demographic data, preparing data, and calculating DHC result 
+>
+> Including separate APIs for any preparation - ie BMI calculation and QRisk required data conversions
+> 
+> .
+
+
+
+
+
+## Example Microservice Design for DHC 
+
+```mermaid
+C4Context
+  title NHS Digital Health Check Alpha Components
+
+    System_Ext(SomeSystem, "Example System", "A system consuming DHC API.") 
+
+    Boundary(dhcmicroservice, "Digtial Health Check", "Microservice Namespace")
+    {
+        Boundary(dhcapi, "DHC API")
+        {
+            System(dhcapicmds, "DHC Cmd API", "RESTful API")   
+            System(dhcapiqueries, "DHC Query API", "RESTful API")   
+        }
+        Boundary(cmdsubsys, "Commands Sub System")
+        {
+            SystemQueue(cmdbus, "Commands")     
+            System(cmdhandlers, "Command Handlers")     
+        }
+
+        Boundary(statesubsys, "Domain and State Sub System")
+        {        
+            System(domainandstate, "Domain & State") 
+            SystemQueue(eventsourcing, "Event Sourcing State")
+            System(internaleventsourcinghandling, "Event Sourcing Hanlder")    
+        }
+        
+        Boundary(eventsubsys, "Event Sub System")
+        {                
+            SystemQueue(internalevents, "Events")        
+            System(internaleventhandling, "Event Handlers ")        
+            System(extEventhandler, "Event Handler forwarding")          
+        }
+
+        Boundary(statesubsysd, "Caching Sub System")
+        {
+            SystemDb(statecache, "State Cache Handing")                
+        }
+
+        Rel(dhcapicmds, cmdbus, "Sends Commands")
+        Rel(cmdbus, cmdhandlers, "Handles Commands")
+        Rel(cmdhandlers, domainandstate, "Executes State")
+        Rel(domainandstate, eventsourcing, "Raised Event")
+        Rel(eventsourcing, internaleventsourcinghandling, "Handles")
+        Rel(internaleventsourcinghandling, internalevents, "Raised Event")       
+        Rel(internalevents, internaleventhandling, "Handles")         
+        Rel(internaleventhandling, statecache, "Stores State")
+        Rel(domainandstate, statecache, "Gets State")
+        Rel(dhcapiqueries, domainandstate, "Gets State")
+        Rel(internalevents, extEventhandler, "Handles")
+        
+
+        UpdateRelStyle(dhcapi, cmdbus, $textColor="black", $lineColor="black", $offsetY="10", $offsetX="-50")
+        UpdateRelStyle(domainandstate, statecache, $textColor="black", $lineColor="black", $offsetY="-100", $offsetX="230")
+
+    }
+
+    Boundary(sharedbus, "Inter Service Event Bus", "Microservice Namespace")
+    {
+        SystemQueue(interserviceeventbus, "Inter Service Events")
+    }
+
+    System_Ext(SomeConsuming, "Example External Integration System", "A system consuming events, eg GP integration.") 
+
+    Rel(extEventhandler, interserviceeventbus, "Raises Event")
+    Rel(SomeSystem, dhcapicmds, "Calls API")
+    Rel(SomeSystem, dhcapiqueries, "Calls API")
+    Rel(interserviceeventbus, SomeConsuming, "Handles Event")
+```
+
 
 ## Capacity and Scale Discovery
 NEED TO :
