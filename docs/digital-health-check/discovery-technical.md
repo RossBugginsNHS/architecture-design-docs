@@ -67,17 +67,20 @@ The technical requirements for a Digital Health Check are not novel, or overly c
 There are a number of clearly defined boundaries within the overall scope of the programme, that will allow for Agile delivery through incremental and iterative feature development.
 
 #### Components Identified
-- Digital Health Check Library Code
-- API for DHC tool
-- API for DHC state management
-- API for invite management
-- Authorisation
-- End user UI
-- Health Care Professional UI
-- Pre load service
-- Export to GP Service
-- Cohorting / Invite Service
-- Blood Test Labs / appointment booking integration
+
+| Area to investigate                               | Summary of Now                        | Ideal Situation                                                                      | Summary of hoped aplha outcome / Delta |
+| ------------------------------------------------- | ------------------------------------- | ------------------------------------------------------------------------------------ | -------------------------------------- |
+| Digital Health Check code library                 | doesn't exist in reusable form        | A standard library available for providing a standard calculation for a health check |                                        |
+| API for DHC tool                                  | doesn't exist in reusable form        |                                                                                      |                                        |
+| API for DHC state management                      | doesn't exists                        |                                                                                      |                                        |
+| API for invite management                         | Exists for specif systems             |                                                                                      |                                        |
+| Authorisation                                     | IdP's exists, needs api Auth platform |                                                                                      |                                        |
+| End user UI                                       | Exists in various forms               |                                                                                      |                                        |
+| Health Care Professional UI                       | Doesn't exist                         |                                                                                      |                                        |
+| Pre load service                                  | ??                                    |                                                                                      |                                        |
+| Export to GP Service                              | Exists with some providers            |                                                                                      |                                        |
+| Cohorting / Invite Service                        | Exists in GP systems                  |                                                                                      |                                        |
+| Blood Test Labs / appointment booking integration | Exists in some form                   |                                                                                      |                                        |
 
 Some of these components will be OHID specific, others could be available for other providers who wish to use the same Digital Health Check "Engine".
 
@@ -152,6 +155,8 @@ C4Context
         System(bpapi, "BP API Tool")
         System(bmiapi,  "BMI API Tool")
         System(qriskapi, "Qrisk API Tool")
+        System(heartage, "Heart Age API Tool")
+        System(postcodetdi, "Postcode to TDI value API Tool")                
         }         
     }
    
@@ -162,7 +167,7 @@ C4Context
     }  
 
     Rel(invitemanagement, identifycitzens, "Gets data from")
-    Rel(dhcapi, dhcpreload, "Gets data from")
+    Rel(ohiddhc, dhcpreload, "Gets data from")
     Rel(ohiddhc, gpint, "Sends data to")
     Rel(dhcapi, dhcapitool, "Uses")
     Rel(dhcapitool, bpapi, "Uses")
@@ -221,7 +226,7 @@ public static HealthCheckResult CalclateHealthCheck(HealthCheckData value)
 }
 ```
 
-> **Step 1** 
+> **Area of Alpha Investigation 01** 
 > 
 > Idempotent Library for Calculating DHC results from provided prepared data
 >
@@ -265,7 +270,7 @@ FHIR has a key place in inter health system communication, but it is likely to b
 
 The DHC API will require .....
 
-> **Step 2** 
+> **Area of Alpha Investigation  2** 
 > 
 > API for consuming observation and demographic data, preparing data, and calculating DHC result 
 >
