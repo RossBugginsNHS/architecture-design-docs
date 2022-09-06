@@ -286,6 +286,8 @@ The DHC API will require .....
 
 Previous reviewed work has kept state management of the Health Check (W&P also did this) process inside the User Interface. Instead of this approach, an API driven process could be used, along side Event Sourcing for state management.
 
+
+### Example sequence for using a state management API for DHC
 ```mermaid
 sequenceDiagram
     UI->>+StateAPI: Start Health Check
@@ -318,11 +320,25 @@ sequenceDiagram
 > 
 > .
 
-## Invite Management   
+## Invite Management
 
 > **Area of Alpha Investigation 04** 
 > 
-> API platform for managing state of invitations to Digital Health Checks
+> API platform for managing state of a "long lived" Digital Health Check process
+>
+>
+> 
+> .
+
+
+## Invite Management   
+
+In contrast to local soloutions to Digital Health Check, nationally there would need to be a way for different GPs, GP Federations, Local Authorities, to manage their invite process in  differently schedules, and possibly different criteria requirements.
+
+
+> **Area of Alpha Investigation 05** 
+> 
+> API platform for managing invites to DHC
 >
 >
 > 
