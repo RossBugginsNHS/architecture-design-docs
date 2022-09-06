@@ -46,16 +46,6 @@ has_children: true
 | Self load data from wearables | 🕐 Pending     |
 
 
-# Discovery Outcomes Summary
-
-- Component Structure for Alpha - National scalable concerns
-- Good UI from previous work
-- GP Integration = hard
-- Question still to be answered - how can digital improve upon and give more benefit that manual health check - instead of just trying to make a carbon copy of existing process
-- Question still to be answered - preloading of data
-- Question still to be answered - Data in GP record vs data available to GP - what would GP's want / expect
-- Question still to be answered - Invite and cohort management
-
 # DHC Technical Discovery Review
 
 **TODO - Write a summary encompassing all work that has been completed as part of the Technical Discovery**
@@ -66,25 +56,40 @@ The technical requirements for a Digital Health Check are not novel, or overly c
 
 There are a number of clearly defined boundaries within the overall scope of the programme, that will allow for Agile delivery through incremental and iterative feature development.
 
-#### Components Identified
+### Discovery outcomes
+- Good UI from previous work
+- GP Integration = hard
+- Question still to be answered - how can digital improve upon and give more benefit that manual health check - instead of just trying to make a carbon copy of existing process
+- Question still to be answered - preloading of data
+- Question still to be answered - Data in GP record vs data available to GP - what would GP's want / expect
+- Question still to be answered - Invite and cohort management
+- Component Structure for Alpha - National scalable concerns
 
-| Area to investigate                               | Summary of Now                        | Ideal Situation                                                                      | Summary of hoped aplha outcome / Delta |
-| ------------------------------------------------- | ------------------------------------- | ------------------------------------------------------------------------------------ | -------------------------------------- |
-| Digital Health Check code library                 | doesn't exist in reusable form        | A standard library available for providing a standard calculation for a health check |                                        |
-| API for DHC tool                                  | doesn't exist in reusable form        |                                                                                      |                                        |
-| API for DHC state management                      | doesn't exists                        |                                                                                      |                                        |
-| API for invite management                         | Exists for specif systems             |                                                                                      |                                        |
-| Authorisation                                     | IdP's exists, needs api Auth platform |                                                                                      |                                        |
-| End user UI                                       | Exists in various forms               |                                                                                      |                                        |
-| Health Care Professional UI                       | Doesn't exist                         |                                                                                      |                                        |
-| Pre load service                                  | ??                                    |                                                                                      |                                        |
-| Export to GP Service                              | Exists with some providers            |                                                                                      |                                        |
-| Cohorting / Invite Service                        | Exists in GP systems                  |                                                                                      |                                        |
-| Blood Test Labs / appointment booking integration | Exists in some form                   |                                                                                      |                                        |
+### Proposed Aplha Outcomes
+- Not targeting a full end to end alpha
+- Investigate and develop possible solutions for each Area identified
+- Beta can then take the best options in each area to combine into an end to end Beta solution
+#### Alpha Areas Identified
+
+| Area No | Area to investigate                               | Summary of Now                        | Ideal Situation                                                                                                                                                                                              | Summary of hoped aplha outcome / Delta                                             |
+| ------- | ------------------------------------------------- | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------- |
+| 01      | Digital Health Check code library                 | doesn't exist in reusable form        | A standard library available for providing a standard calculation for a health check                                                                                                                         | Simple reusable DHC library                                                        |
+| 02      | API for DHC tool                                  | doesn't exist in reusable form        | An reusable RESTful API that consumes raw observation and demographic data and provides a health check result                                                                                                | PoC API for DHC and supporting required APIs                                       |
+| 03      | API for DHC state management                      | doesn't exist                         | An API platform for managing the ongoing state required for completing a health check over a period of time                                                                                                  | PoC API for managing DHC State                                                     |
+| 04      | API for invite management                         | Exists for specific systems           | A platform for managing invites to complete the DHC                                                                                                                                                          | PoC API for invite management and how it would work with OHID DHC state management |
+| 05      | Authorisation                                     | IdP's exists, needs api Auth platform | Citizens able to use NHS Login and Health Care Professionals able to use CIS2 for authentication (OpenId) and a standard API authorisation management using OAuth2                                           | PoC for single Authorisation platform using both NHSLogin and CIS2 as IdPs         |
+| 06      | End user UI                                       | Exists in various forms               | Reactive UI that can be used in mobile or desktop, for complete end to end DHC completion                                                                                                                    | UI that allows configuration for user research of best layout                      |
+| 07      | Health Care Professional UI                       | Doesn't exist                         | A UI for HCPs to manage invites to DHCs                                                                                                                                                                      | PoC UI for invite management                                                       |
+| 08      | Pre load service                                  | ??                                    | All relevant data loaded from existing health records                                                                                                                                                        | Investigate the various ways existing data can be accessed                         |
+| 09      | Export to GP Service                              | Exists with some providers            | Results of DHC automatically added to a patients GP data record                                                                                                                                              | Investigate the various ways existing data can be exported                         |
+| 10      | Cohorting / Invite Service                        | Exists in GP systems                  | Daily list of all those eligible for a DHC                                                                                                                                                                   | Investigate the various ways existing cohort data can be accessed                  |
+| 11      | Blood Test Labs / appointment booking integration | Exists in some form                   | Integration to send requests for home blood kits, and to retrieve results from any lab. Book appointments with GPs/pharmacies/other providers for face to face testing, and API to receive results directly. | Investigate the different providers and ways of integration                        |
+
+
 
 Some of these components will be OHID specific, others could be available for other providers who wish to use the same Digital Health Check "Engine".
 
-#### Other considerations for beta
+#### Other considerations for Alpha
 - Storage Platform
 - Inter service communication / event bus / command handlers etc
 
@@ -99,17 +104,20 @@ C4Context
     Boundary(ohidboundary, "OHID DHC", "System")
     {
         Boundary(ohiduiboundary, "OHID DHC User Interface", "System") {     
-        System(ohidui, "OHID DHC User Interface")       
-        }      
+            System(ohidui, "OHID DHC User Interface")       
+            System(ohiduicms, "OHID DHC User Interface CMS")       
+            Rel(ohidui, ohiduicms, "Uses")
+        }                  
 
         Boundary(ohidprocess, "OHID DHC State Management", "System") {     
-        System(ohiddhc, "OHID DHC")       
+            System(ohiddhc, "OHID DHC APIs / Platform")       
         }   
 
         Boundary(hpinterfaceboundary, "Health Professional Interface", "System") {    
-            System(hpinterface, "HP System")      
+            System(hpinterface, "HP DHC Invite/Process Management System")      
             System(bimisystem, "BI / MI System")              
         }
+        Rel(bimisystem, ohiddhc, "Uses")
     } 
 
     Boundary(ohidintegratboundary, "OHID Integrations", "System")
@@ -130,40 +138,44 @@ C4Context
         Boundary(inviteandcohort, "Inivite and Elegability", "System")
         {
             Boundary(b0, "Invitation", "System") {
-            System(invitemanagement, "Invite Management")
+                System(invitemanagement, "Invite Management")
             }
 
             Boundary(cohorting, "Cohorting", "System") {  
-            System(identifycitzens, "Identify Citizens")  
+                System(identifycitzens, "Identify Citizens")  
             }
         }
     }                                       
      
     Boundary(dhc, "Digital Health Check", "System") { 
-
         Boundary(dhcstatemanagement, "DHC Process and State Management", "System") {   
-          System(dhcapi, "DHC API Process")
+            System(dhcapi, "DHC API Process")
         } 
 
         Boundary(dhctools, "DHC Tools", "System") {          
-        System(dhcapitool, "DHC API Tool")
-        System(dhctool, "DHC Alogorithm/Logic library")
-        Rel(dhcapitool, dhctool, "Uses")
+            System(dhcapitool, "DHC API Tool")
+            System(dhctool, "DHC Alogorithm/Logic library")
+            Rel(dhcapitool, dhctool, "Uses")
         }     
 
         Boundary(generaltools, "Other Tools API", "System") {          
-        System(bpapi, "BP API Tool")
-        System(bmiapi,  "BMI API Tool")
-        System(qriskapi, "Qrisk API Tool")
-        System(heartage, "Heart Age API Tool")
-        System(postcodetdi, "Postcode to TDI value API Tool")                
+            System(bpapi, "BP API Tool")
+            System(bmiapi,  "BMI API Tool")
+            System(qriskapi, "Qrisk API Tool")
+            System(heartage, "Heart Age API Tool")
+            System(postcodetdi, "Postcode to TDI value API Tool")                
         }         
     }
    
-    Boundary(auth, "Authentication", "System") {          
-      System(nhsl, "NHSlogin")
-      System(cis2, "CIS2")
-      System(auth, "Authentication")
+    Boundary(auth, "IdPs & Authentication", "System") {  
+        Boundary(Idps, "External IdPs", "System") {              
+            System(nhsl, "NHSlogin")
+            System(cis2, "CIS2")
+        }
+
+        System(auth, "Authentication")
+        Rel(auth, nhsl, "")
+        Rel(auth, cis2, "")
     }  
 
     Rel(invitemanagement, identifycitzens, "Gets data from")
@@ -173,18 +185,25 @@ C4Context
     Rel(dhcapitool, bpapi, "Uses")
     Rel(dhcapitool, bmiapi, "Uses")
     Rel(dhcapitool, qriskapi, "Uses")
-
+    Rel(dhcapitool, heartage, "Uses")
+    Rel(dhcapitool, postcodetdi, "Uses")
     Rel(ohidui, ohiddhc, "")
     Rel(ohiddhc, dhcapi, "")
     Rel(ohiddhc, invitemanagement, "")    
     Rel(ohiddhc, labsapi, "")        
     Rel(ohiddhc, appointmentapi,"")     
     Rel(ohiddhc, hpinterface,"")     
+    Rel(ohidui, nhsl,"")     
+    Rel(hpinterface, cis2,"")  
+    Rel(bimisystem, cis2,"")      
+    Rel(ohiddhc, auth,"")   
+    Rel(invitemanagement, auth,"")  
+    Rel(dhcapi, auth,"")
            
 ```
 
 
-## Digital Health Check Library Code
+# Digital Health Check Library Code
 At its core, a Digital Health Check is nothing more than:
 
 ```mermaid
@@ -240,7 +259,7 @@ public static HealthCheckResult CalclateHealthCheck(HealthCheckData value)
 - Should some be separate libraries / APIs? BMI for example? Blood pressure result?
 - 
 
-## Digital Health Check Tool API 
+# Digital Health Check Tool API 
 The development of an API first designed system that is just a simple Tool for returning the results of a full set of Health Check data. This will be stateless and can be used by the Digital Health Check Service, both internally and externally. This is a key concept to allowing the DHC work to be reused, and re worked, in the future.
 
 ```mermaid
@@ -270,7 +289,7 @@ FHIR has a key place in inter health system communication, but it is likely to b
 
 The DHC API will require .....
 
-> **Area of Alpha Investigation  2** 
+> **Area of Alpha Investigation  02** 
 > 
 > API for consuming observation and demographic data, preparing data, and calculating DHC result 
 >
@@ -278,8 +297,17 @@ The DHC API will require .....
 > 
 > .
 
+# Health Check State Management
 
 
+
+> **Area of Alpha Investigation 03** 
+> 
+> API platform for managing state of a "long lived" Digital Health Check process
+>
+>
+> 
+> .
 
 
 ## Example Microservice Design for DHC 
