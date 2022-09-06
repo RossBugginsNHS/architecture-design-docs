@@ -27,6 +27,8 @@ url: "" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username: 
 github_username:  nhsexperience
 
+kramdown:
+  toc_levels: 1..2
 
 collections:
   projects: 
