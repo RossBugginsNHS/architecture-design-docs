@@ -4,7 +4,7 @@
   "description": "",
   "private": true,
   "scripts": {
-    "build": "webpack && bundle exec jekyll build"
+    "build": "webpack && bundle install && bundle exec jekyll build"
   },
   "keywords": [],
   "author": "",
