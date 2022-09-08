@@ -43,6 +43,13 @@ plugins:
   - jekyll-feed
   - jekyll-spaceship
 
+
+webpack:
+  debounce:
+    run_once: true
+  cleanup_files:
+    - node_modules
+
 aux_links:
   "Citizen Experience on GitHub":
     - "//github.com/nhsexperience/nhs-experience"

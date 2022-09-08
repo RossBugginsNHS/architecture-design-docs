@@ -1,15 +1,5 @@
 <script type="text/javascript" src="{{ '/assets/js/imageopen.js' | relative_url }}"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript" src="{{ '/assets/js/main.js' | relative_url }}"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/mermaid@9.1.5/dist/mermaid.js"></script>
 
-<script>
-$(document).ready(function() {
-    mermaid.initialize({
-        logLevel: 1,
-        startOnLoad: true
-    });
-
-    window.mermaid.init(undefined, document.querySelectorAll('.language-mermaid'));
-});
-</script>
