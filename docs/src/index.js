@@ -38,6 +38,31 @@ function UseMermaid(document)
     btn.innerHTML = "View diagram as PNG (" + id + ")";
     svg.parentNode.parentNode.before(btn);
    
+    svg.addEventListener('mouseover', (event) => 
+    { 
+        event.target.style.cursor = "pointer";
+    });
+
+    svg.addEventListener('click', (event) => 
+    { 
+        console.log(event);
+        var pngVersion = document.getElementById(id+"_png");
+        if(pngVersion)
+        {
+            window.open(pngVersion.src)
+        }
+        else
+        {
+            drawCanvas(id, (img)=>
+            {
+                img.style.display = "none";
+                var p = document.createElement('p'); 
+                btn.after(p);
+                p.appendChild(img);
+                window.open(img.src); 
+            });
+        }
+    });
 
     btn.addEventListener('click', function () 
     { 
@@ -58,17 +83,19 @@ function UseMermaid(document)
         else
         {
             btn.innerHTML = "View diagram as SVG (" + id + ")";
-            var img = drawCanvas(id);
-            img.style.display = "block";
-            var p = document.createElement('p'); 
-            btn.after(p);
-            p.appendChild(img);
-            pre.style.display = "none";
+            drawCanvas(id, (img)=>
+            {
+                img.style.display = "block";
+                var p = document.createElement('p'); 
+                btn.after(p);
+                p.appendChild(img);
+                pre.style.display = "none";
+            });
         }
     });
 }
 
-function drawCanvas(id)
+function drawCanvas(id, callback)
 {
 
     var svg = document.getElementById(id);
@@ -108,13 +135,13 @@ function drawCanvas(id)
                             .then(blobresult=>
                                 {
                                     img.src = URL.createObjectURL(blobresult);
+                                    callback(img);
                                 });
 
                          //img.style.width = width +'px';
                        
                     });
         });
-    return img;
 }
 
 
