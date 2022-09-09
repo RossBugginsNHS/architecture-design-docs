@@ -43,7 +43,7 @@ The scope for this discovery has been to look at how the current NHS Health Chec
 - No existing provider can provide all areas identified, in terms of functionality and being able to provide a secure, highly available and scalable manner.
 - Good UI from previous work
 - Core "Calculation" available from previous work
-- GP Integration is not easy
+- [GP Integration is not easy]({% link digital-health-check/gp-integration.md%})
 
 ### Proposed Targeted Aplha Outcomes
 - Not expecting a full end to end PoC from an alpha
@@ -188,7 +188,7 @@ C4Context
 ```
 
 
-## Digital Health Check Library Code
+## 01. Digital Health Check Library Code
 At its core, a Digital Health Check is nothing more than:
 
 ```mermaid
@@ -244,7 +244,7 @@ public HealthCheckResult CalclateHealthCheck(HealthCheckData value)
 - Should some be separate libraries / APIs? BMI for example? Blood pressure result?
 - 
 
-## Digital Health Check Tool API 
+## 02. Digital Health Check Tool API 
 The development of an API first designed system that is just a simple Tool for returning the results of a full set of Health Check data. This will be stateless and can be used by the Digital Health Check Service, both internally and externally. This is a key concept to allowing the DHC work to be reused, and re worked, in the future.
 
 ```mermaid
@@ -283,7 +283,7 @@ An outline of [Health Check Data]({% link digital-health-check/architecture/data
 > 
 > .
 
-## Health Check State Management
+## 03. Health Check State Management
 
 Previous reviewed work has kept state management of the Health Check (W&P also did this) process inside the User Interface. Instead of this approach, an API driven process could be used, along side Event Sourcing for state management.
 
@@ -321,7 +321,7 @@ sequenceDiagram
 > 
 > .
 
-## Invite Management
+## 04. Invite Management
 
 > **Area 04** 
 > 
@@ -332,18 +332,33 @@ sequenceDiagram
 > .
 
 
-## Invite Management   
+## 05. Authorisation   
 
-In contrast to local soloutions to Digital Health Check, nationally there would need to be a way for different GPs, GP Federations, Local Authorities, to manage their invite process in  differently schedules, and possibly different criteria requirements.
+
 
 
 > **Area 05** 
 > 
-> API platform for managing invites to DHC
+> 
 >
 >
 > 
 > .
+
+
+## 06. User Interface
+
+## 07. Health Care Professional UI
+
+## 08. Pre loading data service
+
+## 09. Export to GP
+
+## 10. Cohorting / Invite Service
+
+## 11. Blood Test Labs integration
+
+## 12. Output guidance & local customization
 
 
 # Additional Technical Considerations

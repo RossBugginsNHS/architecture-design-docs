@@ -34,8 +34,11 @@ function UseMermaid(document)
     btn.id = id +"_button";
     var pre = svg.parentNode.parentNode;
     pre.id = id + "_pre";
-
     btn.innerHTML = "View diagram as PNG (" + id + ")";
+
+    //Remove to enable the png button.
+    btn.style.display = "none";
+
     svg.parentNode.parentNode.before(btn);
    
     svg.addEventListener('mouseover', (event) => 

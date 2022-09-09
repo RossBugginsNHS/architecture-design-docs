@@ -38,15 +38,13 @@ go beyond the current level of 48%.
 
 ## Current Status
 
-| Stage     | Date Started | Est End Date | End Date |
-| --------- | ------------ | ------------ | -------- |
-| Discovery | June 2022    | August 2022  |          |
+| Stage     | Date Started | Est End Date | End Date       |
+| --------- | ------------ | ------------ | -------------- |
+| Discovery | June 2022    | August 2022  | September 2022 |
 
 ## Discovery
 
+[Discovery]({% link digital-health-check/discovery-technical.md%})
 
-## Alpha
+[Discovery Review]({% link digital-health-check/discovery-technical.md%})
 
-## Beta
-
-## Production

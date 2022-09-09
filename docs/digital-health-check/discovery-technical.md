@@ -15,6 +15,7 @@ has_children: true
 
 # Digital Health Check - Discovery - Technical
 
+[DHC Discovery Technical Review]({% link digital-health-check/discovery-technical-review.md%})
 
 ## Key Items to address
 - Identify possible technical hurdles
