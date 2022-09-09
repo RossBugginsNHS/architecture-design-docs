@@ -26,21 +26,12 @@ has_children: true
 
 ## Status
 
-| Todo                                                                | Status        |
-| ------------------------------------------------------------------- | ------------- |
-| Previous System's Architecture Review                               | ⚠️ in progress |
-| Scope Required Data Model                                           | ⚠️ in progress |
-| Identity / Authorisation Options                                    | ⚠️ in progress |
-| Any Future Questions for User Research                              | 🕐 Pending     |
-| Identify any technical hurdles                                      | 🕐 Pending     |
-| Propose any technical patterns that could /should be followed       | 🕐 Pending     |
-| Identify how DHC could be broken down into separate systems/modules | 🕐 Pending     |
-
-### Technical Hurdles
-
-| Todo                          | Status        |
-| ----------------------------- | ------------- |
-| GP Integration Options        | ⚠️ in progress |
-| Cohort & Invite Management    | 🕐 Pending     |
-| Pre load from GP record       | 🕐 Pending     |
-| Self load data from wearables | 🕐 Pending     |
+| Todo                                                                | Status     |
+| ------------------------------------------------------------------- | ---------- |
+| Previous System's Architecture Review                               | ✅ Complete |
+| Scope Required Data Model                                           | ✅ Complete |
+| Identity / Authorisation Options                                    | ✅ Complete |
+| Any Future Questions for User Research                              | ✅ Complete |
+| Identify any technical hurdles                                      | ✅ Complete |
+| Propose any technical patterns that could /should be followed       | ✅ Complete |
+| Identify how DHC could be broken down into separate systems/modules | ✅ Complete |

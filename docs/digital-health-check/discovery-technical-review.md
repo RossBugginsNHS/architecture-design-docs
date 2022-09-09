@@ -23,22 +23,27 @@ nav_order: 1.1
 </details>
 
 ## Summary
-The technical requirements for the core Digital Health Check are not novel, or overly complex. A well architected technological implementation should not be a blocker for the progression of this programme.
+
+A Discovery process in the Government Agile Framework included focussing on identifying constraints that may impact delivering the service, including possible technological constraints. 
+
+There are a number of clearly defined boundaries within the overall scope of this programme. The next stages of this programme could include an Alpha Build, which could include existing ideas and code from existing and previous projects - with Agile delivery through incremental and iterative feature development in each of these areas.
+
+From the research undertaken in discovery, there appears to be no existing platform that can provide clear solutions to all of the areas that have been identified. If this programme is put out to tender, it is advised that any supplier should be able to provide sound technical explanation to how each of these areas are approached.
+
+There are  identified high level boundaries, grouping the identified areas and components. Some of these boundaries contain components that are OHIC DHC specific, others contain components that could be utilised elsewhere / by other programmes in the future.
+
+The technical requirements for the core of Digital Health Check are not novel, or overly complex. A well architected technological implementation should not be a blocker for the progression of this programme.
 
 However, the challenges faced are likely to be with the integration options with existing providers of required data, providers of required services, and those that require to be notified of Health Check results.
 
-There are a number of clearly defined boundaries within the overall scope of the programme, that will allow for Agile delivery through incremental and iterative feature development.
-
-There are also identified high level boundaries, grouping the identified areas and components. Some of these boundaries contain compoenents that are OHIC DHC specific, others contain components that could be utilised elsewhere / by other programmes in the future.
+The scope for this discovery has been to look at how the current NHS Health Check can be transformed into a digital form. However, questions could be asked to how a digital version of the Health Check can improve and add additional benefit to the current process.
 
 ### High Level Discovery Outcomes
-- Identified Areas for investigation/PoC during Alpha
+- Identified Areas that could be considered as requirements
+- No existing provider can provide all areas identified, in terms of functionality and being able to provide a secure, highly available and scalable manner.
 - Good UI from previous work
-- GP Integration = hard
-- Question still to be answered - how can digital improve upon and give more benefit that manual health check - instead of just trying to make a carbon copy of existing process
-- Question still to be answered - preloading of data
-- Question still to be answered - Data in GP record vs data available to GP - what would GP's want / expect
-- Question still to be answered - Invite and cohort management
+- Core "Calculation" available from previous work
+- GP Integration is not easy
 
 ### Proposed Targeted Aplha Outcomes
 - Not expecting a full end to end PoC from an alpha
@@ -47,14 +52,10 @@ There are also identified high level boundaries, grouping the identified areas a
 
 
 # Review of Existing work
-LINK here.
+Brief summaries of the [Existing systems reviews]({% link digital-health-check/existing-reviews/existing-review-summary.md%}) can be read in more details.
 
+# Technical Areas Identified
 
-# Alpha Phase 
-
-
-### Alpha Areas Identified
-Areas for alpha investigation and development.
 
 | Area No | Area to investigate                               | Summary of Now                                           | Ideal Situation                                                                                                                                                                                              | Summary of hoped aplha outcome / Delta                                             |
 | ------- | ------------------------------------------------- | -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------- |
@@ -71,16 +72,15 @@ Areas for alpha investigation and development.
 | 11      | Blood Test Labs / appointment booking integration | Exists in some form                                      | Integration to send requests for home blood kits, and to retrieve results from any lab. Book appointments with GPs/pharmacies/other providers for face to face testing, and API to receive results directly. | Investigate the different providers and ways of integration                        |
 | 12      | Output guidance - localized customization         | Basic directory of services                              | A GP may want to advertise service x after a health check, a ccg might want to advertise y                                                                                                                   | Investigate what exists in more details & how to manage at multiple levels         |
 
-
 Some of these components will be OHID specific, others could be available for other providers who wish to use the same Digital Health Check "Engine".
 
-#### Other considerations for Alpha
+#### Other considerations
 - Storage Platform
 - Inter service communication / event bus / command handlers etc
 
-Many NHS digital programme requirements start with statements such as "must integrate with NHS App", or " must integrate with NHS.uk". Naive requirements such of this can be appreciated from non technical authors, however architectural and development work should take this and expand to really see the requirement for what it is. Focus on digital solutions should not just be on where they envisaged to be used right now. The NHS App in it's current form will not be around for ever, neither will the nhs web site. Digital solutions MUST be developed with a clear API first focus, that can then be integrated with the NHS app, or any other app.
+Many NHS digital programme requirements start with statements such as "must integrate with NHS App", or " must integrate with NHS.uk". Requirements such of this can be appreciated, however architectural and development work should take this and expand to really see the requirement for what it is. Focus on digital solutions should not just be on where they envisaged to be used right now. The NHS App in it's current form will not be around for ever, neither will the nhs web site. Digital solutions MUST be developed with a clear API first focus, that can then be integrated with the NHS app, or any other app.
 
-### Component Interaction Considerations for Alpha
+### Component Interaction Considerations
 
 ```mermaid
 C4Context
@@ -200,7 +200,7 @@ flowchart LR;
     Process -->Out
 ```
 
-Can be broken down into:
+And can be further broken down into:
 
 ```mermaid
 flowchart LR;
@@ -215,7 +215,7 @@ flowchart LR;
     Calculate -->Out
 ```
 
-Event if an alpha achieves nothing more than this process being made available in a open source digital form (whether an API, or  just a code library that can be used in a CLI) the something positive has been achieved that future work can cleanly and easily build upon.
+A build alpha could aim to making this available in a open source digital form (whether an API, or  just a code library that can be used in a CLI) ensuring any future work can cleanly and easily build upon this.
 
 The perceived complexities for a Digital health Check come from where the "Data In" will come from, and where the "Data Out" will go.
 
@@ -223,14 +223,14 @@ At its most basic, it should be a simple idempotent library.
 Note for idempotent methods, thought should be given to not using variable types such as Dates, instead age in days should be used - ensuring that the same data payload always returns the same result, no matter what the date is today.
 
 ```csharp
-public static HealthCheckResult CalclateHealthCheck(HealthCheckData value)
+public HealthCheckResult CalclateHealthCheck(HealthCheckData value)
 {
     //Calculate health check and return result.
     throw new NotImplementedException();
 }
 ```
 
-> **Area of Alpha Investigation 01** 
+> **Area 01** 
 > 
 > Idempotent Library for Calculating DHC results from provided prepared data
 >
@@ -272,9 +272,10 @@ As such, there must be though given to if a FHIR data model is the best way to g
 
 FHIR has a key place in inter health system communication, but it is likely to be perceived as bloated and overly complex for exposing APIs to Citizens.
 
-The DHC API will require .....
+An outline of [Health Check Data]({% link digital-health-check/architecture/data.md%}) expands this further.
 
-> **Area of Alpha Investigation  02** 
+
+> **Area  02** 
 > 
 > API for consuming observation and demographic data, preparing data, and calculating DHC result 
 >
@@ -312,7 +313,7 @@ sequenceDiagram
 
 ```
 
-> **Area of Alpha Investigation 03** 
+> **Area 03** 
 > 
 > API platform for managing state of a "long lived" Digital Health Check process
 >
@@ -322,7 +323,7 @@ sequenceDiagram
 
 ## Invite Management
 
-> **Area of Alpha Investigation 04** 
+> **Area 04** 
 > 
 > API platform for managing state of a "long lived" Digital Health Check process
 >
@@ -336,7 +337,7 @@ sequenceDiagram
 In contrast to local soloutions to Digital Health Check, nationally there would need to be a way for different GPs, GP Federations, Local Authorities, to manage their invite process in  differently schedules, and possibly different criteria requirements.
 
 
-> **Area of Alpha Investigation 05** 
+> **Area 05** 
 > 
 > API platform for managing invites to DHC
 >
@@ -420,10 +421,10 @@ C4Context
 
 
 ### Capacity and Scale Discovery
-NEED TO :
+Should consider:
 - Find out how many health checks per day
-- How many NHS Logins
-- How much use if only invite vs accessible to all
+- How many NHS Logins (total/active)
+- How much use if used as invite only vs accessible to all
 
 ### Open Source
 All development work should be open source from the very start of any beta stage.

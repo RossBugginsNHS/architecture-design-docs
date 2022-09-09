@@ -17,11 +17,11 @@ nav_order: 1.2
 
 | System                                                                              | Authority | Provider | Description | Review Status | Summary                                                                         |
 | ----------------------------------------------------------------------------------- | --------- | -------- | ----------- | ------------- | ------------------------------------------------------------------------------- |
-| [Cornwall]({% link digital-health-check/existing-reviews/cornwall.md  %})           |           |          |             | 🕐 Pending     | No technical architecture provided. Only SOP and high level process.            |
-| [Southwark]({% link digital-health-check/existing-reviews/southwark.md  %})         |           |          |             | 🕐 Pending     | High level and brief technical discussion. Give some thought to GP integration. |
-| [W&P]({% link digital-health-check/existing-reviews/wellness-prevention.md  %})     |           |          |             | 🕐 Pending     |                                                                                 |
-| [PHE]({% link digital-health-check/existing-reviews/phe.md  %})                     |           |          |             | 🕐 Pending     |                                                                                 |
-| [Heart Age]({% link digital-health-check/existing-reviews/heart-age.md  %})         |           |          |             | 🕐 Pending     |                                                                                 |
+| [Cornwall]({% link digital-health-check/existing-reviews/cornwall.md  %})           |           |          |             | ✅ Complete    | No technical architecture provided. Only SOP and high level process.            |
+| [Southwark]({% link digital-health-check/existing-reviews/southwark.md  %})         |           |          |             | 🕐 In Progress     | High level and brief technical discussion. Give some thought to GP integration. |
+| [W&P]({% link digital-health-check/existing-reviews/wellness-prevention.md  %})     |           |          |             | ✅ Complete  |                                                                                 |
+| [PHE]({% link digital-health-check/existing-reviews/phe.md  %})                     |           |          |             | ✅ Complete  |                                                                                 |
+| [Heart Age]({% link digital-health-check/existing-reviews/heart-age.md  %})         |           |          |             | ✅ Complete    |                                                                                 |
 | [Accurx Florey]({% link digital-health-check/existing-reviews/accurx-florey.md  %}) |           |          |             | 🕐 Pending     |                                                                                 |
 
 > ## Data location
