@@ -56,21 +56,20 @@ Brief summaries of the [Existing systems reviews]({% link digital-health-check/e
 
 # Technical Areas Identified
 
+| Area No | Area to investigate                               | Summary of Now                                                                            | Ideal Situation                                                                                                                                                                                                       | Delta between now and Ideal                                                                                                                                                                                                                             |
+|---------|---------------------------------------------------|-------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 1       | Digital Health Check code library                 | Southwark code base can be used as a good starting point                                  | A standard library available for providing a standard calculation for a health check                                                                                                                                  | Utilising the existing code base for calculations and as a testing comparison for an initial code library. Not a case of just redistributing, there is a requirement for designing a library following common patterns and best practises.              |
+| 2       | API for DHC tool                                  | Doesn’t exist                                                                             | An reusable RESTful API that consumes raw observation and demographic data and provides a health check result                                                                                                         | PoC API for DHC and supporting required APIs                                                                                                                                                                                                            |
+| 3       | API for DHC state management                      | Doesn’t exist                                                                             | An API platform for managing the ongoing state required for completing a health check over a period of time                                                                                                           | PoC API for managing DHC State                                                                                                                                                                                                                          |
+| 4       | Cohorting / Invite Service                        | Exists for specific systems, with bespoke identity providers. (Exists in GP systems)      | The automatic invititaion of those eligible for a health check. With central provision of the service, but with regional and local management - ie GPs pausing invites or changing frequence and amplitude of invites | Investigate the various ways existing cohort data can be accessed, and how management of invites can be provisioned centrally. PoC API for invite management and how it would work with OHID DHC state management, and standard NHS Identity Providers. |
+| 5       | Authorisation                                     | IdP’s exists, needs api Auth platform. Existing systems use their own identity platforms. | Citizens able to use NHS Login and Health Care Professionals able to use CIS2 for authentication (OpenId) and a standard API authorisation management using OAuth2                                                    | PoC for single Authorisation platform using both NHSLogin and CIS2 as IdPs                                                                                                                                                                              |
+| 6       | End user UI                                       | Exists in various forms                                                                   | Reactive UI that can be used in mobile or desktop, for complete end to end DHC completion                                                                                                                             | UI that allows configuration for user research of best layout. Existing and previous platforms have UI's that can be adapted for User Research and development                                                                                          |
+| 7       | Health Care Professional UI                       | Doesn’t exist                                                                             | A UI for HCPs to manage invites to DHCs                                                                                                                                                                               | PoC UI for invite management                                                                                                                                                                                                                            |
+| 8       | Pre load service                                  | No platforms have provided evidence of data pre loading                                   | All relevant data loaded from existing health records, ie recent test results, observations, and Spine demographics data. With support of Citizen generated IOT devices - ie mobile app and wearables                 | Investigate the various ways existing data can be accessed and integrated into the process.                                                                                                                                                             |
+| 9       | Export to GP Service                              | Exists with some providers                                                                | Results of DHC automatically added to a patients GP data record.                                                                                                                                                      | Investigate the various ways existing data can be exported, with an aimed understanding of short, medium and long term options. Decide where the south of truth should be                                                                               |
+| 10      | Blood Test Labs / appointment booking integration | Exists in some form                                                                       | Integration to send requests for home blood kits, and to retrieve results from any lab. Book appointments with GPs/pharmacies/other providers for face to face testing, and API to receive results directly.          | Investigate the different providers and ways of integration                                                                                                                                                                                             |
+| 11      | Output guidance - localized customization         | Basic directory of services                                                               | A GP may want to advertise service x after a health check, a ccg might want to advertise y                                                                                                                            | Investigate what exists in more details & how to manage at multiple levels                                                                                                                                                                              |
 
-| Area No | Area to investigate                               | Summary of Now                                           | Ideal Situation                                                                                                                                                                                              | Summary of hoped aplha outcome / Delta                                             |
-| ------- | ------------------------------------------------- | -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------- |
-| 01      | Digital Health Check code library                 | Southwark code base can be used as a good starting point | A standard library available for providing a standard calculation for a health check                                                                                                                         | Simple reusable DHC library                                                        |
-| 02      | API for DHC tool                                  | Doesn't exist                                            | An reusable RESTful API that consumes raw observation and demographic data and provides a health check result                                                                                                | PoC API for DHC and supporting required APIs                                       |
-| 03      | API for DHC state management                      | Doesn't exist                                            | An API platform for managing the ongoing state required for completing a health check over a period of time                                                                                                  | PoC API for managing DHC State                                                     |
-| 04      | API for invite management                         | Exists for specific systems                              | A platform for managing invites to complete the DHC                                                                                                                                                          | PoC API for invite management and how it would work with OHID DHC state management |
-| 05      | Authorisation                                     | IdP's exists, needs api Auth platform                    | Citizens able to use NHS Login and Health Care Professionals able to use CIS2 for authentication (OpenId) and a standard API authorisation management using OAuth2                                           | PoC for single Authorisation platform using both NHSLogin and CIS2 as IdPs         |
-| 06      | End user UI                                       | Exists in various forms                                  | Reactive UI that can be used in mobile or desktop, for complete end to end DHC completion                                                                                                                    | UI that allows configuration for user research of best layout                      |
-| 07      | Health Care Professional UI                       | Doesn't exist                                            | A UI for HCPs to manage invites to DHCs                                                                                                                                                                      | PoC UI for invite management                                                       |
-| 08      | Pre load service                                  | ??                                                       | All relevant data loaded from existing health records                                                                                                                                                        | Investigate the various ways existing data can be accessed                         |
-| 09      | Export to GP Service                              | Exists with some providers                               | Results of DHC automatically added to a patients GP data record                                                                                                                                              | Investigate the various ways existing data can be exported                         |
-| 10      | Cohorting / Invite Service                        | Exists in GP systems                                     | Daily list of all those eligible for a DHC                                                                                                                                                                   | Investigate the various ways existing cohort data can be accessed                  |
-| 11      | Blood Test Labs / appointment booking integration | Exists in some form                                      | Integration to send requests for home blood kits, and to retrieve results from any lab. Book appointments with GPs/pharmacies/other providers for face to face testing, and API to receive results directly. | Investigate the different providers and ways of integration                        |
-| 12      | Output guidance - localized customization         | Basic directory of services                              | A GP may want to advertise service x after a health check, a ccg might want to advertise y                                                                                                                   | Investigate what exists in more details & how to manage at multiple levels         |
 
 Some of these components will be OHID specific, others could be available for other providers who wish to use the same Digital Health Check "Engine".
 
@@ -285,7 +284,9 @@ An outline of [Health Check Data]({% link digital-health-check/architecture/data
 
 ## 03. Health Check State Management
 
-Previous reviewed work has kept state management of the Health Check (W&P also did this) process inside the User Interface. Instead of this approach, an API driven process could be used, along side Event Sourcing for state management.
+Previous reviewed work has kept state management of the Health Check (W&P also did this) process inside the User Interface. Instead of this approach, an API driven process could be used, alongside Event Sourcing for state management.
+The benefit of this approach is that the User Interface becomes nothing but a graphical window to the logic of the process. This allows the whole process to be directly integrated with any other application, present or future – including custom integration if local regions wanted to provide the health check in there own systems or apps, but with full visibility for all inside the central NHS UK, NHS app or other central app.
+It will also allow for clear reporting for the exact current state of progress for all health checks.
 
 
 ### Example sequence for using a state management API for DHC
@@ -323,9 +324,17 @@ sequenceDiagram
 
 ## 04. Invite Management
 
+Invite management can be separated into two stages, first the collating who is eligible for a health check (based on Age and past medical history). The second stage is then a decision if to send an invite.
+Currently this process is performed locally at a GP level. It is suggested that ideally both processes are moved centrally.
+The first benefit of moving the identification of eligibility and invite centrally are for reporting purposes. There is then one central clear picture of both historical and real time health check status.  The eligibility and invite management could also be used for tracking non digital health checks.
+Any invite system should consider the unique needs of local regions, GP federations, GP Surgeries and individual GPs. It is proposed that any solution should include the ability for configuration of invite sending at any of these levels. 
+For example, a region may want to default to send by default 10 Health Check invites per GP surgery per week. However, a specific surgery might want to completely pause invites, and another might want to send invites to all those eligible. 
+Any management system that requires a health professional to use, should utilise existing identity providers so there is not a requirement of yet another login. It is suggested that CIS2 (with existing usernames and smartcards) is the preferred option.
+
+
 > **Area 04** 
 > 
-> API platform for managing state of a "long lived" Digital Health Check process
+> 
 >
 >
 > 
@@ -333,7 +342,7 @@ sequenceDiagram
 
 
 ## 05. Authorisation   
-
+With NHS Login for citizens, and CIS2 for health care professional’s (and even nhs.net for wider NHS staff) all supporting OpenId – there is no need for any new platform to need its own Identity. With the possibility of this programme requiring both HCP and Citizen login, a single authorisation platform should support both of the NHS OpenID IdPs, with it being used to protect the API resources directly.
 
 
 
@@ -347,19 +356,32 @@ sequenceDiagram
 
 
 ## 06. User Interface
+Any digital health check system should be totally platform agnostic. It should work in a web browser or mobile or desktop and also through native apps. This can be supported through an API driven platform.
+There are a number of existing user interfaces that follow the pattern that is needed for a Digital Health Check. There is the NHS Wellness and Prevention Alpha, which has a full responsive UI https://wp.nhsei.xyz) and also the Southwark DHC UI which follows the standard GDS layout (with asp dotnet core Blazor components).
+There should also be thought into the customising of the User Interface – if a region wants a varied UI – do they create there own and utilised the central APIs, or does the centrally provided UI allow some level of customisation depending on region?
 
 ## 07. Health Care Professional UI
+In addition to citizens requiring a UI for completing a Heath check, there is a requirement for HCP to have a UI. This could be used for both ends of the process – both for invite management and also reporting and MI needs.
+Again, like the citizen user interface, ideally this would be a wrapper over a fully API driven application, allowing ease of integration with other systems, such as GP specific platforms and Business Intelligence platforms.
+ 
 
 ## 08. Pre loading data service
+The lack of a single source of truth for data inside the NHS leads to problems when looking for data to consume. Can data be loaded from a GP? A Local trust PAS? From central Spine? From NHS Account? Should data be gathered from citizens own collected wearables data?
+With a focus on GP systems, this itself is not simple. There is a separate review of [GP integration options](% link digital-health-check/gp-integration.md %) that goes into more detail.
+Pre loading of data from a citizens medical record into a digital health check is not just a technical question, but also a process one. If the technical hurdles are overcome, what data should be loaded? Data from wearables? Data from a blood test last week, or last month? Height and weight?
 
 ## 09. Export to GP
+Technical solutions for providing health check results not only should address the technical challenges, but also over what control is given GPs over the consumption of the data. If a fully automatic system was in place centrally, there could be cases where some GPs do don’t want all results to be automatically added to a patients record.
+As with reading data from GP IT systems, writing results to them is also not simple. There is a separate review of GP integration options [GP integration options](% link digital-health-check/gp-integration.md %) that goes into more detail.
+The technical challenges of centrally writing directly into GP IT systems, there should be consideration into the difference between providing results to a GP through a separate management system vs directly exporting them – how this could be applied to short, medium and long term plans.
 
-## 10. Cohorting / Invite Service
 
-## 11. Blood Test Labs integration
+## 10. Blood Test Labs integration
+The level of integration available with labs providing testing will vary with the level of customisation required. It may be different regions require different labs, and some may use centrally pooled resources. The on going management t of this also needs to be considered, should regions be able to dynamically change the lab in use? There is also a question of if the service could be opened to people outside of the standard age range, and give the option of payment for ordering a test at home lab kit.
+There needs to be identified a pool of labs that would likely be used, and then further investigation into the integration that is available, both for ordering of kits and getting results.
 
-## 12. Output guidance & local customization
-
+## 11. Output guidance & local customization
+Once a health check is completed, there is a requirement to provide next step guidance. Thought should be given to how localised this guidance needs to be. Should a GP be able to have the ability to signpost those at their surgery that have a high blood pressure to a local clinic or service?
 
 # Additional Technical Considerations
 
