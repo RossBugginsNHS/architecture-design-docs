@@ -85,6 +85,9 @@ sequenceDiagram
     Citizen->>Referral: Attends appointment
 ```
 
+
+## Alternative Process View
+
 ```mermaid
 %%{init: 
     { 

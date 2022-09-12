@@ -27,6 +27,8 @@ url: "" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username: 
 github_username:  nhsexperience
 
+kramdown:
+  toc_levels: 1..2
 
 collections:
   projects: 
@@ -40,6 +42,13 @@ theme: just-the-docs
 plugins:
   - jekyll-feed
   - jekyll-spaceship
+
+
+webpack:
+  debounce:
+    run_once: true
+  cleanup_files:
+    - node_modules
 
 aux_links:
   "Citizen Experience on GitHub":
@@ -86,14 +95,11 @@ source_gh_repo_owner: "NHS Experience"
 # Excluded items can be processed by explicitly listing the directories or
 # their entries' file path in the `include:` list.
 #
-# exclude:
-#   - .sass-cache/
-#   - .jekyll-cache/
-#   - gemfiles/
-#   - Gemfile
-#   - Gemfile.lock
-#   - node_modules/
-#   - vendor/bundle/
-#   - vendor/cache/
-#   - vendor/gems/
-#   - vendor/ruby/
+exclude:
+  - .sass-cache/
+  - .jekyll-cache/
+  - gemfiles/
+  - Gemfile
+  - Gemfile.lock
+  - node_modules/
+  - src/
