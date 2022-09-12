@@ -1,3 +1,30 @@
+/*
+ * Created Date: Monday, September 12th 2022, 8:18:19 am
+ * Author: Ross Buggins (NHS) (78215796+RossBugginsNHS@users.noreply.github.com>)
+ * -----
+ * Last Modified: 12/09/2022 09:02:51 am
+ * Modified By: Ross Buggins (NHS)
+ * -----
+ * Copyright (c) 2022 Crown Copyright
+ * -----
+ * GNU General Public License v3.0 or later
+ * 
+ * This file is part of NHS England Digital Health Check.
+ * 
+ * NHS England Digital Health Check is free software: you can redistribute it and/or modify it under the terms
+ * of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ * 
+ * NHS England Digital Health Check is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along with NHS England Digital Health Check.
+ * If not, see <https://www.gnu.org/licenses/>.
+ * -----
+ */
+
+
 using Microsoft.AspNetCore.Mvc;
 using dhc;
 using UnitsNet;
@@ -11,6 +38,7 @@ namespace bmiapi.Controllers;
 [Route("/v{version:apiVersion}/[controller]")]
 public class BmiController : ControllerBase
 {
+    //logger
     private readonly ILogger<BmiController> _logger;
     private readonly IBmiCalculatorProvider _bmiProvider;
     public BmiController(
