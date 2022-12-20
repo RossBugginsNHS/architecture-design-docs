@@ -20,7 +20,7 @@ jobs:
           submodules: true
       - name: Set Permissions
         id: perms
-        run: chmod -R 0777 /opt/ruby/2.7.6
+        run: mkdir /opt/ruby/2.7.6/cache && chmod -R 0777 /opt/ruby/2.7.6/cache
       - name: Build And Deploy
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
