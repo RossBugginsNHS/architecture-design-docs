@@ -5,6 +5,3 @@ _site
 vendor
 node_modules
 assets-webpack/*
-Gemfile-dev.lock
-Gemfile.lock
-package-lock.json
