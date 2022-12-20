@@ -3,7 +3,5 @@ _site
 .jekyll-cache
 .jekyll-metadata
 vendor
-.lock
-Gemfile.lock
 node_modules
 assets-webpack/*
