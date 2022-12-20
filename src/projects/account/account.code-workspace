@@ -1,0 +1,29 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "account"
+		},
+		{
+			"path": "account.abstractions"
+		},
+		{
+			"path": "account.api"
+		},
+		{
+			"path": "account.client"
+		},
+		{
+			"path": "account.silo"
+		},
+		{
+			"path": "testwebapi"
+		},
+		{
+			"path": "superstreams"
+		}
+	],
+	"settings": {}
+}

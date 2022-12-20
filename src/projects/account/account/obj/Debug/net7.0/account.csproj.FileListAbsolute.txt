@@ -1,0 +1,15 @@
+/home/rb/source/account/account/obj/Debug/net7.0/account.csproj.AssemblyReference.cache
+/home/rb/source/account/account/obj/Debug/net7.0/account.GeneratedMSBuildEditorConfig.editorconfig
+/home/rb/source/account/account/obj/Debug/net7.0/account.AssemblyInfoInputs.cache
+/home/rb/source/account/account/obj/Debug/net7.0/account.AssemblyInfo.cs
+/home/rb/source/account/account/obj/Debug/net7.0/account.csproj.CoreCompileInputs.cache
+/home/rb/source/account/account/bin/Debug/net7.0/account.deps.json
+/home/rb/source/account/account/bin/Debug/net7.0/account.dll
+/home/rb/source/account/account/bin/Debug/net7.0/account.pdb
+/home/rb/source/account/account/bin/Debug/net7.0/account.abstractions.dll
+/home/rb/source/account/account/bin/Debug/net7.0/account.abstractions.pdb
+/home/rb/source/account/account/obj/Debug/net7.0/account.csproj.CopyComplete
+/home/rb/source/account/account/obj/Debug/net7.0/account.dll
+/home/rb/source/account/account/obj/Debug/net7.0/refint/account.dll
+/home/rb/source/account/account/obj/Debug/net7.0/account.pdb
+/home/rb/source/account/account/obj/Debug/net7.0/ref/account.dll

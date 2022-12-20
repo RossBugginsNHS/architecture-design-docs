@@ -1,0 +1,12 @@
+/home/rb/source/account/account.abstractions/bin/Debug/net7.0/account.abstractions.deps.json
+/home/rb/source/account/account.abstractions/bin/Debug/net7.0/account.abstractions.dll
+/home/rb/source/account/account.abstractions/bin/Debug/net7.0/account.abstractions.pdb
+/home/rb/source/account/account.abstractions/obj/Debug/net7.0/account.abstractions.csproj.AssemblyReference.cache
+/home/rb/source/account/account.abstractions/obj/Debug/net7.0/account.abstractions.GeneratedMSBuildEditorConfig.editorconfig
+/home/rb/source/account/account.abstractions/obj/Debug/net7.0/account.abstractions.AssemblyInfoInputs.cache
+/home/rb/source/account/account.abstractions/obj/Debug/net7.0/account.abstractions.AssemblyInfo.cs
+/home/rb/source/account/account.abstractions/obj/Debug/net7.0/account.abstractions.csproj.CoreCompileInputs.cache
+/home/rb/source/account/account.abstractions/obj/Debug/net7.0/account.abstractions.dll
+/home/rb/source/account/account.abstractions/obj/Debug/net7.0/refint/account.abstractions.dll
+/home/rb/source/account/account.abstractions/obj/Debug/net7.0/account.abstractions.pdb
+/home/rb/source/account/account.abstractions/obj/Debug/net7.0/ref/account.abstractions.dll
