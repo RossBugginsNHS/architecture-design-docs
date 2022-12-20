@@ -6,11 +6,7 @@ grand_parent: NHS Digital Health Check
 nav_order: 30
 ---
 
-> ⚠️ **Warning**
->  
-> **Draft Documents**: May not represent real world scenarios, may not be fully accurate or complete.
->
-> Please contact the author for more information.
+
 
 # Summary
 - Not a dedicated DHC programme, however, the style and flow of the wellness and prevention programme is similar to what is required for a DHC.

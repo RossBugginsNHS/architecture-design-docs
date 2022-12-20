@@ -27,7 +27,11 @@ There is also the nature of how data is controlled. Citizens rarely understand t
 
 We can't change how the NHS has become structure as an organisation, and we can't change the fact that the control of data and where it is stored has ended up as it has. However, we can look at how best to level the playing field, and bring data sharing between citizens and health care professionals into alignment, to allow data to be shared safely, and with consent of both the data controllers and the subject of that data that is being shared.
 
-This paper / investigation / research looks to question not just what data is shared with what people, but how we empower health professionals to ensure data is available for safe sharing, whilst ultimately moving the final control of what data is shared with who and what, into the citizen's own hands. 
+For Citizens to benefit from Digital revolution, Developers need to be able to easily and effectively create services and applications for them. For Developers to be able to create such applications in this way, they need access to a standard model of both data and functionality, in a context that makes sense to them.
+
+Developers should not need to work at the NHS for months, learning what systems are where and how they expose their specific data, before they can create an application for Citizens. Developers should not be required, or expected, to understand the many complexities of the NHS. In fact, should they even need to work at the NHS at all? If the NHS can provide a central platform for Developers, then any organisation should be able to utilise that platform, with their own customisation and personalisation required for their specific target audience.  
+
+This paper / investigation / research looks to question not just what data is shared with what people, but how we empower health professionals to ensure data is available for safe sharing, give Developers the opportunity to utilise this platform, whilst ultimately moving the final control of what data is shared with who and what, into the citizen's own hands. 
 
 
 # Introduction

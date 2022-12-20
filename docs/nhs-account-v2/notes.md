@@ -1,7 +1,7 @@
 ---
 title: Notes
 layout: page
-parent:  NHS Account - Making Data Accessible with Common Context and Consent
+parent: NHS Account Platform
 nav_order: 9999.01
 ---
 

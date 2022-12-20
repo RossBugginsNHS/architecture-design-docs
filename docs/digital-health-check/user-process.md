@@ -7,11 +7,7 @@ author: Ross Buggins
 last_modified_date: Jul 21 2022 at 03:39 PM
 ---
 
-> ⚠️ **Warning**
->  
-> **Draft Documents**: May not represent real world scenarios, may not be fully accurate or complete.
->
-> Please contact the author for more information.
+
 
 # Health Check User Flow
 Diagram being built from https://github.com/RossBugginsNHS/nhs-experience/issues/1

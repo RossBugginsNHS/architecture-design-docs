@@ -5,11 +5,7 @@ parent: NHS Account Proxy
 nav_order: 4
 ---
 
-> ⚠️ **Warning**
->  
-> **Draft Documents**: May not represent real world scenarios, may not be fully accurate or complete.
->
-> Please contact the author for more information.
+
 
 
 A ReSTful API for verifying 'life events' such as births, deaths and marriages.

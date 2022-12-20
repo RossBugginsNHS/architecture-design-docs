@@ -6,11 +6,7 @@ grand_parent: NHS Digital Health Check
 nav_order: 20
 ---
 
-> ⚠️ **Warning**
->  
-> **Draft Documents**: May not represent real world scenarios, may not be fully accurate or complete.
->
-> Please contact the author for more information.
+
 
 ## Pilot Review
 [Southwark Staging Area DHC UI](https://stagingsouthwarkdhctest.qxlva.io) can be accessed publicly for UI review.

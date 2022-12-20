@@ -1,6 +1,6 @@
 ---
 title: Appendix A
 layout: page
-parent: NHS Account - Making Data Accessible with Common Context and Consent
+parent: NHS Account Platform
 nav_order: 1.10
 ---
