@@ -24,7 +24,7 @@ bundle install
 To Build
 
 ```
-npm run build
+npm run build-development
 ```
 
 This will build the node modules cache and run wepack and builds jekyll

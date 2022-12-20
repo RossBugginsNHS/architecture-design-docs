@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - latest
+      - main
     paths:
       - 'src/projects/digital-health-check/discovery/dhc/src/dhcapi/**'
       - 'src/projects/digital-health-check/discovery/dhc/src/dhc/**'

@@ -1,6 +1,12 @@
 name: dhc library build and test
 
-on: [push]
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - 'src/projects/digital-health-check/discovery/dhc/src/dhc/**'
 
 jobs:
   build-dhc-library:

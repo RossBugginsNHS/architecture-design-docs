@@ -3,7 +3,7 @@ name: dhc tests build and test
 on:
   push:
     branches:
-      - latest
+      - main
     paths:
       - 'src/projects/digital-health-check/discovery/dhc/src/**'
 
