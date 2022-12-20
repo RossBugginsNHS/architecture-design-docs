@@ -1,5 +1,6 @@
 ---
-title: NHS Account - Making Data Accessible with Common Context and Consent
+title: NHS Account Platform
+sub_title: Making Data Accessible with Common Context and Consent
 layout: page
 nav_order: 2.01
 has_children: true

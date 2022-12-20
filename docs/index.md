@@ -1,5 +1,6 @@
 ---
 title: Home
+sub_title: Citizen Experience Architecture
 layout: home
 nav_order: 1
 last_modified_date: Jul 15 2022 at 03:39 PM
@@ -17,15 +18,7 @@ last_modified_date: Jul 15 2022 at 03:39 PM
 
 {% assign sortedpgs = pgs | split: '|' | sort %}
 
-
-
-> ⚠️ **Warning**
->  
-> **Draft Documents**: May not represent real world scenarios, may not be fully accurate or complete.
->
-> Please contact the author for more information.
-
-# Citizen Experience
+# NHS Citizen Experience Architecture
 
 {% if
     site.gh_edit_link and
