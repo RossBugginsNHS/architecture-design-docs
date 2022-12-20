@@ -13,7 +13,7 @@
       "build-production": "webpack && bundle install && JEKYLL_ENV=production bundle exec jekyll build  --config _config.yml,_config_production.yml",
       "build-staging": "webpack && bundle config set --local path 'vendor/bundle' && bundle install && bundle exec just-the-docs rake search:init && JEKYLL_ENV=staging bundle exec jekyll build --config _config.yml,_config_staging.yml",
       "build-development": "webpack --mode=development && bundle config set --local path 'vendor/bundle' && bundle install && bundle exec just-the-docs rake search:init && JEKYLL_ENV=development bundle exec jekyll build --config _config.yml,_config_development.yml",
-      "debug": "JEKYLL_ENV=development BUNDLE_GEMFILE=Gemfile-dev bundle exec jekyll serve --config _config.yml,_config_development.yml --limit_posts 1",
+      "debug": "JEKYLL_ENV=development BUNDLE_GEMFILE=Gemfile-dev bundle exec jekyll serve --config _config.yml,_config_development.yml --limit_posts 100",
       "debug-webpack": "webpack --mode=development && JEKYLL_ENV=development BUNDLE_GEMFILE=Gemfile-dev bundle exec jekyll serve --config _config.yml,_config_development.yml --limit_posts 1",
       "debug-i": "JEKYLL_ENV=development BUNDLE_GEMFILE=Gemfile-dev bundle exec jekyll serve --config _config.yml,_config_development.yml --limit_posts 1 -I",
       "webpack": "webpack --mode=development"

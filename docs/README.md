@@ -32,5 +32,10 @@ This will build the node modules cache and run wepack and builds jekyll
 To then run locally
 
 ```
+npm run debug
+```
+
+To run without the npm config, the below can be used, but all config won't be loaded
+```
 bundle exec jekyll serve
 ```
