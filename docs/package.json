@@ -11,7 +11,7 @@
     "scripts": {
       "preinstall": "npx npm-force-resolutions",
       "build-production": "webpack && bundle install && JEKYLL_ENV=production bundle exec jekyll build  --config _config.yml,_config_production.yml",
-      "build-staging": "webpack && bundle exec just-the-docs rake search:init && bundle install && JEKYLL_ENV=staging bundle exec jekyll build --config _config.yml,_config_staging.yml",
+      "build-staging": "webpack && bundle config set --local path 'vendor/bundle' && bundle exec just-the-docs rake search:init && bundle install && JEKYLL_ENV=staging bundle exec jekyll build --config _config.yml,_config_staging.yml",
       "build-development": "webpack --mode=development && bundle install && JEKYLL_ENV=development bundle exec jekyll build --config _config.yml,_config_development.yml",
       "debug": "JEKYLL_ENV=development BUNDLE_GEMFILE=Gemfile-dev bundle exec jekyll serve --config _config.yml,_config_development.yml --limit_posts 1",
       "debug-webpack": "webpack --mode=development && JEKYLL_ENV=development BUNDLE_GEMFILE=Gemfile-dev bundle exec jekyll serve --config _config.yml,_config_development.yml --limit_posts 1",
