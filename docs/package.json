@@ -1,38 +1,38 @@
 {
-  "name": "nhsexpdocs",
-  "version": "1.0.0",
-  "description": "",
-  "private": true,
-  "scripts": {
-    "preinstall": "npx npm-force-resolutions",
-    "build-production": "webpack && bundle install && JEKYLL_ENV=production bundle exec jekyll build  --config _config.yml,_config_production.yml",
-    "build-staging": "webpack && bundle install && JEKYLL_ENV=staging bundle exec jekyll build --config _config.yml,_config_staging.yml",
-    "build-development": "webpack --mode=development && bundle install && JEKYLL_ENV=development bundle exec jekyll build --config _config.yml,_config_development.yml",
-    "debug": "JEKYLL_ENV=development BUNDLE_GEMFILE=Gemfile-dev bundle exec jekyll serve --config _config.yml,_config_development.yml --limit_posts 1",
-    "debug-webpack": "webpack --mode=development && JEKYLL_ENV=development BUNDLE_GEMFILE=Gemfile-dev bundle exec jekyll serve --config _config.yml,_config_development.yml --limit_posts 1",
-    "debug-i": "JEKYLL_ENV=development BUNDLE_GEMFILE=Gemfile-dev bundle exec jekyll serve --config _config.yml,_config_development.yml --limit_posts 1 -I",
-    "webpack": "webpack --mode=development"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "devDependencies": {
-    "copy-webpack-plugin": "^11.0.0",
-    "css-loader": "^6.7.1",
-    "mini-css-extract-plugin": "^2.6.1",
-    "saas": "^1.0.0",
-    "sass": "^1.55.0",
-    "sass-loader": "^13.1.0",
-    "style-loader": "^3.3.1",
-    "webpack": "^5.74.0",
-    "webpack-cli": "^4.2.0"
-  },
-  "dependencies": {
-    "@fontsource/source-sans-pro": "^4.5.11",
-    "canvg": "^4.0.1",
-    "jquery": "^3.6.1",
-    "mermaid": "^9.2.0",
-    "reveal.js": "^4.4.0",
-    "reveal.js-menu": "^2.1.0"
+    "name": "nhsexpdocs",
+    "version": "1.0.0",
+    "description": "",
+    "private": true,
+    "scripts": {
+      "preinstall": "npx npm-force-resolutions",
+      "build-production": "webpack && bundle install && JEKYLL_ENV=production bundle exec jekyll build  --config _config.yml,_config_production.yml",
+      "build-staging": "webpack && bundle install && JEKYLL_ENV=staging bundle exec jekyll build --config _config.yml,_config_staging.yml",
+      "build-development": "webpack --mode=development && bundle install && JEKYLL_ENV=development bundle exec jekyll build --config _config.yml,_config_development.yml",
+      "debug": "JEKYLL_ENV=development BUNDLE_GEMFILE=Gemfile-dev bundle exec jekyll serve --config _config.yml,_config_development.yml --limit_posts 1",
+      "debug-webpack": "webpack --mode=development && JEKYLL_ENV=development BUNDLE_GEMFILE=Gemfile-dev bundle exec jekyll serve --config _config.yml,_config_development.yml --limit_posts 1",
+      "debug-i": "JEKYLL_ENV=development BUNDLE_GEMFILE=Gemfile-dev bundle exec jekyll serve --config _config.yml,_config_development.yml --limit_posts 1 -I",
+      "webpack": "webpack --mode=development"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "devDependencies": {
+      "copy-webpack-plugin": "^11.0.0",
+      "css-loader": "^6.7.1",
+      "mini-css-extract-plugin": "^2.6.1",
+      "saas": "^1.0.0",
+      "sass": "^1.55.0",
+      "sass-loader": "^13.1.0",
+      "style-loader": "^3.3.1",
+      "webpack": "^5.74.0",
+      "webpack-cli": "^4.2.0"
+    },
+    "dependencies": {
+      "@fontsource/source-sans-pro": "^4.5.11",
+      "canvg": "^4.0.1",
+      "jquery": "^3.6.1",
+      "mermaid": "^9.2.0",
+      "reveal.js": "^4.4.0",
+      "reveal.js-menu": "^2.1.0"
+    }
   }
-}
