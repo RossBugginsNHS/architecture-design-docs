@@ -23,6 +23,9 @@
 		},
 		{
 			"path": "superstreams"
+		},
+		{
+			"path": "account.rabbitmq.streams"
 		}
 	],
 	"settings": {}

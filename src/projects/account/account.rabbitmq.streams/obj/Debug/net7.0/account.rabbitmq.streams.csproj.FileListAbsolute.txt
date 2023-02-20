@@ -1,0 +1,12 @@
+/home/rb/source/nhs-experience/nhs-experience/src/projects/account/account.rabbitmq.streams/obj/Debug/net7.0/account.rabbitmq.streams.csproj.AssemblyReference.cache
+/home/rb/source/nhs-experience/nhs-experience/src/projects/account/account.rabbitmq.streams/obj/Debug/net7.0/account.rabbitmq.streams.GeneratedMSBuildEditorConfig.editorconfig
+/home/rb/source/nhs-experience/nhs-experience/src/projects/account/account.rabbitmq.streams/obj/Debug/net7.0/account.rabbitmq.streams.AssemblyInfoInputs.cache
+/home/rb/source/nhs-experience/nhs-experience/src/projects/account/account.rabbitmq.streams/obj/Debug/net7.0/account.rabbitmq.streams.AssemblyInfo.cs
+/home/rb/source/nhs-experience/nhs-experience/src/projects/account/account.rabbitmq.streams/obj/Debug/net7.0/account.rabbitmq.streams.csproj.CoreCompileInputs.cache
+/home/rb/source/nhs-experience/nhs-experience/src/projects/account/account.rabbitmq.streams/bin/Debug/net7.0/account.rabbitmq.streams.deps.json
+/home/rb/source/nhs-experience/nhs-experience/src/projects/account/account.rabbitmq.streams/bin/Debug/net7.0/account.rabbitmq.streams.dll
+/home/rb/source/nhs-experience/nhs-experience/src/projects/account/account.rabbitmq.streams/bin/Debug/net7.0/account.rabbitmq.streams.pdb
+/home/rb/source/nhs-experience/nhs-experience/src/projects/account/account.rabbitmq.streams/obj/Debug/net7.0/account.rabbitmq.streams.dll
+/home/rb/source/nhs-experience/nhs-experience/src/projects/account/account.rabbitmq.streams/obj/Debug/net7.0/refint/account.rabbitmq.streams.dll
+/home/rb/source/nhs-experience/nhs-experience/src/projects/account/account.rabbitmq.streams/obj/Debug/net7.0/account.rabbitmq.streams.pdb
+/home/rb/source/nhs-experience/nhs-experience/src/projects/account/account.rabbitmq.streams/obj/Debug/net7.0/ref/account.rabbitmq.streams.dll
