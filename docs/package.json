@@ -36,7 +36,7 @@
       "@fontsource/source-sans-pro": "^4.5.11",
       "canvg": "^4.0.1",
       "jquery": "^3.6.1",
-      "mermaid": "^9.2.0",
+      "mermaid": "^9.3.0",
       "reveal.js": "^4.4.0",
       "reveal.js-menu": "^2.1.0"
     }

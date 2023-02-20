@@ -148,8 +148,10 @@ export function MermaidInit(addlinks=true)
 {
     mermaid.initialize({
         logLevel: 1,
-        flowchart: { useMaxWidth: false, htmlLabels: false },
-        c4: {useMaxWidth: false, diagramMarginX:10,  diagramMarginX:10, c4ShapeMargin:20, c4ShapePadding:20},
+        securityLevel: 'loose',
+        htmlLabels: true, 
+        flowchart: { useMaxWidth: true, htmlLabels: false },
+        c4: {useMaxWidth: true, htmlLabels: true, diagramMarginX:10,  diagramMarginX:10, c4ShapeMargin:20, c4ShapePadding:20},
         mermaid: {
             startOnLoad: false,
             callback: function(id) {
@@ -306,4 +308,43 @@ function drawCanvas(id, callback)
                        
                     });
         });
+}
+
+export function hookFullScreen()
+{
+    var cb = document.getElementById("fullscreenCheckbox");    
+    cb.checked = (localStorage.getItem("cb-checked") === 'true');
+
+    fullScreen();
+    cb.onchange = function(evt)
+    {
+        var x = 1;
+        fullScreen();
+    };
+}
+
+function fullScreen()
+{
+    var cb = document.getElementById("fullscreenCheckbox");           
+    var sideBar = document.getElementsByClassName("side-bar")[0];
+    var main  = document.getElementsByClassName("main")[0];
+    var pageInfo  = document.getElementsByClassName("page-info")[0];
+    localStorage.setItem("cb-checked", cb.checked);
+
+    if(cb.checked)
+    {
+        sideBar.style.display = 'none';
+        main.style.maxWidth = '100%';
+        main.style.marginLeft = '0px'; 
+        pageInfo.style.display = 'none';
+    }
+    else
+    {
+        sideBar.style.display = '';
+        main.style.maxWidth = '';
+        main.style.marginLeft = '';   
+        pageInfo.style.display = '';    
+    }
+
+    
 }

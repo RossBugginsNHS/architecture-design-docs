@@ -4,5 +4,8 @@
 
 <script>
     window.nhsce.UseMermaid(document);
+    $(document).ready(function() {
+        window.nhsce.hookFullScreen();
+    });
 </script>
 <link rel="stylesheet" href="{{ '/assets-webpack/css/main.css' | relative_url }}">
