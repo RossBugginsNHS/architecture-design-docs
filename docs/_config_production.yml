@@ -7,7 +7,7 @@ url: "" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username: 
 github_username:  nhsexperience
 
-published_url: "https://ce.nhsei.xyz"
+published_url: "https://zealous-beach-05e189903.1.azurestaticapps.net"
 gh_action_build_file_name: "azure-static-web-apps-zealous-beach-05e189903.yml"
 gh_edit_link: true # show or hide edit this page link
 gh_edit_link_text: "Edit this page on GitHub"
