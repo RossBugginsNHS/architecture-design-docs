@@ -39,6 +39,7 @@ has_children: true
 - What is currently done well? What is not done well?
 - What is the benefit of doing differently to now?
 - How can different be achieved?
+- Do we need input / feedback / questionnaire / user research around what people currently understand about Auth?
 
 
 ## Summary
@@ -82,6 +83,11 @@ mindmap
       Data Providers
       Identity Providers
       Sources of Truth
+    Current Understanding
+      What is known?
+      What isn't known?
+      What should be known?
+      How to find out what's known?
 
 ```
 
@@ -95,6 +101,18 @@ People today have an identity crisis. They may not know it, but most will feel i
 
 ### What is an Identity Provider (IdP) should an Identity Provider be doing?
 
+> *An IdP is a federation partner, organization, or business responsible for managing a user's digital identity and provides identity authentication and verification services, also known as identity as a service (IDaaS). It can manage and verify various identity information, such as usernames, passwords, or biometric information, to vouch for the identity of a user to a relying application or SP.*
+>
+> https://www.pingidentity.com/en/resources/identity-fundamentals/identity-and-access-management/identity-providers-service-providers.html#:~:text=The%20role%20of%20the%20SP,application%20session%20for%20the%20user.
+
+
+### Identity Providers and Service Providers
+
+> *Identity federation standards identify two operational roles in the identity and access management (IAM) and federated networks: the identity provider (IdP) and the service provider (SP). The IdP authenticates the user and provides the SP with the identity information that it requires to grant access to the services and resources that the user needs to do their job.*
+>
+>  *Identity federation allows both providers to define a trust relationship where the SP provides access to resources using identity information provided by the IdP.*
+>
+> https://www.pingidentity.com/en/resources/identity-fundamentals/identity-and-access-management/identity-providers-service-providers.html#:~:text=The%20role%20of%20the%20SP,application%20session%20for%20the%20user.
 
 ## Authorisation
 
@@ -154,22 +172,27 @@ ExternalRelationship1[Ext Service 1]
 ExternalRelationship2[Ext Service 2]
 NHSAPIM[NHS APIM]
 User[User]
+AcmeHealthApp[Acme Health App]
+ClientAuth[NHS Client App Service]
 
-
-
-NHSLogin-->|Identity Provider|IdentityFederation
-CIS2-->|Identity Provider|IdentityFederation
-OneGov-->|Identity Provider|IdentityFederation
-NHSMail-->|Identity Provider|IdentityFederation
+IdentityFederation--> |External Identity Provider|NHSLogin
+IdentityFederation--> |External Identity Provider|CIS2
+IdentityFederation--> |External Identity Provider|OneGov
+IdentityFederation--> |External Identity Provider|NHSMail
 IdentityFederation --> NHSAuth
 NHSAuth-.->NHSPDP
-NHSApp-.->IdentityFederation
+NHSApp-.->|Identity Provider|IdentityFederation
+AcmeHealthApp-.->|Identity Provider|IdentityFederation
+AcmeHealthApp --> NHSAPIM
 
 NHSPDP---NHSPEP1--->NHSPDP
 NHSPEP1-.->NHSAPI1
 
 NHSPDP---NHSPEP2--->NHSPDP
 NHSPEP2-.->NHSAPI2
+
+User-->NHSApp
+User-->AcmeHealthApp
 
 ExternalRelationship1-->NHSRelationshipService
 ExternalRelationship2-->NHSRelationshipService
@@ -180,6 +203,8 @@ NHSPDP-->NHSRolesAttributes
 NHSApp --> NHSAPIM
 NHSAPIM -->NHSPEP1
 NHSAPIM -->NHSPEP2
+NHSAPIM --> ClientAuth
+ClientAuth -->NHSAuth
 
 NHSAuth-.->IdentityFederation
 
@@ -200,21 +225,74 @@ linkStyle 10 stroke:none
 
 ### OAuth
 
+https://developer.okta.com/blog/2019/10/21/illustrated-guide-to-oauth-and-oidc
+
+
 ### Tokens
 
 #### Id Token
 
 #### Access Token
 
+>  *The access token is a piece of code used for authenticating the client application to access specific resources on  the resource owner’s behalf. The access token represents the client’s authorization to access a specific resource.* 
+>  *Access tokens can be provided as JSON Web Tokens (JWTs) or opaque tokens, which are passed over HTTPS so that they are secure in transit. *
+> 
+> ***Access Token Usage***
+> 
+> *The access token is used by the client application for making API calls to access specific resources on behalf of  their owner. Which particular resource the client can access is determined by scopes included in the token payload. A token with relevant scopes attached allows the client to access a specific resources and/or perform particular actions.*
+>
+> https://cloudentity.com/developers/basics/tokens/access-token/
+
+
+Best Practises:
+
+- Keep the signing key secret and reveal it only to services that require it.
+- Exclude sensitive data from the payload: Tokens are signed but can be decoded.
+- Use as few claims as possible: In the payload, add required claims only to optimize performance and security.
+
+https://cloudentity.com/developers/basics/tokens/access-token/
+
+
+
+Example of what can be in an access token
+
+https://learn.microsoft.com/en-us/azure/active-directory/develop/access-token-claims-reference
+
+
+
+
 #### Refresh Token
 
-### OpenId
+### OpenId (Connect) (OIDC)
+
+> **ID TOKEN  **
+> 
+> FOR THE CLIENT. FOR THE CLIENT. FOR THE CLIENT.
+
+OpenID Connect (OIDC) extends the OAuth 2.0 authorization protocol for use as an additional authentication protocol. You can use OIDC to enable single sign-on (SSO) between your OAuth-enabled applications by using a security token called an ID token.
+
+The full specification for OIDC is available on the OpenID Foundation's website at OpenID Connect Core 1.0 specification.
+
+The ID token is a security token that includes claims regarding the authentication of the user by the authorization server with the use of an OAuth client application. The ID token may also include other requested claims. It is created on the authorization server’s side to encode the user’s authentication information. Unlike access tokens **intended to be consumed by the resource server**, ID tokens are intended to be **consumed by the third-party application**.
+
+ID tokens are for storing user data and delivering it to the client application. Since the client application receives the ID token only after the user gets authenticated, the ID token becomes a proof of the **user’s identity to the client.**
 
 ### Policy Decision and Enforcement
 
 ### Claims, Roles, Attributes
 
-### Identity Federation
+## Identity Federation - Service Provider
+
+> *An SP is a federation partner, organization, or business that offers individuals or enterprises access to application resources, such as software as a service (SaaS) applications, for work-related or personal purposes. Some federation protocols use different terms for the service provider role, such as relying party (RP) or consumer.*
+>
+> *The role of the SP is to consume the trusted authentication token assertion sent by the IdP. SPs don't authenticate users, and they rely on the IdP to verify the identity of a user. After the SP receives the token, it checks for the verified user information and then creates an application session for the user.*
+>
+> *The SP offers a service for an enterprise or individual wanting to simplify client access to its services and resources, freeing the organization from the responsibility of providing access to these services.*
+>
+> https://www.pingidentity.com/en/resources/identity-fundamentals/identity-and-access-management/identity-providers-service-providers.html#:~:text=The%20role%20of%20the%20SP,application%20session%20for%20the%20user.
+
+### Claim Transformations
+
 
 
 
