@@ -16,7 +16,7 @@ has_children: true
 </details>
 
 
-## Notes for Author - Aims / Direction / Plan
+## Notes for Author - Aims / Objectives / Direction / Plan
 
 - Making Auth accessible to wider audience
 - Deep dive sections 
@@ -25,6 +25,13 @@ has_children: true
 - Need simple diagrams / images
 - Need simple example scenarios
 - Need a short summary version, and then a longer version with much more detail
+
+### Objectives
+
+- Provide non tech staff with a understanding 
+- Provide details for tech staff to find interesting and to enhance existing knowledge
+- Outline architectural design for a NHS Scenario, how to best use tech? "Proxy?"
+- Use dev background, provide working code examples and deployments of how this fits together is "best case" scenario
 
 ## Summary
 
@@ -104,17 +111,64 @@ deactivate Client application
 
 Understanding PKCE flow [^auth-flow-pkce]
 
-### Testing a Sankey Diagram
+## How this could look
 
 ```mermaid
-sankey-beta
+flowchart LR
+NHSLogin((NHS Login))
+CIS2((CIS 2))
+OneGov((One Gov))
+NHSMail((NHS Mail))
+NHSAuth[NHS Auth]
+NHSPDP[NHS PDP]
+NHSApp[NHS App]
+NHSPEP1[NHS PEP 1]
+NHSAPI1[NHS API 1]
+NHSPEP2[NHS PEP 2]
+NHSAPI2[NHS API 2]
+IdentityFederation[NHS Identity Federation]
+NHSRelationshipService[Relationship Service]
+NHSAccessService
+NHSRolesAttributes[Roles and Attribs Service]
+ExternalRelationship1[Ext Service 1]
+ExternalRelationship2[Ext Service 2]
+NHSAPIM[NHS APIM]
 
-NHS Login,NHS App,6000000
-NHS Login, NHS Web,100000
-CIS2,System1,1000000
-NHS App,PDS,2000000
-System1,PDS,600000
+NHSLogin-->|Identity Provider|IdentityFederation
+CIS2-->|Identity Provider|IdentityFederation
+OneGov-->|Identity Provider|IdentityFederation
+NHSMail-->|Identity Provider|IdentityFederation
+IdentityFederation --> NHSAuth
+NHSAuth-.->NHSPDP
+NHSApp-.->NHSAuth
+
+NHSPDP---NHSPEP1--->NHSPDP
+NHSPEP1-.->NHSAPI1
+
+NHSPDP---NHSPEP2--->NHSPDP
+NHSPEP2-.->NHSAPI2
+
+ExternalRelationship1-->NHSRelationshipService
+ExternalRelationship2-->NHSRelationshipService
+NHSRelationshipService<-->NHSAccessService
+NHSAccessService-->NHSRolesAttributes
+NHSPDP-->NHSRolesAttributes
+
+NHSApp --> NHSAPIM
+NHSAPIM -->NHSPEP1
+NHSAPIM -->NHSPEP2
+
+NHSAuth-.->IdentityFederation
+
+linkStyle 7 stroke:none
+linkStyle 10 stroke:none
+
 ```
+
+
+
+
+
 
 ## Key Technologies and Processes
 
@@ -136,9 +190,25 @@ System1,PDS,600000
 
 ### Identity Federation
 
+
+
+
+
 ## How can this be implemented successfully?
 
 
+### Testing a Sankey Diagram
+
+
+```mermaid
+sankey-beta
+
+NHS Login,NHS App,6000000
+NHS Login, NHS Web,100000
+CIS2,System1,1000000
+NHS App,PDS,2000000
+System1,PDS,600000
+```
 
 ## References
 
