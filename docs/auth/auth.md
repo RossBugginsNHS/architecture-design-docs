@@ -15,6 +15,17 @@ has_children: true
 {:toc}
 </details>
 
+
+## Notes for Author - Aims / Direction / Plan
+
+- Making Auth accessible to wider audience
+- Deep dive sections 
+- Also appeal to those with tech background
+- Include a case study - how could / should be done
+- Need simple diagrams / images
+- Need simple example scenarios
+- Need a short summary version, and then a longer version with much more detail
+
 ## Summary
 
 Authentication, Authorisation, OAuth, OpenId, Enforcement, Decisions, Credentials, Claims, JWT, Grants, Flows, Bearer, Tokens, Scopes, Policies, Roles, Attributes - the list could go on. Auth is hard. It is hard at times for people with a technical background, developers, engineers and architects. It's just as hard for project managers, business analystics and product teams. 
@@ -108,6 +119,14 @@ System1,PDS,600000
 ## Key Technologies and Processes
 
 ### OAuth
+
+### Tokens
+
+#### Id Token
+
+#### Access Token
+
+#### Refresh Token
 
 ### OpenId
 
