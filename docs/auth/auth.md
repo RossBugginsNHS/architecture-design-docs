@@ -33,9 +33,17 @@ has_children: true
 - Outline architectural design for a NHS Scenario, how to best use tech? "Proxy?"
 - Use dev background, provide working code examples and deployments of how this fits together is "best case" scenario
 
+### Questions to answer
+
+- What / where are the main confusions around Auth?
+- What is currently done well? What is not done well?
+- What is the benefit of doing differently to now?
+- How can different be achieved?
+
+
 ## Summary
 
-Authentication, Authorisation, OAuth, OpenId, Enforcement, Decisions, Credentials, Claims, JWT, Grants, Flows, Bearer, Tokens, Scopes, Policies, Roles, Attributes - the list could go on. Auth is hard. It is hard at times for people with a technical background, developers, engineers and architects. It's just as hard for project managers, business analystics and product teams. 
+Authentication, Authorisation, OAuth, OpenId, Enforcement, Decisions, Credentials, Claims, JWT, Grants, Flows, Bearer, Tokens, Scopes, Policies, Roles, Attributes - the list could go on. Auth is hard. It is hard at times for people with a technical background, developers, engineers and architects. It's just as hard for project managers, business analysts and product teams. 
 
 The aim of this paper is to remove some of the magic and mystery that surrounds Auth, hoping to allow a winder audience to have a better understanding of common Auth terms and processes.
 
@@ -145,6 +153,9 @@ NHSRolesAttributes[Roles and Attribs Service]
 ExternalRelationship1[Ext Service 1]
 ExternalRelationship2[Ext Service 2]
 NHSAPIM[NHS APIM]
+User[User]
+
+
 
 NHSLogin-->|Identity Provider|IdentityFederation
 CIS2-->|Identity Provider|IdentityFederation
@@ -152,7 +163,7 @@ OneGov-->|Identity Provider|IdentityFederation
 NHSMail-->|Identity Provider|IdentityFederation
 IdentityFederation --> NHSAuth
 NHSAuth-.->NHSPDP
-NHSApp-.->NHSAuth
+NHSApp-.->IdentityFederation
 
 NHSPDP---NHSPEP1--->NHSPDP
 NHSPEP1-.->NHSAPI1
@@ -172,12 +183,15 @@ NHSAPIM -->NHSPEP2
 
 NHSAuth-.->IdentityFederation
 
+
+```
+
+Changing arrows, set number to be the link to change. e.g.
+```
 linkStyle 7 stroke:none
 linkStyle 10 stroke:none
 
 ```
-
-
 
 
 
