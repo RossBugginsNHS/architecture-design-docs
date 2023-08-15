@@ -107,6 +107,10 @@ Also, to clear up:
 - OAuth - This is about **Auth**orisation
 - OIDC - OpenId Connect - This adds on top of OAuth, providing Authentication support from Identity Providers. (more on this later.)
 
+<iframe width="560" height="315" src="https://www.youtube.com/embed/t18YB3xDfXI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+
+[An Illustrated Guide to OAuth and OpenID Connect](https://www.youtube.com/watch?v=t18YB3xDfXI)
+
 ## Authentication
 
 ### What is an Identity Provider (IdP) should an Identity Provider be doing?
