@@ -94,7 +94,11 @@ mindmap
 
 ## Introduction
 
-People today have an identity crisis. They may not know it, but most will feel it in their every day interactions with technology. 
+People today have an identity crisis. They may not know it, but most will feel it in their every day interactions with technology. So many usernames, passwords and accounts. Social logins, work logins, government logins. Some web pages and app allow you to chose which existing user account you would like to use, some enforce this as the only option. Each time you enter a password, you are using an identity provider, that has a specific and unique representation of your identity. For some of these you will have completed additional "Biometric" identity verification, some will have Multifactor authentication. Many people turn to password managers just to keep track of what credentials they use for which services.
+
+
+
+
 
 ### Auth - Authentication? Authorisation? OAuth? OhhhhhAuth😣...
 
