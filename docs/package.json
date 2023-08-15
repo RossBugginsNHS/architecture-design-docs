@@ -23,21 +23,21 @@
     "license": "ISC",
     "devDependencies": {
       "copy-webpack-plugin": "^11.0.0",
-      "css-loader": "^6.7.1",
-      "mini-css-extract-plugin": "^2.6.1",
+      "css-loader": "^6.8.1",
+      "mini-css-extract-plugin": "^2.7.6",
       "saas": "^1.0.0",
-      "sass": "^1.55.0",
-      "sass-loader": "^13.1.0",
-      "style-loader": "^3.3.1",
-      "webpack": "^5.74.0",
-      "webpack-cli": "^4.2.0"
+      "sass": "^1.65.1",
+      "sass-loader": "^13.3.2",
+      "style-loader": "^3.3.3",
+      "webpack": "^5.88.2",
+      "webpack-cli": "^5.1.4"
     },
     "dependencies": {
-      "@fontsource/source-sans-pro": "^4.5.11",
+      "@fontsource/source-sans-pro": "^5.0.8",
       "canvg": "^4.0.1",
-      "jquery": "^3.6.1",
-      "mermaid": "^9.3.0",
-      "reveal.js": "^4.4.0",
+      "jquery": "^3.7.0",
+      "mermaid": "^10.3.1",
+      "reveal.js": "^4.5.0",
       "reveal.js-menu": "^2.1.0"
     }
   }
