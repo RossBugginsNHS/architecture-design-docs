@@ -44,7 +44,7 @@ has_children: true
 
 ## Summary
 
-Authentication, Authorisation, OAuth, OpenId, Enforcement, Decisions, Credentials, Claims, JWT, Grants, Flows, Bearer, Tokens, Scopes, Policies, Roles, Attributes - the list could go on. Auth is hard. It is hard at times for people with a technical background, developers, engineers and architects. It's just as hard for project managers, business analysts and product teams. 
+Authentication, Authorisation, OAuth, OpenId, Providers, Enforcement, Decisions, Credentials, Claims, JWT, Grants, Flows, Bearer, Tokens, Scopes, Policies, Roles, Attributes - the list could go on. Auth is hard. It is hard at times for people with a technical background, developers, engineers and architects. It's just as hard for project managers, business analysts and product teams. 
 
 The aim of this paper is to remove some of the magic and mystery that surrounds Auth, hoping to allow a winder audience to have a better understanding of common Auth terms and processes.
 
@@ -78,6 +78,7 @@ mindmap
       PEP
       PKCE
       JWT
+      Federation: IdPs an SPs
     Involvement
       Client Apps
       Data Providers
@@ -95,7 +96,16 @@ mindmap
 
 People today have an identity crisis. They may not know it, but most will feel it in their every day interactions with technology. 
 
+### Auth - Authentication? Authorisation? OAuth? OhhhhhAuth😣...
 
+What do we mean when we just say Auth? What do other people mean what they say just Auth?
+
+
+
+Also, to clear up:
+
+- OAuth - This is about **Auth**orisation
+- OIDC - OpenId Connect - This adds on top of OAuth, providing Authentication support from Identity Providers. (more on this later.)
 
 ## Authentication
 
