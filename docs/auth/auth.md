@@ -53,6 +53,14 @@ mindmap
     Authorisation
       Policy Decision
       Policy Enforcement
+      Attribs vs Roles
+      Relationship Sources of Truth
+        External Issuers
+      
+    Key Principles
+      Separation of concerns
+      Ease of expansion / integration
+      Abstraction of IdP and Client App
     Tech
       OAuth
       OpenId
@@ -64,6 +72,8 @@ mindmap
     Involvement
       Client Apps
       Data Providers
+      Identity Providers
+      Sources of Truth
 
 ```
 
@@ -72,11 +82,13 @@ mindmap
 People today have an identity crisis. They may not know it, but most will feel it in their every day interactions with technology. 
 
 
-## Key Terms
 
-### Authentication
+## Authentication
 
-### Authorisation
+### What is an Identity Provider (IdP) should an Identity Provider be doing?
+
+
+## Authorisation
 
 #### Authorization Code Flow With Proof Key of Code Exchange (PKCE)
 ```mermaid
