@@ -83,23 +83,4 @@
 
 ---
 
-
 <img data-src="/auth/givedatatoknight.svg">
-
----
-
-## Others
-
-<img data-src="/auth/img1aa.svg">
-
----
-
-<img data-src="/auth/img1.svg">
-
----
-
-
-
-
-
-## Authorisation
