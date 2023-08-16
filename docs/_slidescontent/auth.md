@@ -18,6 +18,18 @@
 
 ---
 
+<img data-src="/auth/knightsstone.svg">
+
+---
+
+<img data-src="/auth/knightsstone2.svg">
+
+---
+
+<img data-src="/auth/knightsstone3.svg">
+
+---
+
 <img data-src="/auth/img1aa.svg">
 
 ---
