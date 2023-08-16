@@ -28,6 +28,10 @@ has_children: true
 - Need simple example scenarios
 - Need a short summary version, and then a longer version with much more detail
 
+### Need to ensure
+- Scope of doc is clear
+- Ensure there are constraints around use cases
+
 ### Objectives
 
 - Provide non tech staff with a understanding 
