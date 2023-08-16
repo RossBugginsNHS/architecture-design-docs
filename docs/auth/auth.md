@@ -44,7 +44,7 @@ has_children: true
 
 ## Summary
 
-Authentication, Authorisation, OAuth, OpenId, Providers, Enforcement, Decisions, Credentials, Claims, JWT, Grants, Flows, Bearer, Tokens, Scopes, Policies, Roles, Attributes - the list could go on. Auth is hard. It is hard at times for people with a technical background, developers, engineers and architects. It's just as hard for project managers, business analysts and product teams. 
+Authentication, Authorisation, OAuth, OpenId, Providers, Enforcement, Decisions, Credentials, Identity, Access Management, Claims, JWT, Grants, Flows, Bearer, Tokens, Scopes, Policies, Roles, Attributes - the list could go on. Auth is hard. It is hard at times for people with a technical background, developers, engineers and architects. It's just as hard for project managers, business analysts and product teams. 
 
 The aim of this paper is to remove some of the magic and mystery that surrounds Auth, hoping to allow a winder audience to have a better understanding of common Auth terms and processes.
 
@@ -96,8 +96,29 @@ mindmap
 
 People today have an identity crisis. They may not know it, but most will feel it in their every day interactions with technology. So many usernames, passwords and accounts. Social logins, work logins, government logins. Some web pages and app allow you to chose which existing user account you would like to use, some enforce this as the only option. Each time you enter a password, you are using an identity provider, that has a specific and unique representation of your identity. For some of these you will have completed additional "Biometric" identity verification, some will have Multifactor authentication. Many people turn to password managers just to keep track of what credentials they use for which services.
 
+to cover:
+
+- sso
+- better than used to be
+- what is the "Nirvana" state for identity? Some would say 1 identity to rule them all.. 
 
 
+## Getting Started
+
+Objectives
+
+- What is auth
+- What should it do
+- What are key components
+- Key terminology? 
+
+
+
+
+
+
+
+# Deeper Tech Sections
 
 
 ### Auth - Authentication? Authorisation? OAuth? OhhhhhAuth😣...
@@ -331,6 +352,16 @@ CIS2,System1,1000000
 NHS App,PDS,2000000
 System1,PDS,600000
 ```
+
+
+# Example and Utilising Best Practices
+
+TODO
+
+
+
+
+
 
 ## References
 
