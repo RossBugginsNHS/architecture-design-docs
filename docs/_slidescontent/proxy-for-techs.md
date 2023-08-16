@@ -17,6 +17,7 @@ Note:
 A note here
 
 ---
+
 ## OED Definition
 
 *"Authority given to a person  
@@ -25,7 +26,9 @@ Note:
 A note there
 
 ---
+
 ## NHS Definition
+
 *"Allow people to act on behalf of the  
 patients and dependents they care for,  
 and to allow users of NHS digital  
@@ -33,6 +36,7 @@ services to share their records with
 those they trust to act on their behalf"* <!-- .element: class="quote-text r-fit-text"  -->
 
 ---
+
 ## Tech Definition
 *"An intermediary between a client  
 requesting a resource and the server  
@@ -41,6 +45,7 @@ providing that resource,
 request to the resource server."***<!-- .element: class="quote-text r-fit-text"  -->
 
 ---
+
 ## What need answering?
 - What can you do with proxy?
 - Where does this happen?
@@ -53,6 +58,7 @@ request to the resource server."***<!-- .element: class="quote-text r-fit-text" 
 - Hang on, what really is proxy for us?
 
 ---
+
 ## What can you (or should be able) do with "NHS Proxy"?
 - Make decisions (non digital)
 - View records (non digital)
@@ -62,22 +68,26 @@ request to the resource server."***<!-- .element: class="quote-text r-fit-text" 
 *A mix of digital and non digital*
 
 ---
+
 ## Where does this already happen?
 - GPs - no standard
 - Secondary care?
 - Paramedics? (Sec or Pri?)
 
 ---
+
 ## How do you get proxy? - The Act of "Giving Proxy"
 The act of giving someone proof that they can act for you
 
 ---
+
 ## Burden of responsibility of verification
 - Currently on medical professionals
 - Paper checks
 - **This Burden has to go**
 
 ---
+
 ## Burden of responsibility of enforcement
 - Currently on medical professionals
 - On the spot ID checks?
@@ -85,6 +95,7 @@ The act of giving someone proof that they can act for you
 - **This Burden has to go**
 
 ---
+
 ## Tearing down the word Proxy
 - Giving Authority to act of behalf
 - Recording it
@@ -92,17 +103,20 @@ The act of giving someone proof that they can act for you
 - Acting upon it
   
 ---
+
 ## Splitting up the needs 
 - Digitally - record roles and assignments
 - Physically - need an easy way to proove
 - Legally - Enforcing external "overrides" to set roles
 
 ---
+
 ## Can we do better, than Authority to "Act on behalf?"
 - Parter has authority to act on my behalf to pick up prescriptions
 - PA has authority to accept appointments
 
 ---
+
 ## And how about, what can do things, not just who
 - Partner can see in an medical app prescription is ready
 - But can't see what it is
@@ -111,29 +125,35 @@ The act of giving someone proof that they can act for you
 - children can just see time
 
 ---
+
 Isn't this everywhere, without using the word proxy?
 **YES**<!-- .element: class="r-fit-text"  -->
 
 It's called roles.
 
 ---
+
 And OAuth
 
 ---
+
 And UMA
 
 ---
+
 ## Identity and its "Role"
 NHS Login should just prove who someone is
 NOT WHAT THEY CAN DO
 
 ---
+
 ## Ensuring Login is separate to EVERYTHING
 Login should prove who someone is, and what their **CURENT** NHS number is
 **It should not mean they have access do anything with  
 the data associated with that NHS Number**  
 
 ---
+
 ## Bringing together "Account" & "Proxy"
 - Account - this represents all data and demographics related to an NHS Number
 - Has a "primary" NHS number (some people do end up with multiple - its FUBAR)
@@ -145,14 +165,17 @@ the data associated with that NHS Number**
 - list of who is allowed to do what with each app
 
 ---
+
 ## Account Diag
 <iframe data-src="/diagrams/proxy1.html" frameBorder="0" data-preload></iframe><!-- .element: class="myiframe"  -->
 
 ---
+
 ## All citizen interaction through account
 - EVEN When acting as "proxy"
 
 ---
+
 ## So what is account?
 Ideal: A citizen facing single API endpoint  
  with granular OAUTH controlled  scopes  
@@ -161,6 +184,7 @@ for each API.
 Data Model: FHIR **is not** Citizen friendly..
 
 ---
+
 ## One you have this, everything is easy
 - I can "give" access to anyone, myself
 - My "proxy(s)" can interact with my account
@@ -169,15 +193,18 @@ Data Model: FHIR **is not** Citizen friendly..
 - And updates the roles.! 
 
 ---
+
 ## Reiterate
 - NHS Login - who you are...
 - **SHOULD NOT** imply **WHAT** you can do 
 
 ---
+
 ## A Citizen RBAC
 ... Gulp
 
 ---
+
 ## How VCs fit in to this - those we trust
 - Used for proving to us someone has PoA, Parent Rights etc
 - we update roles
@@ -205,6 +232,7 @@ Data Model: FHIR **is not** Citizen friendly..
 ## Scenario A: Partner to have "full" digital access
 
 ---
+
 ## Scenario B: Doctor wants consent for treatment on Alice
 - Alice is incapacitated, Bob is claiming he has authority
 - Doctor enters NHS Number on his device
@@ -212,6 +240,7 @@ Data Model: FHIR **is not** Citizen friendly..
 - Doctors device confirms Bob has authority
 
 ---
+
 ## Scenario B: Where did that QR code come from?!
 - Direct from MoJ - a "PoA" VC, Alice Subject, Bob the holder
 - or...
@@ -220,12 +249,14 @@ Data Model: FHIR **is not** Citizen friendly..
 - i.e. full decision making, but no authority on CPR? 
 
 ---
+
 ## Scenario B: Notes
 - Doctor "could" look up the Alice to Bob roles in account?
 - But needs the VC to prove that person is really Bob
 - Takes the responsibilty of "Proof" away from the Doctor
 
 ---
+
 ## That's all well and good
 
 But... The Data
@@ -260,6 +291,7 @@ ProxyService-->RBAC;
 When if you have RBAC - someone can just give the roles
 
 ---
+
 ### Proxy Service
 
 - Forces an update to those roles

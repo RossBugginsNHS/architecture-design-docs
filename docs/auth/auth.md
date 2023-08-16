@@ -16,6 +16,8 @@ has_children: true
 </details>
 
 
+{% include slide.html fileName="auth" divName="auth-intro-presentation" %}
+
 ## Notes for Author - Aims / Objectives / Direction / Plan
 
 - Making Auth accessible to wider audience
@@ -44,7 +46,7 @@ has_children: true
 
 ## Summary
 
-Authentication, Authorisation, OAuth, OpenId, Providers, Enforcement, Decisions, Credentials, Identity, Access Management, Claims, JWT, Grants, Flows, Bearer, Tokens, Scopes, Policies, Roles, Attributes - the list could go on. Auth is hard. It is hard at times for people with a technical background, developers, engineers and architects. It's just as hard for project managers, business analysts and product teams. 
+Authentication, Authorisation, OAuth, OpenId, Providers, Verification, Enforcement, Decisions, Credentials, Identity, Access Management, Claims, JWT, Grants, Flows, Bearer, Tokens, Scopes, Policies, Roles, Attributes - the list could go on. Auth is hard. It is hard at times for people with a technical background, developers, engineers and architects. It's just as hard for project managers, business analysts and product teams. 
 
 The aim of this paper is to remove some of the magic and mystery that surrounds Auth, hoping to allow a winder audience to have a better understanding of common Auth terms and processes.
 
